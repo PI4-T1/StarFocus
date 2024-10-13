@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/off_white"
+    android:orientation="vertical"
+    tools:context=".SignUp">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/appCompatImage1"
+        android:layout_width="453dp"
+        android:layout_height="390dp"
+        android:layout_marginBottom="-10dp"
+        android:src="@drawable/welcomesignupvector"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/appCompatTextView1"
+        android:layout_width="220dp"
+        android:layout_height="40dp"
+        android:text="@string/cadaastrese"
+        android:fontFamily="@font/poppins_medium"
+        android:textAlignment="center"
+        android:textSize="34sp"
+        android:layout_marginTop="-30dp"
+        android:textColor="@color/teal_dark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appCompatImage1"
+        />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/appCompatTextView2"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_medium"
+        android:text="@string/signupDescription"
+        android:textAlignment="textEnd"
+        android:textColor="@color/purple"
+        android:textSize="17sp"
+        app:layout_constraintEnd_toEndOf="@+id/appCompatTextView1"
+        app:Start_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appCompatTextView1" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/idEmail"
+        style="@style/inputstyle"
+        android:layout_width="310dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="35dp"
+        android:fontFamily="@font/poppins"
+        android:hint="@string/email"
+        android:paddingStart="10dp"
+        android:paddingTop="13dp"
+        android:paddingEnd="10dp"
+        android:textAlignment="textStart"
+        android:textColorHint="@color/black"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="@id/appCompatTextView1"
+        app:layout_constraintStart_toStartOf="@id/appCompatTextView1"
+        app:layout_constraintTop_toBottomOf="@id/appCompatTextView1" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/idNome"
+        style="@style/inputstyle"
+        android:layout_width="310dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/poppins"
+        android:hint="@string/Nome"
+        android:paddingStart="10dp"
+        android:paddingTop="13dp"
+        android:paddingEnd="10dp"
+        android:textAlignment="textStart"
+        android:textColorHint="@color/black"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="@id/appCompatTextView1"
+        app:layout_constraintStart_toStartOf="@id/appCompatTextView1"
+        app:layout_constraintTop_toBottomOf="@+id/idEmail" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/idSenha"
+        style="@style/inputstyle"
+        android:layout_width="310dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/poppins"
+        android:hint="@string/Senha"
+        android:paddingStart="10dp"
+        android:paddingTop="13dp"
+        android:paddingEnd="10dp"
+        android:textAlignment="textStart"
+        android:textColorHint="@color/black"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="@id/appCompatTextView1"
+        app:layout_constraintStart_toStartOf="@id/appCompatTextView1"
+        app:layout_constraintTop_toBottomOf="@+id/idNome" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/idtelefone"
+        style="@style/inputstyle"
+        android:layout_width="310dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/poppins"
+        android:hint="@string/Telefone"
+        android:paddingStart="10dp"
+        android:paddingTop="13dp"
+        android:paddingEnd="10dp"
+        android:textAlignment="textStart"
+        android:textColorHint="@color/black"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="@id/appCompatTextView1"
+        app:layout_constraintStart_toStartOf="@id/appCompatTextView1"
+        app:layout_constraintTop_toBottomOf="@+id/idSenha" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/idData_de_nascimento"
+        style="@style/inputstyle"
+        android:layout_width="310dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/poppins"
+        android:hint="@string/Data_de_nascimento"
+        android:paddingStart="10dp"
+        android:paddingTop="13dp"
+        android:paddingEnd="10dp"
+        android:textAlignment="textStart"
+        android:textColorHint="@color/black"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="@id/appCompatTextView1"
+        app:layout_constraintStart_toStartOf="@id/appCompatTextView1"
+        app:layout_constraintTop_toBottomOf="@+id/idtelefone" />
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnCadastrar"
+        style="@style/buttonsend"
+        android:layout_width="310dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/poppins_bold"
+        android:paddingTop="6dp"
+        android:text="@string/cadastrar"
+        android:textAlignment="center"
+        android:textColor="@color/off_white"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/idData_de_nascimento" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/textViewLoginPrompt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/FacaLogin"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:fontFamily="@font/poppins"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnCadastrar"
+        android:layout_marginEnd="8dp"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/buttonLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Login"
+        android:fontFamily="@font/poppins_semibold"
+        android:textColor="@color/teal"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@+id/textViewLoginPrompt"
+        app:layout_constraintTop_toBottomOf="@+id/btnCadastrar"
+        android:layout_marginStart="3dp"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

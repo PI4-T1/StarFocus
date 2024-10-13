@@ -1,3 +1,24 @@
 <resources>
-    <string name="app_name">StarFocusApp</string>
+    <string name="app_name">StarFocus</string>
+
+    <!--TELA DE CADASTRO-->
+    <string name="signupDescription">Para começar!</string>
+    <string name="cadaastrese">Cadastre-se</string>
+    <string name="email">Email</string>
+    <string name="Nome">Nome</string>
+    <string name="Senha">Senha</string>
+    <string name="Telefone">Telefone</string>
+    <string name="Data_de_nascimento">Data de nascimento</string>
+    <string name="cadastrar">Cadastrar</string>
+    <string name="FacaLogin">Já tem uma conta?</string>
+    <string name="Login">Login</string>
+    <string name="strings_app_name">strings/app_name</string>
+    <string name="welcome_back">BEM-VINDO DE VOLTA</string>
+    <string name="to_continue">para continuar!</string>
+    <string name="senha">Senha</string>
+    <string name="forget_password">Esqueceu sua senha?</string>
+    <string name="remember">Lembrar-me</string>
+    <string name="noAccount">Não tem uma conta?</string>
+
+
 </resources>
