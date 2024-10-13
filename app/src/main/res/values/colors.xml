@@ -2,10 +2,12 @@
 <resources>
     <color name="purple">#6F69AC</color>
     <color name="grey">#E1E1E1</color>
+    <color name="dark_grey">#595959</color>
     <color name="teal">#299DA3</color>
     <color name="teal_dark">#1496A4</color>
     <color name="teal_clear">#76C8BB</color>
     <color name="clearBlue">#BCDADA</color>
+    <color name="mediumBlue">#299DA3</color>
     <color name="grey_dark">#E8E8E8</color>
     <color name="pink">#FC83A2</color>
     <color name="yellow">#FCE194</color>
