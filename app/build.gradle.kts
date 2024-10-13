@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.androidx.constraintlayout)
     implementation (libs.material)
+    implementation (libs.androidx.constraintlayout.v204)
 
 
 }

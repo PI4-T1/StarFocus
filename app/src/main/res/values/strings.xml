@@ -13,6 +13,7 @@
     <string name="FacaLogin">Já tem uma conta?</string>
     <string name="Login">Login</string>
     <string name="strings_app_name">strings/app_name</string>
+    <string name="welcome_back">BEM-VINDO DE VOLTA</string>
 
 
 </resources>
