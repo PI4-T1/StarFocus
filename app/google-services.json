@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "992590332988",
+    "project_id": "star-a03ea",
+    "storage_bucket": "star-a03ea.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:992590332988:android:896ccd42f1e0a080ce6f39",
+        "android_client_info": {
+          "package_name": "br.edu.puccampinas.starfocusapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5puQZbddSxB5kuTKXK1d6bQ14oOwUgZ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
