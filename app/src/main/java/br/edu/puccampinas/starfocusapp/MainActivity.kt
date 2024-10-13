@@ -45,3 +45,29 @@ fun GreetingPreview() {
         Greeting("Android")
     }
 }
+
+//Código de tela inicial - Mostra  o logo  do app no fundo roxo -  alterar depois
+//package br.edu.puccampinas.starfocusapp
+//
+//import android.content.Intent
+//import android.graphics.Color
+//import android.os.Bundle
+//import android.os.Handler
+//import android.os.Looper
+//import androidx.appcompat.app.AppCompatActivity
+//import com.starfocus.app.R
+//
+//class MainActivity : AppCompatActivity() {
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        setContentView(R.layout.main_activity) // Define o layout da atividade
+//
+//        supportActionBar?.hide()
+//        window.statusBarColor= Color.parseColor("#6F69AC")
+//        Handler(Looper.getMainLooper()).postDelayed({
+//            val intent =   Intent(this,Home::class.java)
+//            startActivity(intent)
+//            finish()
+//        },3000)
+//    }
+//}
