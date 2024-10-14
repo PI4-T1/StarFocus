@@ -179,5 +179,16 @@
         app:layout_constraintTop_toBottomOf="@+id/btnCadastrar"
         android:layout_marginStart="3dp"/>
 
+    <ImageView
+        android:id="@+id/arrowBack"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="340dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/vector_arrow_back" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
