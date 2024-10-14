@@ -196,6 +196,8 @@ class SignUp : AppCompatActivity() {
     }
 
     private fun registerUser(user: User) {
+        // Define o idioma para português
+        FirebaseAuth.getInstance().setLanguageCode("pt")
         auth.createUserWithEmailAndPassword(user.email, user.senha).addOnSuccessListener { authResult ->
             authResult.user?.sendEmailVerification()?.addOnCompleteListener {
 

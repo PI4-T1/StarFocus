@@ -34,6 +34,8 @@ class ResetPassword : AppCompatActivity() {
             Toast.makeText(this, "Digite o endereço de email", Toast.LENGTH_LONG).show()
             return
         }
+        // Define o idioma para português
+        FirebaseAuth.getInstance().setLanguageCode("pt")
         // Envia um e-mail de redefinição de senha para o endereço fornecido
         auth.sendPasswordResetEmail(email).addOnCompleteListener { task ->
             if (task.isSuccessful) {
