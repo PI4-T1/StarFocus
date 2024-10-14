@@ -19,6 +19,9 @@
     <string name="forget_password">Esqueceu sua senha?</string>
     <string name="remember">Lembrar-me</string>
     <string name="noAccount">Não tem uma conta?</string>
+    <string name="password">Redefina sua senha!</string>
+    <string name="Send">Enviar</string>
+    <string name="goback">Voltar para</string>
 
 
 </resources>
