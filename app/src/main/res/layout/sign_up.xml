@@ -43,8 +43,10 @@
         android:textAlignment="textEnd"
         android:textColor="@color/purple"
         android:textSize="17sp"
+        android:layout_marginStart="65dp"
         app:layout_constraintEnd_toEndOf="@+id/appCompatTextView1"
-        app:Start_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/appCompatTextView1"
+        app:layout_constraintStart_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/appCompatTextView1" />
 
     <androidx.appcompat.widget.AppCompatEditText

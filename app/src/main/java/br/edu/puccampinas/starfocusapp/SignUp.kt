@@ -92,36 +92,53 @@ class SignUp : AppCompatActivity() {
 
     private fun setupDateMask(editText: EditText) {
         editText.addTextChangedListener(object : TextWatcher {
+            var isUpdating = false
+            var oldText = ""
+
             override fun afterTextChanged(s: Editable?) {}
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                oldText = s.toString()
+            }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val currentText = s.toString().replace("/", "")
+                if (isUpdating) return
+
+                val newText = s.toString().replace(Regex("[^\\d]"), "")
+                if (newText == oldText) return
+
+                isUpdating = true
+
                 val formattedText = when {
-                    currentText.length > 4 -> {
-                        currentText.substring(0, 2) + "/" + currentText.substring(2, 4) + "/" + currentText.substring(4, 8)
-                    }
-                    currentText.length > 2 -> {
-                        currentText.substring(0, 2) + "/" + currentText.substring(2, 4)
-                    }
-                    else -> {
-                        currentText
-                    }
+                    newText.length > 8 -> newText.substring(0, 2) + "/" + newText.substring(2, 4) + "/" + newText.substring(4, 8)
+                    newText.length > 4 -> newText.substring(0, 2) + "/" + newText.substring(2, 4) + "/" + newText.substring(4)
+                    newText.length > 2 -> newText.substring(0, 2) + "/" + newText.substring(2)
+                    else -> newText
                 }
+
                 editText.setText(formattedText)
-                editText.setSelection(formattedText.length)
+                editText.setSelection(formattedText.length.coerceAtMost(formattedText.length))
+
+                isUpdating = false
             }
         })
     }
 
     private fun setupPhoneMask(editText: EditText) {
         editText.addTextChangedListener(object : TextWatcher {
+            var isUpdating = false // Variável de controle para evitar o loop
+
             override fun afterTextChanged(s: Editable?) {}
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (isUpdating) {
+                    return
+                }
+
+                isUpdating = true // Impedir que o evento seja chamado novamente
+
                 val currentText = s.toString().replace(Regex("[^\\d]"), "")
                 val formattedText = when {
                     currentText.length > 10 -> {
@@ -134,8 +151,12 @@ class SignUp : AppCompatActivity() {
                         currentText
                     }
                 }
+
+                // Atualizar o texto sem disparar o listener novamente
                 editText.setText(formattedText)
                 editText.setSelection(formattedText.length)
+
+                isUpdating = false // Permitir que o evento seja chamado novamente
             }
         })
     }
