@@ -14,4 +14,5 @@
     <color name= "off_white">#F6F5F3</color>
     <color name="black">#3D3D3D</color>
     <color name="background_login">#F0F0F0</color>
+    <color name="ic_launcher_background">#FFFFFF</color>
 </resources>
