@@ -2,11 +2,13 @@ package br.edu.puccampinas.starfocusapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import androidx.appcompat.app.AppCompatActivity
 import br.edu.puccampinas.starfocusapp.databinding.LoginBinding
 import com.google.firebase.auth.FirebaseAuth
 import android.widget.Toast
 import android.widget.EditText
+import android.widget.ToggleButton
 
 // Tela de Login
 class Login : AppCompatActivity() {
@@ -31,6 +33,11 @@ class Login : AppCompatActivity() {
             }
         }
         setCursor(binding.idEmail)
+        // Configura o botão de alternar visibilidade da senha
+        setupPasswordToggle(
+            binding.togglePasswordVisibility,
+            binding.idSenha,
+            InputType.TYPE_CLASS_TEXT)
     }
 
     // voltar o cursor no início do input
@@ -60,6 +67,28 @@ class Login : AppCompatActivity() {
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
+
+    /**
+     * Função que altera a visibilidade da senha ao alternar o toggle
+     * @authors: Isabella.
+     */
+    private fun setupPasswordToggle(
+        toggleButton: ToggleButton,
+        editText: EditText,
+        inputType: Int
+    ) {
+        toggleButton.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                // Se o botão está marcado, mostrar a senha
+                editText.inputType = inputType or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            } else {
+                // Se o botão não está marcado, ocultar a senha
+                editText.inputType = inputType or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            }
+            // Para atualizar a exibição do EditText
+            editText.text?.let { editText.setSelection(it.length) }
+        }
     }
 
     private fun userAuthentication(email: String, password: String) {
