@@ -13,14 +13,19 @@
         android:theme="@style/Theme.StarFocusApp"
         tools:targetApi="31">
         <activity
-            android:name=".Login"
+            android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar">
+            android:theme="@style/Theme.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".Login"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar">
         </activity>
         <activity
             android:name=".Home"

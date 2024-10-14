@@ -10,7 +10,7 @@
     <string name="Telefone">Telefone</string>
     <string name="Data_de_nascimento">Data de nascimento</string>
     <string name="cadastrar">Cadastrar</string>
-    <string name="FacaLogin">Já tem uma conta?</string>
+    <string name="FacaLogin"> <font color="#595959">Já tem uma conta?</font> <font color="#299DA3">Login</font></string>
     <string name="Login">Login</string>
     <string name="strings_app_name">strings/app_name</string>
     <string name="welcome_back">BEM-VINDO DE VOLTA</string>

@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.StarFocusApp" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.StarFocusApp" parent="android:Theme.Material.Light.NoActionBar"
+
+        />
+    <style name="Theme.Splash" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/purple</item>
+        <item name="android:windowBackground">@drawable/ic_launcher_logo</item>
+    </style>
 </resources>
