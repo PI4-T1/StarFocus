@@ -25,7 +25,7 @@ class Login : AppCompatActivity() {
                 userAuthentication(idEmail.text.toString(), idSenha.text.toString())
             }
             remember.setOnClickListener {
-                rememberPassword(idEmail.text.toString())
+                startActivity(Intent(this@Login, ResetPassword::class.java))
             }
             signUp.setOnClickListener {
                 startActivity(Intent(this@Login, SignUp::class.java))
@@ -45,22 +45,6 @@ class Login : AppCompatActivity() {
         editText.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
                 editText.setSelection(0)
-            }
-        }
-    }
-    // enviará para a activity de recuperar senha obrigatoriamente com o email ja escrito no campo
-    private fun rememberPassword(email: String) {
-        if (email.isBlank())
-        {
-            showToast("Digite um email para a recuperação de senha!")
-            return
-        }
-        auth.sendPasswordResetEmail(email).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                startActivity(Intent(this, ResetPassword::class.java).putExtra("email", email))
-                finish()
-            } else {
-                showToast("Endereço de email atual inválido!")
             }
         }
     }

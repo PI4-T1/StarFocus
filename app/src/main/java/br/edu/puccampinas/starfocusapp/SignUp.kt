@@ -12,6 +12,9 @@ import androidx.annotation.RequiresApi
 import br.edu.puccampinas.starfocusapp.databinding.SignUpBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 @RequiresApi(Build.VERSION_CODES.O)
 class SignUp : AppCompatActivity() {
@@ -78,6 +81,11 @@ class SignUp : AppCompatActivity() {
             return
         }
 
+        if (!isValidAge(user.dataDeNascimento)) {
+            showToast("O usuário deve ter pelo menos 7 anos e a data não pode ser futura!")
+            return
+        }
+
         registerUser(user)
     }
 
@@ -88,6 +96,28 @@ class SignUp : AppCompatActivity() {
 
     private fun isValidPassword(password: String): Boolean {
         return password.length >= 6
+    }
+
+    private fun isValidAge(dataDeNascimento: String): Boolean {
+        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+        return try {
+            val birthDate = LocalDate.parse(dataDeNascimento, formatter)
+            val currentDate = LocalDate.now()
+
+            // Verificar se a data de nascimento é no futuro
+            if (birthDate.isAfter(currentDate)) {
+                return false // Data no futuro é inválida
+            }
+
+            // Calcular a idade do usuário
+            val age = ChronoUnit.YEARS.between(birthDate, currentDate)
+
+            // O usuário deve ter pelo menos 7 anos
+            age >= 7
+        } catch (e: Exception) {
+            false // Retorna falso se a data estiver em formato inválido
+        }
     }
 
     private fun setupDateMask(editText: EditText) {
@@ -166,11 +196,28 @@ class SignUp : AppCompatActivity() {
     }
 
     private fun registerUser(user: User) {
+        // Define o idioma para português
+        FirebaseAuth.getInstance().setLanguageCode("pt")
         auth.createUserWithEmailAndPassword(user.email, user.senha).addOnSuccessListener { authResult ->
             authResult.user?.sendEmailVerification()?.addOnCompleteListener {
-                database.collection("Pessoas").document(authResult.user?.uid.toString()).set(user)
-                startActivity(Intent(this, Login::class.java))
-                finish()
+
+                // Criar um novo objeto sem a senha para salvar no Firestore
+                val userData = mapOf(
+                    "email" to user.email,
+                    "nomeCompleto" to user.nomeCompleto,
+                    "telefone" to user.telefone,
+                    "dataDeNascimento" to user.dataDeNascimento
+                )
+
+                // Salvar o usuário no Firestore sem a senha
+                database.collection("Pessoas").document(authResult.user?.uid.toString()).set(userData)
+                    .addOnSuccessListener {
+                        startActivity(Intent(this, Login::class.java))
+                        finish()
+                    }
+                    .addOnFailureListener { exception ->
+                        showToast("Erro ao salvar os dados: ${exception.message}")
+                    }
             }
         }.addOnFailureListener { exception ->
             when (exception.message) {
@@ -186,4 +233,5 @@ class SignUp : AppCompatActivity() {
             }
         }
     }
+
 }
