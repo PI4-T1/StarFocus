@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.StarFocusApp" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.StarFocusApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:statusBarColor">@color/purple</item>
         <item name="android:windowBackground">@color/purple</item>
     </style>
