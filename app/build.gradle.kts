@@ -76,6 +76,8 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation (libs.material)
     implementation (libs.androidx.constraintlayout.v204)
+    implementation (libs.androidx.core.splashscreen.v100beta02)
+
 
 
 }

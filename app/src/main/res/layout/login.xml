@@ -42,6 +42,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/hiddenPassword"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_marginStart="240dp"
+        android:visibility="gone"
+        android:scaleType="fitXY"
+        android:src="@drawable/hiddenpassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+    />
+
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/welcomeback"
         android:layout_width="wrap_content"
@@ -93,7 +106,7 @@
         android:fontFamily="@font/poppins"
         android:gravity="center_vertical"
         android:hint="@string/email"
-        android:padding="10dp"
+        android:paddingTop="4dp"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         android:textColorHint="@color/black"
@@ -111,7 +124,7 @@
         android:fontFamily="@font/poppins"
         android:gravity="center_vertical"
         android:hint="@string/senha"
-        android:padding="10dp"
+        android:paddingTop="4dp"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         android:textColorHint="@color/black"
@@ -187,7 +200,7 @@
         android:fontFamily="@font/poppins_medium"
         android:text="@string/noAccount"
         android:textColor="@color/dark_grey"
-        android:textSize="13sp"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnLogin" />
@@ -196,12 +209,12 @@
         android:id="@+id/signUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="141dp"
+        android:layout_marginStart="189dp"
         android:layout_marginTop="30dp"
         android:fontFamily="@font/poppins_bold"
         android:text="@string/cadaastrese"
         android:textColor="@color/mediumBlue"
-        android:textSize="13sp"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnLogin" />

@@ -2,6 +2,8 @@
 agp = "8.6.0"
 constraintlayout = "2.1.4"
 constraintlayoutVersion = "2.0.4"
+coreSplashscreen = "1.0.1"
+coreSplashscreenVersion = "1.0.0-beta02"
 firebaseBom = "33.4.0"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
@@ -20,6 +22,8 @@ firebaseFirestoreKtx = "25.1.0"
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 androidx-constraintlayout-v204 = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayoutVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
+androidx-core-splashscreen-v100beta02 = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreenVersion" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
