@@ -18,4 +18,14 @@
         <item name="android:layout_marginRight">4dp</item>
         <item name="android:textColor">"@color/white"</item>
     </style>
+
+    <style name="rectangledetails">
+        <item name="android:layout_width">339dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/rectanglegreen</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:textColor">"@color/off_white"</item>
+    </style>
+
 </resources>

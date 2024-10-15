@@ -41,6 +41,11 @@ class SignUp : AppCompatActivity() {
             btnCadastrar.setOnClickListener {
                 validData()
             }
+            textViewLoginPrompt.setOnClickListener {
+                startActivity(Intent(this@SignUp, Login::class.java))
+                finish() // Opcional: finaliza a atividade atual
+            }
+
         }
         setCursor(binding.idEmail)
         setCursor(binding.idNome)

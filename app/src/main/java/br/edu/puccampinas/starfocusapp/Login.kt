@@ -3,12 +3,14 @@ package br.edu.puccampinas.starfocusapp
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import br.edu.puccampinas.starfocusapp.databinding.LoginBinding
 import com.google.firebase.auth.FirebaseAuth
 import android.widget.Toast
 import android.widget.EditText
 import android.widget.ToggleButton
+import androidx.appcompat.widget.AppCompatImageView
 
 // Tela de Login
 class Login : AppCompatActivity() {
@@ -37,7 +39,11 @@ class Login : AppCompatActivity() {
         setupPasswordToggle(
             binding.togglePasswordVisibility,
             binding.idSenha,
-            InputType.TYPE_CLASS_TEXT)
+            InputType.TYPE_CLASS_TEXT,
+            binding.monster,
+            binding.hiddenPassword
+        )
+
     }
 
     // voltar o cursor no início do input
@@ -60,15 +66,25 @@ class Login : AppCompatActivity() {
     private fun setupPasswordToggle(
         toggleButton: ToggleButton,
         editText: EditText,
-        inputType: Int
-    ) {
+        inputType: Int,
+        monsterImageView: AppCompatImageView,
+        hiddenPasswordImageView: AppCompatImageView
+        ) {
         toggleButton.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 // Se o botão está marcado, mostrar a senha
                 editText.inputType = inputType or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                // Ocultar a imagem do monstro
+                monsterImageView.visibility = View.GONE
+                // Mostrar a imagem de senha oculta
+                hiddenPasswordImageView.visibility = View.VISIBLE
             } else {
                 // Se o botão não está marcado, ocultar a senha
                 editText.inputType = inputType or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                // Mostrar a imagem do monstro
+                monsterImageView.visibility = View.VISIBLE
+                // Ocultar a imagem de senha oculta
+                hiddenPasswordImageView.visibility = View.GONE
             }
             // Para atualizar a exibição do EditText
             editText.text?.let { editText.setSelection(it.length) }

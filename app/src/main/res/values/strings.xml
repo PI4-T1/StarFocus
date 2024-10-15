@@ -10,7 +10,7 @@
     <string name="Telefone">Telefone</string>
     <string name="Data_de_nascimento">Data de nascimento</string>
     <string name="cadastrar">Cadastrar</string>
-    <string name="FacaLogin"> <font color="#595959">Já tem uma conta?</font> <font color="#299DA3">Login</font></string>
+    <string name="FacaLogin"> <font color="#595959">Já tem uma conta?</font><font color="#299DA3"> Login</font></string>
     <string name="Login">Login</string>
     <string name="strings_app_name">strings/app_name</string>
     <string name="welcome_back">BEM-VINDO DE VOLTA</string>
@@ -22,6 +22,9 @@
     <string name="password">Redefina sua senha!</string>
     <string name="Send">Enviar</string>
     <string name="goback">Voltar para</string>
+    <string name="jornada">Durante sua jornada, você terá um amigo ao seu lado. </string>
+    <string name="choosename">Como  deve se chamar seu amigo?</string>
+    <string name="save">Salvar</string>
 
 
 </resources>

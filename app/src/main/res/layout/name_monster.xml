@@ -6,5 +6,82 @@
     android:layout_height="match_parent"
     tools:context=".NameMonster">
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/rectangle"
+        style="@style/rectangledetails"
+        android:layout_width="370dp"
+        android:layout_height="100dp"
+        android:paddingTop="100dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+
+        />
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/textdescription1"
+        android:layout_width="269dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/poppins_medium"
+        android:text="@string/jornada"
+        android:textAlignment="center"
+        android:textColor="@color/off_white"
+        android:textSize="16sp"
+        android:paddingTop="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+
+         />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/choseename"
+        android:layout_width="290dp"
+        android:layout_height="50dp"
+        android:fontFamily="@font/poppins_medium"
+        android:text="@string/choosename"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textdescription1"
+        />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/idNameFriend"
+        style="@style/inputstyle"
+        android:layout_width="310dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/poppins"
+        android:gravity="center_vertical"
+        android:hint="@string/Nome"
+        android:paddingTop="4dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:textColorHint="@color/black"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/choseename" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnSave"
+        style="@style/buttonsend"
+        android:layout_width="310dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="13dp"
+        android:fontFamily="@font/poppins_bold"
+        android:paddingTop="6dp"
+        android:text="@string/save"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="@color/off_white"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/idNameFriend" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
