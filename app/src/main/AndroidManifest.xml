@@ -29,17 +29,17 @@
         </activity>
         <activity
             android:name=".SignUp"
-            android:exported="false"
+            android:exported="true"
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar">
         </activity>
         <activity
             android:name=".NameMonster"
-            android:exported="false"
+            android:exported="true"
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar">
         </activity>
         <activity
             android:name=".ResetPassword"
-            android:exported="false"
+            android:exported="true"
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar">
         </activity>
         <meta-data
