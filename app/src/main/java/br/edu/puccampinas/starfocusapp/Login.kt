@@ -1,6 +1,7 @@
 package br.edu.puccampinas.starfocusapp
 
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.InputType
 import android.view.View
@@ -9,8 +10,10 @@ import br.edu.puccampinas.starfocusapp.databinding.LoginBinding
 import com.google.firebase.auth.FirebaseAuth
 import android.widget.Toast
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.content.ContextCompat
 
 // Tela de Login
 class Login : AppCompatActivity() {
@@ -35,15 +38,16 @@ class Login : AppCompatActivity() {
             }
         }
         setCursor(binding.idEmail)
+        // Define inicialmente o campo de senha como oculto
+        binding.idSenha.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+
         // Configura o botão de alternar visibilidade da senha
         setupPasswordToggle(
             binding.togglePasswordVisibility,
             binding.idSenha,
             InputType.TYPE_CLASS_TEXT,
             binding.monster,
-            binding.hiddenPassword
-        )
-
+            binding.hiddenPassword)
     }
 
     // voltar o cursor no início do input
@@ -61,7 +65,6 @@ class Login : AppCompatActivity() {
 
     /**
      * Função que altera a visibilidade da senha ao alternar o toggle
-     * @authors: Isabella.
      */
     private fun setupPasswordToggle(
         toggleButton: ToggleButton,
@@ -69,7 +72,10 @@ class Login : AppCompatActivity() {
         inputType: Int,
         monsterImageView: AppCompatImageView,
         hiddenPasswordImageView: AppCompatImageView
-        ) {
+    ) {
+        // Inicializa o botão como "não mostrar senha"
+        toggleButton.isChecked = false
+
         toggleButton.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 // Se o botão está marcado, mostrar a senha
@@ -92,10 +98,27 @@ class Login : AppCompatActivity() {
     }
 
     private fun userAuthentication(email: String, password: String) {
-        if (email.isBlank() or password.isBlank()) {
-            showToast("Por favor, preencha os campos antes!")
-            return
+        var isValid = true
+
+        // Validações antes de tentar o login
+        if (email.isBlank()) {
+            updateInputState(binding.idEmail, binding.textErrorEmail, "Campo obrigatório!", true)
+            isValid = false
+        } else {
+            updateInputState(binding.idEmail, binding.textErrorEmail, "", false)
         }
+
+        if (password.isBlank()) {
+            updateInputState(binding.idSenha, binding.textErrorSenha, "Campo obrigatório!", true)
+            isValid = false
+        } else {
+            updateInputState(binding.idSenha, binding.textErrorSenha, "", false)
+        }
+
+        if (!isValid) {
+            return // Interrompe o login caso algum campo seja inválido
+        }
+
         // autenticação
         auth.signInWithEmailAndPassword(email, password)
             .addOnSuccessListener { authResult ->
@@ -107,11 +130,41 @@ class Login : AppCompatActivity() {
                 // Trata falhas durante o processo de login
                 if (exception.message.toString() == "The email address is badly formatted.") {
                     // Verifica se o formato do email está incorreto
-                    showToast("Endereço de email inválido, por favor digite novamente!")
+                    updateInputState(binding.idEmail, binding.textErrorEmail, "Endereço de email inválido!", true)
                 } else {
                     // Se a falha não for relacionada ao formato do email, exibe mensagem de erro genérica
                     showToast("Email ou senha incorretos, por favor digite novamente!")
                 }
             }
+    }
+
+    private fun updateInputState(
+        editText: EditText,
+        textView: TextView,
+        text: String,
+        status: Boolean
+    ) {
+        val errorIcon: Drawable?
+
+        if (status) {
+            editText.setBackgroundResource(R.drawable.shape_input_invalid)
+            textView.text = text
+            errorIcon = ContextCompat.getDrawable(this, R.drawable.icon_error)
+        } else {
+            editText.setBackgroundResource(R.drawable.shape_inputs)
+            textView.text = ""
+            errorIcon = null
+        }
+
+        // Obtém o ícone original do início
+        val originalStartIcon = editText.compoundDrawablesRelative[0]
+
+        // Adiciona o ícone de erro no final, mantendo o ícone original no início
+        editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            originalStartIcon,
+            null,
+            errorIcon,
+            null
+        )
     }
 }

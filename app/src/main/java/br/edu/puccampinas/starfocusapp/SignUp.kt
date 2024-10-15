@@ -85,7 +85,7 @@ class SignUp : AppCompatActivity() {
 
         // Validação do nome completo
         if (user.nomeCompleto.isBlank()) {
-            updateInputState(binding.idNome, binding.textErrorNome, "Campo obrigatório", true)
+            updateInputState(binding.idNome, binding.textErrorNome, "Campo obrigatório!", true)
             isValid = false
         } else {
             updateInputState(binding.idNome, binding.textErrorNome, "", false)
