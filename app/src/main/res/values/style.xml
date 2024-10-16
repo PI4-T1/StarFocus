@@ -37,4 +37,14 @@
         <item name="android:textColor">"@color/off_white"</item>
     </style>
 
+    <style name="error">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">10dp</item>
+        <item name="android:layout_marginEnd">10dp</item>
+        <item name="android:layout_marginTop">2dp</item>
+        <item name="android:text">""</item>
+        <item name="android:textColor">@color/input_invalid</item>
+    </style>
+
 </resources>
