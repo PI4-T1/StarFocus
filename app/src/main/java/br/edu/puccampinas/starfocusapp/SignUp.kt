@@ -3,17 +3,20 @@ package br.edu.puccampinas.starfocusapp
 import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import android.widget.Toast
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import br.edu.puccampinas.starfocusapp.databinding.SignUpBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import androidx.core.content.ContextCompat
 import java.time.temporal.ChronoUnit
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -62,6 +65,8 @@ class SignUp : AppCompatActivity() {
     }
 
     private fun validData() {
+        var isValid = true // Variável de controle para saber se os dados estão corretos
+
         val user = User(
             email = binding.idEmail.text.toString(),
             nomeCompleto = binding.idNome.text.toString(),
@@ -70,28 +75,49 @@ class SignUp : AppCompatActivity() {
             dataDeNascimento = binding.idDataDeNascimento.text.toString()
         )
 
-        if (user.email.isBlank() || user.nomeCompleto.isBlank() || user.senha.isBlank() ||
-            user.telefone.isBlank() || user.dataDeNascimento.isBlank()) {
-            showToast("Por favor, preencha todos os campos antes de prosseguir!")
-            return
+        // Validação do e-mail
+        if (user.email.isBlank() || !isValidEmail(user.email)) {
+            updateInputState(binding.idEmail, binding.textErrorEmail, "E-mail inválido!", true)
+            isValid = false
+        } else {
+            updateInputState(binding.idEmail, binding.textErrorEmail, "", false)
         }
 
+        // Validação do nome completo
+        if (user.nomeCompleto.isBlank()) {
+            updateInputState(binding.idNome, binding.textErrorNome, "Campo obrigatório!", true)
+            isValid = false
+        } else {
+            updateInputState(binding.idNome, binding.textErrorNome, "", false)
+        }
+
+        // Validação do telefone
         if (!isPhone(user.telefone)) {
-            showToast("Por favor, verifique se o número de telefone está correto!")
-            return
+            updateInputState(binding.idtelefone, binding.textErrorTelefone, "Número de telefone inválido!", true)
+            isValid = false
+        } else {
+            updateInputState(binding.idtelefone, binding.textErrorTelefone, "", false)
         }
 
-        if (!isValidPassword(user.senha)) {
-            showToast("A senha deve ter pelo menos 6 caracteres!")
-            return
+        // Validação da senha
+        if (user.senha.isBlank() || !isValidPassword(user.senha)) {
+            updateInputState(binding.idSenha, binding.textErrorSenha, "A senha deve ter pelo menos 6 caracteres!", true)
+            isValid = false
+        } else {
+            updateInputState(binding.idSenha, binding.textErrorSenha, "", false)
         }
 
+        // Validação da data de nascimento
         if (!isValidAge(user.dataDeNascimento)) {
-            showToast("O usuário deve ter pelo menos 7 anos e a data não pode ser futura!")
-            return
+            updateInputState(binding.idDataDeNascimento, binding.textErrorDataNascimento, "Data de nascimento inválida! Idade mínima: 7", true)
+            isValid = false
+        } else {
+            updateInputState(binding.idDataDeNascimento, binding.textErrorDataNascimento, "", false)
         }
-
-        registerUser(user)
+        // Se todos os campos forem válidos, prosseguir com o registro
+        if (isValid) {
+            registerUser(user)
+        }
     }
 
     private fun isPhone(givenPhone: String): Boolean {
@@ -101,6 +127,10 @@ class SignUp : AppCompatActivity() {
 
     private fun isValidPassword(password: String): Boolean {
         return password.length >= 6
+    }
+
+    private fun isValidEmail(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
     private fun isValidAge(dataDeNascimento: String): Boolean {
@@ -217,6 +247,7 @@ class SignUp : AppCompatActivity() {
                 // Salvar o usuário no Firestore sem a senha
                 database.collection("Pessoas").document(authResult.user?.uid.toString()).set(userData)
                     .addOnSuccessListener {
+                        showToast("Enviamos um email de verificação para você!")
                         startActivity(Intent(this, Login::class.java))
                         finish()
                     }
@@ -237,6 +268,33 @@ class SignUp : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun updateInputState(
+        editText: EditText,
+        textView: TextView,
+        text: String,
+        status: Boolean
+    ) {
+        val errorIcon: Drawable?
+        if (status) {
+            editText.setBackgroundResource(R.drawable.shape_input_invalid)
+            textView.text = text
+            errorIcon = ContextCompat.getDrawable(this, R.drawable.icon_error)
+        } else {
+            editText.setBackgroundResource(R.drawable.shape_inputs)
+            textView.text = ""
+            errorIcon = null
+        }
+        // Obtém o ícone original do início
+        val originalStartIcon = editText.compoundDrawablesRelative[0]
+        // Adiciona o ícone de erro no final, mantendo o ícone original no início
+        editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            originalStartIcon,
+            null,
+            errorIcon,
+            null
+        )
     }
 
 }

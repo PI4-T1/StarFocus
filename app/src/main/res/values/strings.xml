@@ -5,10 +5,10 @@
     <string name="signupDescription">Para começar!</string>
     <string name="cadaastrese">Cadastre-se</string>
     <string name="email">Email</string>
-    <string name="Nome">Nome</string>
+    <string name="Nome">Nome Completo</string>
     <string name="Senha">Senha</string>
-    <string name="Telefone">Telefone</string>
-    <string name="Data_de_nascimento">Data de nascimento</string>
+    <string name="Telefone">Telefone Celular</string>
+    <string name="Data_de_nascimento">Data de Nascimento</string>
     <string name="cadastrar">Cadastrar</string>
     <string name="FacaLogin"> <font color="#595959">Já tem uma conta?</font><font color="#299DA3"> Login</font></string>
     <string name="Login">Login</string>
@@ -25,6 +25,9 @@
     <string name="jornada">Durante sua jornada, você terá um amigo ao seu lado. </string>
     <string name="choosename">Como  deve se chamar seu amigo?</string>
     <string name="save">Salvar</string>
-
+    <string name="sair">Sair</string>
+    <string name="jaVai">Já vai?</string>
+    <string name="gif_description">gif</string>
+    <string name="insert">Digite aqui...</string>
 
 </resources>

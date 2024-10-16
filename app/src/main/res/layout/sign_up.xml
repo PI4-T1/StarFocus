@@ -67,6 +67,13 @@
         app:layout_constraintStart_toStartOf="@id/appCompatTextView1"
         app:layout_constraintTop_toBottomOf="@id/appCompatTextView1" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/textErrorEmail"
+        style="@style/error"
+        app:layout_constraintEnd_toEndOf="@+id/idEmail"
+        app:layout_constraintStart_toStartOf="@+id/idEmail"
+        app:layout_constraintTop_toBottomOf="@+id/idEmail" />
+
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/idNome"
         style="@style/inputstyle"
@@ -84,6 +91,13 @@
         app:layout_constraintEnd_toEndOf="@id/appCompatTextView1"
         app:layout_constraintStart_toStartOf="@id/appCompatTextView1"
         app:layout_constraintTop_toBottomOf="@+id/idEmail" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/textErrorNome"
+        style="@style/error"
+        app:layout_constraintEnd_toEndOf="@+id/idNome"
+        app:layout_constraintStart_toStartOf="@+id/idNome"
+        app:layout_constraintTop_toBottomOf="@+id/idNome" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/idSenha"
@@ -103,6 +117,13 @@
         app:layout_constraintStart_toStartOf="@id/appCompatTextView1"
         app:layout_constraintTop_toBottomOf="@+id/idNome" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/textErrorSenha"
+        style="@style/error"
+        app:layout_constraintEnd_toEndOf="@+id/idSenha"
+        app:layout_constraintStart_toStartOf="@+id/idSenha"
+        app:layout_constraintTop_toBottomOf="@+id/idSenha" />
+
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/idtelefone"
         style="@style/inputstyle"
@@ -120,6 +141,13 @@
         app:layout_constraintEnd_toEndOf="@id/appCompatTextView1"
         app:layout_constraintStart_toStartOf="@id/appCompatTextView1"
         app:layout_constraintTop_toBottomOf="@+id/idSenha" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/textErrorTelefone"
+        style="@style/error"
+        app:layout_constraintEnd_toEndOf="@+id/idtelefone"
+        app:layout_constraintStart_toStartOf="@+id/idtelefone"
+        app:layout_constraintTop_toBottomOf="@+id/idtelefone" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/idData_de_nascimento"
@@ -139,6 +167,12 @@
         app:layout_constraintStart_toStartOf="@id/appCompatTextView1"
         app:layout_constraintTop_toBottomOf="@+id/idtelefone" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/textErrorDataNascimento"
+        style="@style/error"
+        app:layout_constraintEnd_toEndOf="@+id/idData_de_nascimento"
+        app:layout_constraintStart_toStartOf="@+id/idData_de_nascimento"
+        app:layout_constraintTop_toBottomOf="@+id/idData_de_nascimento" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnCadastrar"

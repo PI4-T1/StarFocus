@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NameMonster">
+    tools:context=".NameMonster"
+    android:background="@color/off_white">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/rectangle"
@@ -34,6 +35,19 @@
 
          />
 
+    <ImageView
+        android:id="@+id/imageViewGif"
+        android:layout_width="800dp"
+        android:layout_height="400dp"
+        android:contentDescription="@string/gif_description"
+        android:scaleType="fitCenter"
+        android:layout_margin="20dp"
+        android:src="@drawable/imageviewgif"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textdescription1" />
+
+
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/choseename"
         android:layout_width="290dp"
@@ -42,10 +56,11 @@
         android:text="@string/choosename"
         android:textAlignment="center"
         android:textColor="@color/black"
+        android:layout_marginTop="40dp"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textdescription1"
+        app:layout_constraintTop_toBottomOf="@id/imageViewGif"
         />
 
     <androidx.appcompat.widget.AppCompatEditText
@@ -56,7 +71,7 @@
         android:layout_marginTop="20dp"
         android:fontFamily="@font/poppins"
         android:gravity="center_vertical"
-        android:hint="@string/Nome"
+        android:hint="@string/insert"
         android:paddingTop="4dp"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
