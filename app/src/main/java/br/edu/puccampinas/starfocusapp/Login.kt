@@ -14,6 +14,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import android.graphics.drawable.Drawable
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import com.google.firebase.firestore.FirebaseFirestore
 
 // Tela de Login
 class Login : AppCompatActivity() {
@@ -120,9 +121,8 @@ class Login : AppCompatActivity() {
         // autenticação
         auth.signInWithEmailAndPassword(email, password)
             .addOnSuccessListener { authResult ->
-                // SUCESSO
-                startActivity(Intent(this, NameMonster::class.java))
-                finish()
+                val userId = authResult.user?.uid ?: return@addOnSuccessListener
+                checkMonsterNameAndNavigate(userId)
             }
             .addOnFailureListener { exception ->
                 // Trata falhas durante o processo de login
@@ -161,5 +161,24 @@ class Login : AppCompatActivity() {
             errorIcon,
             null
         )
+    }
+
+    private fun checkMonsterNameAndNavigate(userId: String) {
+        val db = FirebaseFirestore.getInstance()
+        val userRef = db.collection("Pessoas").document(userId)
+
+        userRef.get().addOnSuccessListener { document ->
+            if (document.exists() && document.getString("monsterName") != null) {
+                // Se o campo monsterName existir, vai para a tela Home
+                startActivity(Intent(this, Home::class.java))
+            } else {
+                // Se o campo monsterName não existir, vai para a tela NameMonster
+                startActivity(Intent(this, NameMonster::class.java))
+            }
+            finish()
+        }.addOnFailureListener { exception ->
+            // Tratar possíveis erros na consulta
+            showToast("Erro ao verificar o nome do monstro: ${exception.message}")
+        }
     }
 }

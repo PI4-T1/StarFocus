@@ -71,7 +71,7 @@
         android:layout_marginTop="20dp"
         android:fontFamily="@font/poppins"
         android:gravity="center_vertical"
-        android:hint="@string/Nome"
+        android:hint="@string/insert"
         android:paddingTop="4dp"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
