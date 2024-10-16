@@ -115,6 +115,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tocontinue" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/textErrorEmail"
+        style="@style/error"
+        app:layout_constraintEnd_toEndOf="@+id/idEmail"
+        app:layout_constraintStart_toStartOf="@+id/idEmail"
+        app:layout_constraintTop_toBottomOf="@+id/idEmail" />
+
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/idSenha"
         style="@style/inputstyle"
@@ -132,6 +139,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/idEmail" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/textErrorSenha"
+        style="@style/error"
+        app:layout_constraintEnd_toEndOf="@+id/idSenha"
+        app:layout_constraintStart_toStartOf="@+id/idSenha"
+        app:layout_constraintTop_toBottomOf="@+id/idSenha" />
 
     <ToggleButton
         android:id="@+id/togglePasswordVisibility"
@@ -151,7 +165,7 @@
         android:id="@+id/forgetpassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="13dp"
+        android:layout_marginTop="20dp"
         android:fontFamily="@font/poppins_medium"
         android:text="@string/forget_password"
         android:textColor="@color/dark_grey"
@@ -165,7 +179,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="220dp"
-        android:layout_marginTop="13dp"
+        android:layout_marginTop="20dp"
         android:fontFamily="@font/poppins_bold"
         android:text="@string/remember"
         android:textColor="@color/mediumBlue"
@@ -179,7 +193,7 @@
         style="@style/buttonsend"
         android:layout_width="310dp"
         android:layout_height="48dp"
-        android:layout_marginTop="13dp"
+        android:layout_marginTop="20dp"
         android:fontFamily="@font/poppins_bold"
         android:paddingTop="6dp"
         android:text="@string/Login"
@@ -195,7 +209,7 @@
         android:id="@+id/noAccount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="89dp"
         android:fontFamily="@font/poppins_medium"
         android:text="@string/noAccount"
@@ -210,7 +224,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="189dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:fontFamily="@font/poppins_bold"
         android:text="@string/cadaastrese"
         android:textColor="@color/mediumBlue"
