@@ -1,10 +1,13 @@
 [versions]
 agp = "8.6.0"
+compiler = "4.11.0"
 constraintlayout = "2.1.4"
 constraintlayoutVersion = "2.0.4"
 coreSplashscreen = "1.0.1"
 coreSplashscreenVersion = "1.0.0-beta02"
 firebaseBom = "33.4.0"
+glide = "3.7.0"
+glideVersion = "4.16.0"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -24,8 +27,11 @@ androidx-constraintlayout-v204 = { module = "androidx.constraintlayout:constrain
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-core-splashscreen-v100beta02 = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreenVersion" }
+compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compiler" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+glide-v4160 = { module = "com.github.bumptech.glide:glide", version.ref = "glideVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

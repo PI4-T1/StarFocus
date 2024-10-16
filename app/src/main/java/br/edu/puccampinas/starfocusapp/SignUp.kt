@@ -217,7 +217,8 @@ class SignUp : AppCompatActivity() {
                 // Salvar o usuário no Firestore sem a senha
                 database.collection("Pessoas").document(authResult.user?.uid.toString()).set(userData)
                     .addOnSuccessListener {
-                        startActivity(Intent(this, Login::class.java))
+                        showToast("Cadastro feito com sucesso!")
+                        startActivity(Intent(this, NameMonster::class.java))
                         finish()
                     }
                     .addOnFailureListener { exception ->

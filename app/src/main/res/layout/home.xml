@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_login"
+    android:orientation="vertical"
+    tools:context=".Home">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/javAi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_medium"
+        android:text="@string/jaVai"
+        android:textColor="@color/black"
+        android:layout_marginTop="100dp"
+        android:textSize="34sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+
+        />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/monsterJaVai"
+        android:layout_width="240dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="-290dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/javai"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/javAi"
+         />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnLogout"
+        style="@style/sairapp"
+        android:layout_width="270dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="13dp"
+        android:fontFamily="@font/poppins_bold"
+        android:paddingTop="6dp"
+        android:text="@string/sair"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="@color/off_white"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/monsterJaVai"
+         />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

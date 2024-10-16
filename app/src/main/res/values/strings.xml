@@ -25,6 +25,8 @@
     <string name="jornada">Durante sua jornada, você terá um amigo ao seu lado. </string>
     <string name="choosename">Como  deve se chamar seu amigo?</string>
     <string name="save">Salvar</string>
-
+    <string name="sair">Sair</string>
+    <string name="jaVai">Já vai?</string>
+    <string name="gif_description">gif</string>
 
 </resources>
