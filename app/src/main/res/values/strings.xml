@@ -29,5 +29,7 @@
     <string name="jaVai">Já vai?</string>
     <string name="gif_description">gif</string>
     <string name="insert">Digite aqui...</string>
+    <string name="calendar">Calendário</string>
+    <string name="adventure">Continuar Aventura</string>
 
 </resources>
