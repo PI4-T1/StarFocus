@@ -45,18 +45,56 @@
         app:layout_constraintTop_toTopOf="@id/rectangle" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/idEmail"
+        android:id="@+id/container"
         style="@style/inputstyle"
         android:layout_width="310dp"
         android:layout_height="48dp"
         android:layout_marginTop="55dp"
         android:fontFamily="@font/poppins"
         android:gravity="center_vertical"
-        android:elevation="5dp"
         android:textColorHint="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/calendar" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/month"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_bold"
+        android:text="Outubro 2024"
+        android:textAlignment="center"
+        android:textColor="@color/dark_black"
+        android:textSize="15sp"
+        android:elevation="5dp"
+        app:layout_constraintBottom_toBottomOf="@id/container"
+        app:layout_constraintEnd_toEndOf="@id/container"
+        app:layout_constraintStart_toStartOf="@id/container"
+        app:layout_constraintTop_toTopOf="@id/container" />
+
+    <androidx.appcompat.widget.AppCompatButton
+    android:id="@+id/backward"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:text="@string/backward"
+    android:background="@null"
+    android:layout_marginBottom="2.5dp"
+    android:textColor="@color/dark_black"
+    android:textSize="25sp"
+    app:layout_constraintBottom_toBottomOf="@id/container"
+    app:layout_constraintStart_toStartOf="@id/container" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/forward"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/forward"
+        android:background="@null"
+        android:layout_marginBottom="2.5dp"
+        android:textColor="@color/dark_black"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="@id/container"
+        app:layout_constraintEnd_toEndOf="@id/container" />
 
 
 

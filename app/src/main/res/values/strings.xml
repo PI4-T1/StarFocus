@@ -31,5 +31,7 @@
     <string name="insert">Digite aqui...</string>
     <string name="calendar">Calendário</string>
     <string name="adventure">Continuar Aventura</string>
+    <string name="backward"><![CDATA[<]]></string>
+    <string name="forward"><![CDATA[>]]></string>
 
 </resources>

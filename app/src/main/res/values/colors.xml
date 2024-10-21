@@ -13,6 +13,7 @@
     <color name="yellow">#FCE194</color>
     <color name= "off_white">#F6F5F3</color>
     <color name="black">#3D3D3D</color>
+    <color name="dark_black">#000000</color>
     <color name="background_login">#F0F0F0</color>
     <color name="red">#C60E0E</color>
     <color name="input_invalid">#F44336</color>
