@@ -5,5 +5,8 @@
         <item name="android:statusBarColor">@color/purple</item>
         <item name="android:windowBackground">@color/purple</item>
     </style>
-
+    <style name="CustomActivityAnimation" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/slide_in_right</item>
+        <item name="android:activityOpenExitAnimation">@anim/slide_out_left</item>
+    </style>
 </resources>

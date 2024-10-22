@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_login"
+    android:background="@color/off_white"
     android:orientation="vertical"
     tools:context=".Menu">
 
@@ -16,7 +16,8 @@
         android:paddingTop="100dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/adventure"
@@ -33,4 +34,265 @@
         app:layout_constraintStart_toStartOf="@id/rectangle"
         app:layout_constraintTop_toTopOf="@id/rectangle" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/Tarefas"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:text="@string/Tasks"
+        android:textColor="@color/black"
+        android:fontFamily="@font/poppins_semibold"
+        android:textSize="26sp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toBottomOf="@id/rectangle"
+        app:layout_constraintStart_toStartOf="@id/rectangle"
+        />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/ButtonCalendar"
+        android:layout_width="140dp"
+        android:layout_height="48dp"
+        style="@style/buttonCalendar"
+        android:layout_marginTop="25dp"
+        android:text="@string/calendar"
+        android:textAllCaps="false"
+        android:fontFamily="@font/poppins_medium"
+        android:paddingEnd="7dp"
+        android:paddingStart="8dp"
+        android:textSize="16sp"
+        android:paddingTop="4dp"
+        android:drawableStart="@drawable/baseline_calendar_month_24"
+        app:layout_constraintTop_toBottomOf="@id/rectangle"
+        app:layout_constraintEnd_toEndOf="@id/rectangle"
+    />
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/BarDays"
+        android:layout_width="370dp"
+        android:layout_height="41dp"
+        style="@style/CalendarDays"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@id/Tarefas"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <!--Colocar dias do mes de acordo com o sistema-->
+
+    <!--Foco no dia-->
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/elipse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/off_white"
+        android:textSize="23sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/Tarefas"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/BarDays"
+        />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/ToDoList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ToDo"
+        android:textColor="@color/black"
+        android:fontFamily="@font/poppins_medium"
+        android:textSize="20sp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@id/BarDays"
+        app:layout_constraintStart_toStartOf="@id/BarDays"
+        />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/InputTask"
+        android:layout_width="370dp"
+        android:layout_height="56dp"
+       style="@style/AddTask"
+        android:text="@string/AddTarefa"
+        android:textAllCaps="false"
+        android:textSize="20sp"
+        android:fontFamily="@font/poppins_medium"
+        android:textColor="@color/black"
+        android:paddingStart="20dp"
+        android:paddingEnd="90dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ToDoList"
+        android:drawableStart="@drawable/baseline_add_24"
+
+        />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/InputTask1"
+        android:layout_width="370dp"
+        android:layout_height="56dp"
+        style="@style/AddTask"
+        android:paddingStart="20dp"
+        android:paddingEnd="90dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/InputTask"
+        android:contentDescription="@string/AddTarefa"
+        />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/InputTask2"
+        android:layout_width="370dp"
+        android:layout_height="56dp"
+        style="@style/AddTask"
+        android:paddingStart="20dp"
+        android:paddingEnd="90dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/InputTask1"
+        android:contentDescription="@string/AddTarefa"
+        />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/InputTask3"
+        android:layout_width="370dp"
+        android:layout_height="56dp"
+        style="@style/AddTask"
+        android:paddingStart="20dp"
+        android:paddingEnd="90dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/InputTask2"
+        android:contentDescription="@string/AddTarefa"
+        />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/InputTask4"
+        android:layout_width="370dp"
+        android:layout_height="56dp"
+        style="@style/AddTask"
+        android:paddingStart="20dp"
+        android:paddingEnd="90dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/InputTask3"
+        android:contentDescription="@string/AddTarefa"
+        />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/InputTask5"
+        android:layout_width="370dp"
+        android:layout_height="56dp"
+        style="@style/AddTask"
+        android:paddingStart="20dp"
+        android:paddingEnd="90dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/InputTask4"
+        android:contentDescription="@string/AddTarefa"
+        />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/buttonProgress"
+        android:layout_width="370dp"
+        android:layout_height="160dp"
+        android:background="@drawable/rectangleprogress"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/InputTask5">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/textProgresso"
+            android:layout_width="260dp"
+            android:layout_height="50dp"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="@string/progresso"
+            android:textAlignment="textStart"
+            android:layout_marginTop="30dp"
+            android:textColor="@color/off_white"
+            android:textSize="34sp"
+            android:gravity="start"
+            android:paddingStart="30dp"
+            android:paddingEnd="20dp"
+            app:layout_constraintStart_toStartOf="@id/buttonProgress"
+            app:layout_constraintTop_toTopOf="@id/buttonProgress"
+
+            />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/textProgressoWarning"
+            android:layout_width="190dp"
+            android:layout_height="50dp"
+            android:fontFamily="@font/poppins"
+            android:text="@string/ProgressoWarning"
+            android:layout_marginTop="80dp"
+            android:layout_marginStart="30dp"
+            android:textColor="@color/off_white"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/buttonProgress"
+            app:layout_constraintTop_toTopOf="@id/buttonProgress"
+            />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/HappyMonster"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/happy"
+            app:layout_constraintBottom_toBottomOf="@id/buttonProgress"
+            app:layout_constraintEnd_toEndOf="@id/buttonProgress"
+            app:layout_constraintTop_toTopOf="@id/buttonProgress" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:layout_width="match_parent"
+        android:layout_height="61dp"
+        android:id="@+id/bottom_navigation"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_menu"
+        android:background="@drawable/dialogbckg"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintTop_toBottomOf="@id/buttonProgress"
+        android:elevation="2dp"
+        app:itemIconSize="30dp"
+        app:itemIconTint="@drawable/itemselector"
+        app:itemRippleColor="@android:color/transparent"
+        app:itemTextColor="@color/off_white"
+        app:itemTextAppearanceActive="@font/poppins_medium"
+
+        />
+
+
+<!--    <androidx.coordinatorlayout.widget.CoordinatorLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent">-->
+<!--        -->
+<!--        <com.google.android.material.bottomappbar.BottomAppBar-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/bottomTabBar"-->
+<!--            android:layout_gravity="bottom"-->
+<!--            android:backgroundTint="@color/purple"-->
+<!--            app:fabCradleMargin="10dp"-->
+<!--            app:fabCradleRoundedCornerRadius="50dp">-->
+
+<!--            <com.google.android.material.bottomnavigation.BottomNavigationView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:id="@+id/bottom_navigation"-->
+<!--                app:labelVisibilityMode="labeled"-->
+<!--                app:menu="@menu/bottom_menu"-->
+<!--                android:background="@android:color/transparent"/>-->
+
+<!--        </com.google.android.material.bottomappbar.BottomAppBar>-->
+
+<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:backgroundTint="@color/yellow"-->
+<!--            android:src="@drawable/baseline_add_24"-->
+<!--            -->
+<!--            >-->
+
+<!--        </com.google.android.material.floatingactionbutton.FloatingActionButton>-->
+<!--    </androidx.coordinatorlayout.widget.CoordinatorLayout>-->
 </androidx.constraintlayout.widget.ConstraintLayout>

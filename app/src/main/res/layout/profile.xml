@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/background_login"
     android:orientation="vertical"
-    tools:context=".Home">
+    tools:context=".Profile">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/javAi"
