@@ -10,7 +10,7 @@ class Profile : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.profile)
+        setContentView(R.layout.fragment_profile)
 
         // Referência ao botão de logout
         val btnLogout = findViewById<Button>(R.id.btnLogout)

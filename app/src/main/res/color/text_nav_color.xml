@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/color/item_text_color.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true" android:color="@color/purple"/> <!-- Cor do texto quando selecionado -->
+    <item android:state_checked="false" android:color="@color/off_white"/> <!-- Cor do texto quando não selecionado -->
+</selector>

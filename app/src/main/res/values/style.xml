@@ -84,10 +84,11 @@
     </style>
 
 
-    <style name="CustomBottomNavStyle">
+    <style name="CustomBottomNavStyle" >
         <item name="android:fontFamily">@font/poppins_medium</item> <!-- Use a fonte que você adicionou -->
-        <item name="android:textColor">@color/off_white</item> <!-- Cor do texto -->
+        <item name="android:textColor">@color/purple</item> <!-- Cor do texto -->
         <item name="android:textSize">14sp</item> <!-- Tamanho do texto -->
+        <item name="android:textColorHint">@color/off_white</item><!-- Cor quando não selecionado -->
     </style>
 
 

@@ -1,0 +1,9 @@
+<!-- res/drawable/rounded_background.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+  <size
+      android:width="92dp"
+      android:height="42dp"/>
+  <corners android:radius="196dp"/> <!-- Altere 16dp para o valor desejado para os cantos arredondados -->
+  <solid android:color="@color/off_white"/> <!-- Cor de fundo -->
+</shape>

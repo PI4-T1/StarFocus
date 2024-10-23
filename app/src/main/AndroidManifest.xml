@@ -23,11 +23,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Profile"
-            android:exported="true"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
-        </activity>
-        <activity
             android:name=".SignUp"
             android:exported="true"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
@@ -42,7 +37,7 @@
             android:exported="true"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
         </activity>
-        <activity android:name=".BottomMenu"
+        <activity android:name=".BottomNav"
             android:exported="true"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
 
