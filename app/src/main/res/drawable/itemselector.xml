@@ -4,8 +4,9 @@
    <item
        android:state_selected="true"
         android:color = "@color/off_white"
+
        />
     <item
         android:state_selected="false"
-        android:color = "@color/purple"/>
+        android:color = "@color/off_white"/>
 </selector>

@@ -3,9 +3,7 @@
     <item
         android:id="@+id/bottom_home"
         android:icon="@drawable/baseline_home_24"
-        android:title="@string/menuHome"
-        
-        />
+        android:title="@string/menuHome"/>
     <item
         android:id="@+id/bottom_closet"
         android:icon="@drawable/baseline_door_sliding_24"
@@ -13,8 +11,7 @@
 
     <item
         android:title=""
-        android:enabled="true"
-       />
+        android:enabled="true" />
 
     <item
         android:id="@+id/map"

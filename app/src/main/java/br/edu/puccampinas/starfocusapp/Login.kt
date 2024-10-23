@@ -15,6 +15,7 @@ import android.graphics.drawable.Drawable
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.google.firebase.firestore.FirebaseFirestore
+import org.checkerframework.common.subtyping.qual.Bottom
 
 // Tela de Login
 class Login : AppCompatActivity() {
@@ -170,7 +171,7 @@ class Login : AppCompatActivity() {
         userRef.get().addOnSuccessListener { document ->
             if (document.exists() && document.getString("monsterName") != null) {
                 // Se o campo monsterName existir, vai para a tela Home
-                startActivity(Intent(this, Profile::class.java))
+                startActivity(Intent(this, BottomMenu::class.java))
             } else {
                 // Se o campo monsterName não existir, vai para a tela NameMonster
                 startActivity(Intent(this, NameMonster::class.java))

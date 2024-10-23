@@ -89,7 +89,7 @@ class NameMonster : AppCompatActivity() {
                     startActivity(
                         Intent(
                             this,
-                            Profile::class.java
+                            BottomMenu::class.java
                         )
                     ) // Troque "Home::class.java" pela activity desejada
                     finish()

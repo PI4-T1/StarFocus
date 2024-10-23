@@ -83,4 +83,12 @@
         <item name="android:textColor">"@color/off_white"</item>
     </style>
 
+
+    <style name="CustomBottomNavStyle">
+        <item name="android:fontFamily">@font/poppins_medium</item> <!-- Use a fonte que você adicionou -->
+        <item name="android:textColor">@color/off_white</item> <!-- Cor do texto -->
+        <item name="android:textSize">14sp</item> <!-- Tamanho do texto -->
+    </style>
+
+
 </resources>
