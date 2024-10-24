@@ -55,6 +55,7 @@
         android:layout_marginTop="25dp"
         android:text="@string/calendar"
         android:textAllCaps="false"
+        android:textColor="@color/white"
         android:fontFamily="@font/poppins_medium"
         android:paddingEnd="7dp"
         android:paddingStart="8dp"
@@ -67,13 +68,33 @@
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/BarDays"
         android:layout_width="370dp"
-        android:layout_height="41dp"
+        android:layout_height="61dp"
         style="@style/CalendarDays"
         android:layout_marginTop="10dp"
         app:layout_constraintTop_toBottomOf="@id/Tarefas"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         />
+
+    <HorizontalScrollView
+        android:id="@+id/BarDaysScroll"
+        android:layout_width="@id/BarDays"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintTop_toBottomOf="@id/Tarefas"
+        app:layout_constraintEnd_toEndOf="@id/BarDays"
+        app:layout_constraintStart_toStartOf="@id/BarDays"
+        android:scrollbars="none">
+        <LinearLayout
+            android:id="@+id/linearLayoutDays"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <!-- Dias serão adicionados dinamicamente -->
+        </LinearLayout>
+    </HorizontalScrollView>
 
     <!--Colocar dias do mes de acordo com o sistema-->
 

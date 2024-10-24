@@ -40,7 +40,6 @@
         <activity android:name=".BottomNav"
             android:exported="true"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
-
         </activity>
         <meta-data
             android:name="preloaded_fonts"
