@@ -78,6 +78,11 @@ dependencies {
     implementation (libs.androidx.constraintlayout.v204)
     implementation (libs.androidx.core.splashscreen.v100beta02)
     implementation (libs.glide.v4160)
+    implementation (libs.androidx.viewpager2)
+    implementation (libs.material.v180)
+    implementation (libs.material.v1100)
+
+
 
 
 }

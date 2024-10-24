@@ -37,10 +37,6 @@ class SignUp : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         with(binding) {
-            arrowBack.setOnClickListener {
-                startActivity(Intent(this@SignUp, Login::class.java))
-                finish()
-            }
             btnCadastrar.setOnClickListener {
                 validData()
             }

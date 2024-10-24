@@ -8,6 +8,7 @@ coreSplashscreenVersion = "1.0.0-beta02"
 firebaseBom = "33.4.0"
 glide = "3.7.0"
 glideVersion = "4.16.0"
+googleMaterial = "1.10.0"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -20,6 +21,8 @@ appcompat = "1.7.0"
 material = "1.12.0"
 firebaseAuthKtx = "23.0.0"
 firebaseFirestoreKtx = "25.1.0"
+materialVersion = "1.8.0"
+viewpager2 = "1.1.0"
 
 [libraries]
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
@@ -27,6 +30,7 @@ androidx-constraintlayout-v204 = { module = "androidx.constraintlayout:constrain
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-core-splashscreen-v100beta02 = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreenVersion" }
+androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
 compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compiler" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
@@ -49,6 +53,8 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { module = "com.google.android.material:material", version.ref = "material" }
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
+material-v1100 = { module = "com.google.android.material:material", version.ref = "googleMaterial" }
+material-v180 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
