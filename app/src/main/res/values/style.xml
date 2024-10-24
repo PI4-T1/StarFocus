@@ -91,5 +91,12 @@
         <item name="android:textColorHint">@color/off_white</item><!-- Cor quando não selecionado -->
     </style>
 
+    <style name="buttondays">
+        <item name="android:layout_width">70dp</item>
+        <item name="android:layout_height">22dp</item>
+        <item name="android:background">@drawable/inputstyle</item>
+    </style>
+
+
 
 </resources>

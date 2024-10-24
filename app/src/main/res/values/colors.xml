@@ -8,7 +8,7 @@
     <color name="teal_clear">#76C8BB</color>
     <color name="clearBlue">#BCDADA</color>
     <color name="mediumBlue">#299DA3</color>
-    <color name="grey_dark">#E8E8E8</color>
+    <color name="grey_dark">#B3B3B3</color>
     <color name="pink">#FC83A2</color>
     <color name="yellow">#FCE194</color>
     <color name= "off_white">#F6F5F3</color>
@@ -17,5 +17,6 @@
     <color name="red">#C60E0E</color>
     <color name="input_invalid">#F44336</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="grey_ligth">#EBEBEB</color>
 
 </resources>
