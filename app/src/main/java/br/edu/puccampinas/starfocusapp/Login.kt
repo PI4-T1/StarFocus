@@ -169,8 +169,8 @@ class Login : AppCompatActivity() {
 
         userRef.get().addOnSuccessListener { document ->
             if (document.exists() && document.getString("monsterName") != null) {
-                // Se o campo monsterName existir, vai para a tela Home
-                startActivity(Intent(this, Profile::class.java))
+                // Se o campo monsterName existir, vai para a tela Menu
+                startActivity(Intent(this, Menu::class.java))
             } else {
                 // Se o campo monsterName não existir, vai para a tela NameMonster
                 startActivity(Intent(this, NameMonster::class.java))
