@@ -226,7 +226,7 @@ class HomeFragment : Fragment() {
                         } ?: emptyList()
 
                         Log.d("Firestore", "Tarefas para $selectedDate: $tarefasDoDia")
-                        displayTasks(tarefasDoDia)
+                        displayTasks(tarefasDoDia, selectedDate)
                     } else {
                         Log.d("Firestore", "Campo 'tarefas' está vazio ou não encontrado")
                     }
@@ -239,58 +239,52 @@ class HomeFragment : Fragment() {
             }
     }
 
-    private fun displayTasks(tarefas: List<Pair<String?, Boolean>>) {
+    private fun displayTasks(tarefas: List<Pair<String?, Boolean>>, selectedDate: String) {
         binding.TaskContainer.removeAllViews() // Limpa tarefas anteriores
 
-        tarefas.forEachIndexed { index, (tarefaTexto, concluido) ->
-            val tarefaView = RadioButton(requireContext()).apply {
-                text = tarefaTexto
-                textSize = 20f
-                gravity = Gravity.START
-                isAllCaps = false
-                setBackgroundResource(R.drawable.rectangleaddtask)
-                setTextColor(Color.parseColor("#3D3D3D"))
-                setPadding(40, 10, 40, 10)
+        val userId = auth.currentUser?.uid ?: return
 
-                // Define o índice como tag para ser usado no listener
-                tag = index
+        tarefas.forEach { (tarefaTexto, concluido) ->
+            if (tarefaTexto != null) {
+                val tarefaView = RadioButton(requireContext()).apply {
+                    text = tarefaTexto
+                    textSize = 20f
+                    gravity = Gravity.START
+                    isAllCaps = false
 
-                // Verifica se a tarefa está concluída
-                isChecked = concluido // Marca como selecionado se concluído
-                if (concluido) {
-                    paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG // Aplica o texto riscado
-                }
+                    setBackgroundResource(R.drawable.rectangleaddtask)
+                    setTextColor(Color.parseColor("#3D3D3D"))
+                    setPadding(40, 10, 40, 10)
+                    isChecked =
+                        concluido // Define o estado do RadioButton conforme o campo 'concluido' da tarefa
 
-                val selectedDate = String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear)
-
-                setOnClickListener {
-                    // Atualiza o valor de novoStatus corretamente ao inverter o status de isChecked
-                    isChecked = !isChecked
-                    val novoStatus = isChecked
-
-                    val taskIndex = tag as Int
-                    Log.d("TaskStatusUpdate", "Updating task status - selectedDate: $selectedDate, taskIndex: $taskIndex, novoStatus: $novoStatus")
-
-                    // Chama a função de atualização com o novo status
-                    updateTaskStatus(selectedDate, taskIndex, novoStatus)
-
-                    // Aplica ou remove a flag de riscado com base no novoStatus
-                    paintFlags = if (novoStatus) {
+                    // Aplica o estilo de riscado se a tarefa estiver concluída
+                    paintFlags = if (concluido) {
                         paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                     } else {
                         paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
                     }
-                }
-            }
 
-            val layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                setMargins(16, 0, 0, 0)
+                    setOnClickListener {
+                        // Chama a função para marcar a tarefa como concluída ao clicar no RadioButton
+                        if (!concluido) { // Só marca como concluído se ainda não estiver
+                            updateTaskStatus(userId, selectedDate, tarefaTexto)
+                            // Aplica o estilo riscado após a conclusão
+                            paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                            isChecked = true
+                        }
+                    }
+                }
+
+                val layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    setMargins(16, 0, 0, 0)
+                }
+                tarefaView.layoutParams = layoutParams
+                binding.TaskContainer.addView(tarefaView)
             }
-            tarefaView.layoutParams = layoutParams
-            binding.TaskContainer.addView(tarefaView)
         }
 
         // Remove o botão 'InputTask' do seu pai, se ele já tiver um
@@ -312,17 +306,31 @@ class HomeFragment : Fragment() {
         binding.TaskContainer.addView(binding.buttonProgress)
     }
 
-    private fun updateTaskStatus(selectedDate: String, taskIndex: Int, concluido: Boolean) {
-        val userId = auth.currentUser?.uid ?: return
+    fun updateTaskStatus(userId: String, dataSelecionada: String, tarefaTexto: String) {
+        val tarefasRef = db.collection("Tarefas").document(userId)
 
-        db.collection("Tarefas").document(userId)
-            .update("tarefas.$selectedDate.$taskIndex.concluido", concluido)
-            .addOnSuccessListener {
-                Log.d("Firestore", "Status da tarefa atualizado com sucesso no dia $selectedDate, tarefa índice: $taskIndex, concluído: $concluido")
+        tarefasRef.get().addOnSuccessListener { document ->
+            val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableList<MutableMap<String, Any>>> ?: mutableMapOf()
+            val tarefasDoDia = dataTarefas[dataSelecionada] ?: mutableListOf()
+
+            // Encontra a tarefa com o texto correspondente e atualiza o campo "concluido" para true
+            for (tarefa in tarefasDoDia) {
+                if (tarefa["texto"] == tarefaTexto) {
+                    tarefa["concluido"] = true
+                    break
+                }
             }
-            .addOnFailureListener { e ->
-                Log.e("Firestore", "Erro ao atualizar status da tarefa no dia $selectedDate, tarefa índice: $taskIndex", e)
+
+            // Atualiza o campo "tarefas" no Firestore com a modificação
+            dataTarefas[dataSelecionada] = tarefasDoDia
+            tarefasRef.update("tarefas", dataTarefas).addOnSuccessListener {
+                Log.d("Firestore", "Tarefa marcada como concluída com sucesso.")
+            }.addOnFailureListener { e ->
+                Log.w("Firestore", "Erro ao marcar tarefa como concluída", e)
             }
+        }.addOnFailureListener { e ->
+            Log.w("Firestore", "Erro ao obter tarefas", e)
+        }
     }
 
 }
