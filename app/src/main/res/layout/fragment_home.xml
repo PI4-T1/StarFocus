@@ -123,9 +123,20 @@
         android:textSize="20sp"
         android:layout_marginTop="10dp"
         app:layout_constraintTop_toBottomOf="@id/BarDays"
-        app:layout_constraintStart_toStartOf="@id/BarDays"
-        />
+        app:layout_constraintStart_toStartOf="@id/BarDays" />
 
+    <!-- Contêiner das Tarefas -->
+    <LinearLayout
+        android:id="@+id/TaskContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/InputTask"
+        app:layout_constraintTop_toBottomOf="@id/ToDoList" />
+
+    <!-- Botão de Adicionar Tarefa -->
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/InputTask"
         android:layout_width="370dp"
@@ -140,71 +151,9 @@
         android:paddingEnd="90dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ToDoList"
-        android:drawableStart="@drawable/baseline_add_24"
+        app:layout_constraintTop_toBottomOf="@id/TaskContainer"
+        android:drawableStart="@drawable/baseline_add_24" />
 
-        />
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/InputTask1"
-        android:layout_width="370dp"
-        android:layout_height="56dp"
-        style="@style/AddTask"
-        android:paddingStart="20dp"
-        android:paddingEnd="90dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/InputTask"
-        android:contentDescription="@string/AddTarefa"
-        />
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/InputTask2"
-        android:layout_width="370dp"
-        android:layout_height="56dp"
-        style="@style/AddTask"
-        android:paddingStart="20dp"
-        android:paddingEnd="90dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/InputTask1"
-        android:contentDescription="@string/AddTarefa"
-        />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/InputTask3"
-        android:layout_width="370dp"
-        android:layout_height="56dp"
-        style="@style/AddTask"
-        android:paddingStart="20dp"
-        android:paddingEnd="90dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/InputTask2"
-        android:contentDescription="@string/AddTarefa"
-        />
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/InputTask4"
-        android:layout_width="370dp"
-        android:layout_height="56dp"
-        style="@style/AddTask"
-        android:paddingStart="20dp"
-        android:paddingEnd="90dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/InputTask3"
-        android:contentDescription="@string/AddTarefa"
-        />
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/InputTask5"
-        android:layout_width="370dp"
-        android:layout_height="56dp"
-        style="@style/AddTask"
-        android:paddingStart="20dp"
-        android:paddingEnd="90dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/InputTask4"
-        android:contentDescription="@string/AddTarefa"
-        />
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/buttonProgress"
         android:layout_width="375dp"
@@ -217,7 +166,7 @@
         android:layout_marginStart="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/InputTask5">
+        app:layout_constraintTop_toBottomOf="@id/InputTask">
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/textProgresso"

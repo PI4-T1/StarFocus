@@ -49,6 +49,6 @@
     <string name="hoje">Hoje</string>
     <string name="Choosedate">Escolha a data</string>
     <string name="newtask">Nova Tarefa</string>
-    <string name="feedbackNovatask">Wow, uma nova tarefa, complete ela e ganhe recompensas!</string>
+    <string name="feedbackNovatask">Wow, uma nova tarefa, complete-a e ganhe recompensas!</string>
 
 </resources>

@@ -1,59 +1,91 @@
 package br.edu.puccampinas.starfocusapp
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import br.edu.puccampinas.starfocusapp.databinding.BottomsheetAddtaskBinding
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class BottomsSheetAddTaskFragment(private val onTaskAdded: () -> Unit) : BottomSheetDialogFragment() {
 
-/**
- * A simple [Fragment] subclass.
- * Use the [bottomssheetAddTaskFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class bottomssheetAddTaskFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var _binding: BottomsheetAddtaskBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var db: FirebaseFirestore
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.bottomsheet_addtask, container, false)
+        _binding = BottomsheetAddtaskBinding.inflate(inflater, container, false)
+        db = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance() // Inicializa o FirebaseAuth
+
+        // Obtendo os dados da data completa
+        val diaSelecionado = arguments?.getInt("diaSelecionado")
+        val mesSelecionado = arguments?.getInt("mesSelecionado")
+        val anoSelecionado = arguments?.getInt("anoSelecionado")
+
+        // Formatar a data no formato "dd-MM-yyyy"
+        val dataSelecionada = String.format("%02d-%02d-%04d", diaSelecionado, mesSelecionado, anoSelecionado)
+        Log.d("BottomSheetAddTask", "Data formatada selecionada: $dataSelecionada")
+
+        binding.buttonSaveTask.setOnClickListener {
+            val tarefaTexto = binding.inputtarefa.text.toString()
+            val userId = auth.currentUser?.uid
+
+            if (userId == null) {
+                Toast.makeText(context, "Usuário não autenticado", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (tarefaTexto.isNotEmpty()) {
+                // Referência ao documento do usuário na coleção "Tarefas"
+                val tarefasRef = db.collection("Tarefas").document(userId)
+
+                tarefasRef.get().addOnSuccessListener { document ->
+                    val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableList<Map<String, Any>>> ?: mutableMapOf()
+                    val tarefasDoDia = dataTarefas[dataSelecionada] ?: mutableListOf()
+
+                    // Adiciona a nova tarefa com o campo "concluído" padrão como false
+                    val novaTarefa = mapOf(
+                        "texto" to tarefaTexto,
+                        "concluido" to false
+                    )
+                    tarefasDoDia.add(novaTarefa)
+                    dataTarefas[dataSelecionada] = tarefasDoDia
+
+                    // Atualiza o documento com as tarefas modificadas
+                    tarefasRef.set(hashMapOf("tarefas" to dataTarefas), SetOptions.merge())
+                        .addOnSuccessListener {
+                            binding.inputtarefa.text?.clear()
+                            onTaskAdded()
+                            dismiss()
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(context, "Erro ao adicionar tarefa: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+
+                }.addOnFailureListener { e ->
+                    Toast.makeText(context, "Erro ao recuperar tarefas: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+
+            } else {
+                binding.inputtarefa.error = "Por favor, insira uma tarefa."
+            }
+        }
+
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment bottomssheetAddTaskFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            bottomssheetAddTaskFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
