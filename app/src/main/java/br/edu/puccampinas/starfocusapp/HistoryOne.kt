@@ -17,9 +17,16 @@ class HistoryOne : AppCompatActivity() {
 
         // Configurando o botão para pular para outra atividade
         binding.textViewJump.setOnClickListener {
-            // Substitua 'AnotherActivity' pela atividade para onde quer navegar
+           //Navega para o menu se o usuário pular a história
             val intent = Intent(this, BottomNav::class.java)
             startActivity(intent)
+
         }
+        binding.nexthistory.setOnClickListener{
+            val intent = Intent(this, HistoryTwo::class.java)
+            startActivity(intent)
+        }
+
+
     }
 }
