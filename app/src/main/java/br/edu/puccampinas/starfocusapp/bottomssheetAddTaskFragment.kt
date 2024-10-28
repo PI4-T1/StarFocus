@@ -32,6 +32,10 @@ class BottomsSheetAddTaskFragment(private val onTaskAdded: () -> Unit) : BottomS
         //máximo de caracteres permitido
         val maxLength = 50
 
+        // Inicializa o botão como desativado e opaco
+        binding.buttonSaveTask.isEnabled = false
+        binding.buttonSaveTask.alpha = 0.5f
+
         // Configura o TextWatcher para atualizar o contador de caracteres
         binding.inputtarefa.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -40,14 +44,14 @@ class BottomsSheetAddTaskFragment(private val onTaskAdded: () -> Unit) : BottomS
                 val currentLength = s?.length ?: 0
                 binding.charCountTextView.text = "$currentLength/$maxLength"
 
-                if (currentLength > maxLength) {
-                    // Muda as cores para vermelho e desabilita o botão
+                if (currentLength == 0 || currentLength > maxLength) {
+                    // Caso o campo esteja vazio ou exceda o limite, mantenha o botão desativado e as cores vermelhas
                     binding.charCountTextView.setTextColor(resources.getColor(R.color.red, null))
                     binding.inputtarefa.setTextColor(resources.getColor(R.color.red, null))
                     binding.buttonSaveTask.isEnabled = false
                     binding.buttonSaveTask.alpha = 0.5f  // Reduz a opacidade para indicar que está desativado
                 } else {
-                    // Retorna às cores normais e habilita o botão
+                    // Caso o campo tenha texto dentro do limite, ative o botão e restaure as cores normais
                     binding.charCountTextView.setTextColor(resources.getColor(R.color.black, null))
                     binding.inputtarefa.setTextColor(resources.getColor(R.color.black, null))
                     binding.buttonSaveTask.isEnabled = true
