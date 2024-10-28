@@ -53,4 +53,19 @@
     <string name="sendProgress">Enviar Progresso</string>
     <string name="maxChar">0/50</string>
 
+    <string name="adviceProfile">Trocar nome do seu monstrinho.</string>
+    <string name="name">Name</string>
+    
+    <string name="JaVai">Já vai?</string>
+    <string name="Poxa">Poxa, espero te ver na próxima aventura!</string>
+
+    <string name="novonome">Escolha um novo nome</string>
+    <string name="namechanging">Nome</string>
+    <string name="atualizarbtn">Salvar</string>
+
+    <string name="hiistoryone">Em um reino, não tão distante, vivia um monstro...</string>
+    <string name="jumphistory"><u>Pular história</u></string>
+
+
+
 </resources>

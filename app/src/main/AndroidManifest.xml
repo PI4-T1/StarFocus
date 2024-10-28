@@ -43,6 +43,22 @@
             android:exported="true"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
         </activity>
+        <activity android:name=".ChangeName"
+            android:exported="true"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+        </activity>
+        <activity android:name=".HistoryOne"
+            android:exported="true"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+        </activity>
+        <activity android:name=".HistoryTwo"
+            android:exported="true"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+        </activity>
+        <activity android:name=".HistoryThree"
+            android:exported="true"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+        </activity>
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
