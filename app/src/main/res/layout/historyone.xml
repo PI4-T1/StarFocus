@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/history1background"
+    android:orientation="vertical"
+    android:id="@+id/history_one"
+    tools:context=".HistoryOne">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/history"
+        android:layout_width="260dp"
+        android:layout_height="60dp"
+        android:text="@string/hiistoryone"
+        android:textColor="@color/off_white"
+        android:fontFamily="@font/poppins_medium"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="20dp"
+        android:textSize="18sp"
+        android:layout_marginBottom="20dp"
+        />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/nexthistory"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/baseline_arrow_forward_24_offwhite"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/history"
+        android:layout_marginStart="300dp"
+        android:layout_marginBottom="30dp"
+        />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/textViewJump"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="70dp"
+        android:fontFamily="@font/poppins_medium"
+        android:text="@string/jumphistory"
+        android:textColor="@color/off_white"
+        android:textSize="18sp"
+        android:layout_marginTop="400dp"
+        android:layout_marginBottom="200dp"
+        android:textAllCaps="false"
+        android:layout_marginStart="680dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintEnd_toEndOf="@id/textViewJump"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/textViewJump"
+
+         />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

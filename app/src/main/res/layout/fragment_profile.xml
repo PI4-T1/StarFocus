@@ -7,53 +7,200 @@
     android:layout_height="match_parent"
     android:background="@color/off_white"
     android:orientation="vertical"
+    android:id="@+id/profilefragmentid"
     tools:context=".Profile">
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/javAi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/poppins_medium"
-        android:text="@string/jaVai"
-        android:textColor="@color/black"
-        android:layout_marginTop="100dp"
-        android:textSize="34sp"
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/rectangle"
+        style="@style/rectangledetails"
+        android:layout_width="370dp"
+        android:layout_height="85dp"
+        android:paddingTop="100dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-
         />
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/monsterJaVai"
-        android:layout_width="240dp"
-        android:layout_height="250dp"
-        android:layout_marginTop="-290dp"
-        android:scaleType="fitXY"
-        android:src="@drawable/javai"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/javAi"
-        />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnLogout"
-        style="@style/sairapp"
-        android:layout_width="270dp"
-        android:layout_height="49dp"
-        android:layout_marginTop="13dp"
-        android:fontFamily="@font/poppins_bold"
-        android:paddingTop="6dp"
-        android:text="@string/sair"
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/adventure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_semibold"
+        android:text="@string/menuPerfil"
         android:textAlignment="center"
-        android:textAllCaps="true"
+        android:layout_marginTop="10dp"
         android:textColor="@color/off_white"
-        android:textSize="18sp"
+        android:textSize="23sp"
+        app:layout_constraintBottom_toBottomOf="@id/rectangle"
+        app:layout_constraintEnd_toEndOf="@id/rectangle"
+        app:layout_constraintStart_toStartOf="@id/rectangle"
+        app:layout_constraintTop_toTopOf="@id/rectangle" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/MudarNomeCardView"
+        android:layout_width="330dp"
+        android:layout_height="168dp"
+        android:layout_marginTop="160dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/monsterJaVai"
-        />
+        app:layout_constraintTop_toBottomOf="@id/rectangle"
+        app:cardElevation="5dp"
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="@android:color/white">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/MudarNome"
+            style="@style/Rectangleprofile"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingEnd="20dp"
+            android:paddingStart="30dp"
+            android:scaleType="centerCrop"
+           />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:src="@drawable/monsterprofile"
+            app:layout_constraintBottom_toBottomOf="@id/MudarNome"
+            app:layout_constraintEnd_toEndOf="@id/MudarNome"
+            app:layout_constraintStart_toStartOf="@id/MudarNome"
+            app:layout_constraintTop_toTopOf="@id/MudarNome"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="200dp"
+            android:layout_marginTop="40dp"
+
+            />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/chasename"
+            android:layout_width="160dp"
+            android:layout_height="36dp"
+            android:fontFamily="@font/poppins"
+            android:text="@string/adviceProfile"
+            android:textColor="@color/dark_grey"
+            android:layout_marginTop="85dp"
+            android:layout_marginBottom="0dp"
+            android:textSize="12sp"
+            android:layout_marginStart="125dp"
+            app:layout_constraintBottom_toBottomOf="@id/MudarNome"
+            app:layout_constraintEnd_toEndOf="@id/MudarNome"
+            app:layout_constraintStart_toStartOf="@id/MudarNome"
+            app:layout_constraintTop_toTopOf="@id/MudarNome"
+
+            />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/name"
+            android:textColor="@color/black"
+            android:layout_marginTop="60dp"
+            android:layout_marginBottom="0dp"
+            android:textSize="20sp"
+            android:layout_marginStart="125dp"
+            app:layout_constraintBottom_toBottomOf="@id/MudarNome"
+            app:layout_constraintEnd_toEndOf="@id/MudarNome"
+            app:layout_constraintStart_toStartOf="@id/MudarNome"
+            app:layout_constraintTop_toTopOf="@id/MudarNome"
+            />
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/changenamepage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_arrow_forward_ios_24"
+            android:background="@android:color/transparent"
+            android:layout_marginStart="290dp"
+            android:layout_marginTop="75dp"
+            app:layout_constraintBottom_toBottomOf="@id/MudarNome"
+            app:layout_constraintEnd_toEndOf="@id/MudarNome"
+            app:layout_constraintStart_toStartOf="@id/MudarNome"
+            app:layout_constraintTop_toTopOf="@id/MudarNome"
+            />
+
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/CardViewSair"
+        android:layout_width="330dp"
+        android:layout_height="210dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/MudarNomeCardView"
+        app:cardElevation="5dp"
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="@color/grey">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imagesad"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/monsterprofilesad"
+            app:layout_constraintBottom_toBottomOf="@id/MudarNome"
+            app:layout_constraintEnd_toEndOf="@id/MudarNome"
+            app:layout_constraintStart_toStartOf="@id/MudarNome"
+            app:layout_constraintTop_toTopOf="@id/MudarNome"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="200dp"
+            android:layout_marginTop="30dp" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/javai"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/JaVai"
+            android:textColor="@color/black"
+            android:layout_marginTop="45dp"
+            android:layout_marginBottom="2dp"
+            android:textSize="24sp"
+            android:layout_marginStart="129dp"
+            app:layout_constraintBottom_toBottomOf="@id/MudarNome"
+            app:layout_constraintEnd_toEndOf="@id/MudarNome"
+            app:layout_constraintStart_toStartOf="@id/MudarNome"
+            app:layout_constraintTop_toTopOf="@id/MudarNome"
+            />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/proxavent"
+            android:layout_width="190dp"
+            android:layout_height="50dp"
+            android:fontFamily="@font/poppins"
+            android:text="@string/Poxa"
+            android:textColor="@color/dark_grey"
+            android:layout_marginTop="75dp"
+            android:layout_marginBottom="60dp"
+            android:textSize="16sp"
+            android:layout_marginStart="130dp"
+            app:layout_constraintBottom_toBottomOf="@id/MudarNome"
+            app:layout_constraintEnd_toEndOf="@id/MudarNome"
+            app:layout_constraintStart_toStartOf="@id/MudarNome"
+            app:layout_constraintTop_toTopOf="@id/MudarNome"
+            />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnLogout"
+            style="@style/sairapp"
+            android:layout_width="250dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="150dp"
+            android:fontFamily="@font/poppins_bold"
+            android:paddingTop="6dp"
+            android:text="@string/sair"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:textColor="@color/off_white"
+            android:textSize="18sp"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="30dp"
+            />
+
+    </androidx.cardview.widget.CardView>
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

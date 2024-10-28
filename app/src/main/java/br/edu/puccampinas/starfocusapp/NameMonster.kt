@@ -89,9 +89,9 @@ class NameMonster : AppCompatActivity() {
                     startActivity(
                         Intent(
                             this,
-                            BottomNav::class.java
+                            HistoryOne::class.java
                         )
-                    ) // Troque "Home::class.java" pela activity desejada
+                    )
                     finish()
                 }
                 .addOnFailureListener { exception ->
