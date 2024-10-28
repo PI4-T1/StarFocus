@@ -51,5 +51,6 @@
     <string name="newtask">Nova Tarefa</string>
     <string name="feedbackNovatask">Wow, uma nova tarefa, complete-a e ganhe recompensas!</string>
     <string name="sendProgress">Enviar Progresso</string>
+    <string name="maxChar">0/50</string>
 
 </resources>

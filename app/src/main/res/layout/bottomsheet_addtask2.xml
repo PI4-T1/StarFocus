@@ -35,6 +35,19 @@
         android:fontFamily="@font/poppins_medium"
         />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/charCountTextView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/inputtarefa2"
+        app:layout_constraintEnd_toEndOf="@id/inputtarefa2"
+        android:layout_marginEnd="5dp"
+        android:text="@string/maxChar"
+        android:textSize="14sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/poppins_medium"
+        android:layout_marginTop="4dp" />
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonToday2"
         android:layout_width="99dp"

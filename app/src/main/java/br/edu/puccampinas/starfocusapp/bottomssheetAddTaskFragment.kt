@@ -1,6 +1,8 @@
 package br.edu.puccampinas.starfocusapp
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +28,35 @@ class BottomsSheetAddTaskFragment(private val onTaskAdded: () -> Unit) : BottomS
         _binding = BottomsheetAddtaskBinding.inflate(inflater, container, false)
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance() // Inicializa o FirebaseAuth
+
+        //máximo de caracteres permitido
+        val maxLength = 50
+
+        // Configura o TextWatcher para atualizar o contador de caracteres
+        binding.inputtarefa.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val currentLength = s?.length ?: 0
+                binding.charCountTextView.text = "$currentLength/$maxLength"
+
+                if (currentLength > maxLength) {
+                    // Muda as cores para vermelho e desabilita o botão
+                    binding.charCountTextView.setTextColor(resources.getColor(R.color.red, null))
+                    binding.inputtarefa.setTextColor(resources.getColor(R.color.red, null))
+                    binding.buttonSaveTask.isEnabled = false
+                    binding.buttonSaveTask.alpha = 0.5f  // Reduz a opacidade para indicar que está desativado
+                } else {
+                    // Retorna às cores normais e habilita o botão
+                    binding.charCountTextView.setTextColor(resources.getColor(R.color.black, null))
+                    binding.inputtarefa.setTextColor(resources.getColor(R.color.black, null))
+                    binding.buttonSaveTask.isEnabled = true
+                    binding.buttonSaveTask.alpha = 1.0f  // Restaura a opacidade normal
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
 
         // Obtendo os dados da data completa
         val diaSelecionado = arguments?.getInt("diaSelecionado")
