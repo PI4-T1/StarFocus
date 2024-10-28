@@ -249,38 +249,42 @@ class HomeFragment : Fragment() {
                 val tarefaView = RadioButton(requireContext()).apply {
                     text = tarefaTexto
                     textSize = 20f
-                    gravity = Gravity.START
+                    gravity = Gravity.CENTER_VERTICAL
                     isAllCaps = false
 
                     setBackgroundResource(R.drawable.rectangleaddtask)
                     setTextColor(Color.parseColor("#3D3D3D"))
-                    setPadding(40, 10, 40, 10)
-                    isChecked =
-                        concluido // Define o estado do RadioButton conforme o campo 'concluido' da tarefa
 
-                    // Aplica o estilo de riscado se a tarefa estiver concluída
+                    buttonDrawable = null // Remove o botão padrão do RadioButton
+                    setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_outline_24, 0, 0, 0) // Adiciona o drawable à esquerda do texto
+                    compoundDrawablePadding = 37 // Ajusta o espaço entre o texto e o botão
+                    setPadding(70, 10, 60, 10) // Ajusta o padding para o texto e o botão à direita
+
+                    isChecked = concluido // Define o estado do RadioButton conforme o campo 'concluido' da tarefa
+
                     paintFlags = if (concluido) {
+                        setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_24, 0, 0, 0) // Drawable de tarefa concluída
                         paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                     } else {
+                        setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_outline_24, 0, 0, 0) // Drawable de tarefa não concluída
                         paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
                     }
 
                     setOnClickListener {
-                        // Chama a função para marcar a tarefa como concluída ao clicar no RadioButton
                         if (!concluido) { // Só marca como concluído se ainda não estiver
                             updateTaskStatus(userId, selectedDate, tarefaTexto)
-                            // Aplica o estilo riscado após a conclusão
                             paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                             isChecked = true
+                            setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_24, 0, 0, 0) // Muda o drawable para indicar conclusão
                         }
                     }
                 }
 
                 val layoutParams = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
+                    binding.InputTask.width, //mesmo tamanho do botao
+                    binding.InputTask.height //mesmo tamanho do botao
                 ).apply {
-                    setMargins(16, 0, 0, 0)
+                    setMargins(16, 0, 16, 0) // Margens horizontais para espaçamento
                 }
                 tarefaView.layoutParams = layoutParams
                 binding.TaskContainer.addView(tarefaView)
@@ -306,7 +310,7 @@ class HomeFragment : Fragment() {
         binding.TaskContainer.addView(binding.buttonProgress)
     }
 
-    fun updateTaskStatus(userId: String, dataSelecionada: String, tarefaTexto: String) {
+    private fun updateTaskStatus(userId: String, dataSelecionada: String, tarefaTexto: String) {
         val tarefasRef = db.collection("Tarefas").document(userId)
 
         tarefasRef.get().addOnSuccessListener { document ->

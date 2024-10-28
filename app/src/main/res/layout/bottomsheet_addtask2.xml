@@ -19,7 +19,7 @@
 
 
     <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/inputtarefa"
+        android:id="@+id/inputtarefa2"
         android:layout_height="60dp"
         android:layout_width="match_parent"
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
@@ -35,6 +35,42 @@
         android:fontFamily="@font/poppins_medium"
         />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/buttonToday2"
+        android:layout_width="99dp"
+        android:layout_height="32dp"
+        android:text="@string/hoje"
+        app:layout_constraintStart_toStartOf="@id/inputtarefa2"
+        app:layout_constraintTop_toBottomOf="@id/inputtarefa2"
+        android:fontFamily="@font/poppins_medium"
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        style="@style/buttondays"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:drawableStart="@drawable/baseline_calendar_month_24_purple"
+        />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/buttonchoose2"
+        android:layout_width="165dp"
+        android:layout_height="32dp"
+        android:text="@string/Choosedate"
+        android:fontFamily="@font/poppins_medium"
+        style="@style/buttondays"
+        app:layout_constraintStart_toEndOf="@id/buttonToday2"
+        app:layout_constraintTop_toBottomOf="@id/inputtarefa2"
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="1dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:textAlignment="textEnd"
+        android:drawableStart="@drawable/baseline_calendar_month_24_purple"
+        />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonSaveTask"
@@ -42,11 +78,11 @@
         android:layout_height="32dp"
         android:text="@string/save"
         android:layout_gravity="center"
-        app:layout_constraintStart_toStartOf="@id/inputtarefa"
-        app:layout_constraintTop_toBottomOf="@id/inputtarefa"
+        android:textColor="@color/white"
+        app:layout_constraintStart_toEndOf="@id/buttonchoose2"
+        app:layout_constraintTop_toBottomOf="@id/inputtarefa2"
         android:fontFamily="@font/poppins_medium"
         android:textAllCaps="false"
-        android:textColor="@color/white"
         android:textSize="15sp"
         style="@style/buttonsend"
         android:layout_marginStart="4dp"
@@ -56,8 +92,8 @@
         android:layout_width="180dp"
         android:layout_height="260dp"
         android:src="@drawable/bottomsheetcharacter"
-        app:layout_constraintStart_toStartOf="@id/inputtarefa"
-        app:layout_constraintTop_toBottomOf="@id/buttonSaveTask"
+        app:layout_constraintStart_toStartOf="@id/inputtarefa2"
+        app:layout_constraintTop_toBottomOf="@id/buttonToday2"
         android:layout_marginStart="20dp"
         android:layout_marginTop="120dp"
         />
@@ -65,8 +101,8 @@
         android:layout_width="230dp"
         android:layout_height="84dp"
         style="@style/buttonsend"
-        app:layout_constraintStart_toEndOf="@id/buttonSaveTask"
-        app:layout_constraintTop_toBottomOf="@id/buttonSaveTask"
+        app:layout_constraintStart_toStartOf="@id/buttonchoose2"
+        app:layout_constraintTop_toBottomOf="@id/buttonToday2"
         android:layout_marginTop="70dp"
         android:layout_marginStart="30dp"
         android:textColor="@color/white"
