@@ -73,14 +73,12 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
-    implementation(libs.androidx.constraintlayout)
-    implementation (libs.material)
     implementation (libs.androidx.constraintlayout.v204)
     implementation (libs.androidx.core.splashscreen.v100beta02)
     implementation (libs.glide.v4160)
     implementation (libs.androidx.viewpager2)
-    implementation (libs.material.v180)
     implementation (libs.material.v1100)
+    implementation (libs.play.services.auth)
 
 
 
