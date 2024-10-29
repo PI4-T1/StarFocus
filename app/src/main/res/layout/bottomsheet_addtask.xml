@@ -28,6 +28,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:boxBackgroundMode="filled"
         app:boxStrokeColor="@color/grey"
+        android:inputType="text"
         android:hint="@string/newtask"
         android:layout_marginTop="20dp"
         android:textSize="22sp"

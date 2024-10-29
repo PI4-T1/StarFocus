@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment
 import java.util.Calendar
 import android.app.AlertDialog
 import android.graphics.Paint
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.NumberPicker
@@ -272,12 +274,37 @@ class HomeFragment : Fragment() {
 
                     setOnClickListener {
                         if (!concluido) { // Só marca como concluído se ainda não estiver
-                            updateTaskStatus(userId, selectedDate, tarefaTexto)
+                            updateTaskStatusTrue(userId, selectedDate, tarefaTexto)
                             paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                             isChecked = true
                             setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_24, 0, 0, 0) // Muda o drawable para indicar conclusão
+
+                            // Exibe o drawable de conclusão com animação
+                            binding.feedback1.apply {
+                                alpha = 0f // Começa invisível
+                                visibility = View.VISIBLE
+                                animate().alpha(1f).setDuration(300).start() // Faz o fade-in em 300ms
+                            }
+
+                            // Cria um Handler para esconder o drawable após 3 segundos com animação de fade-out
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                binding.feedback1.animate()
+                                    .alpha(0f)
+                                    .setDuration(300) // Duração do fade-out
+                                    .withEndAction {
+                                        binding.feedback1.visibility = View.GONE
+                                    }
+                                    .start()
+                            }, 3000) // 3000 milissegundos = 3 segundos
+                        } else {
+                            // Desmarcar a tarefa e remover o risco
+                            updateTaskStatusFalse(userId, selectedDate, tarefaTexto) // Atualiza o status para não concluído
+                            paintFlags = paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv() // Remove o risco
+                            isChecked = false
+                            setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_outline_24, 0, 0, 0) // Muda o drawable para indicar não conclusão
                         }
                     }
+
                 }
 
                 val layoutParams = LinearLayout.LayoutParams(
@@ -310,7 +337,7 @@ class HomeFragment : Fragment() {
         binding.TaskContainer.addView(binding.buttonProgress)
     }
 
-    private fun updateTaskStatus(userId: String, dataSelecionada: String, tarefaTexto: String) {
+    private fun updateTaskStatusTrue(userId: String, dataSelecionada: String, tarefaTexto: String) {
         val tarefasRef = db.collection("Tarefas").document(userId)
 
         tarefasRef.get().addOnSuccessListener { document ->
@@ -321,6 +348,34 @@ class HomeFragment : Fragment() {
             for (tarefa in tarefasDoDia) {
                 if (tarefa["texto"] == tarefaTexto) {
                     tarefa["concluido"] = true
+                    break
+                }
+            }
+
+            // Atualiza o campo "tarefas" no Firestore com a modificação
+            dataTarefas[dataSelecionada] = tarefasDoDia
+            tarefasRef.update("tarefas", dataTarefas).addOnSuccessListener {
+                Log.d("Firestore", "Tarefa marcada como concluída com sucesso.")
+                loadTasksForSelectedDay(dataSelecionada)
+            }.addOnFailureListener { e ->
+                Log.w("Firestore", "Erro ao marcar tarefa como concluída", e)
+            }
+        }.addOnFailureListener { e ->
+            Log.w("Firestore", "Erro ao obter tarefas", e)
+        }
+    }
+
+    private fun updateTaskStatusFalse(userId: String, dataSelecionada: String, tarefaTexto: String) {
+        val tarefasRef = db.collection("Tarefas").document(userId)
+
+        tarefasRef.get().addOnSuccessListener { document ->
+            val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableList<MutableMap<String, Any>>> ?: mutableMapOf()
+            val tarefasDoDia = dataTarefas[dataSelecionada] ?: mutableListOf()
+
+            // Encontra a tarefa com o texto correspondente e atualiza o campo "concluido" para true
+            for (tarefa in tarefasDoDia) {
+                if (tarefa["texto"] == tarefaTexto) {
+                    tarefa["concluido"] = false
                     break
                 }
             }
