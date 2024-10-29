@@ -54,7 +54,7 @@
         android:layout_height="32dp"
         android:text="@string/hoje"
         app:layout_constraintStart_toStartOf="@id/inputtarefa2"
-        app:layout_constraintTop_toBottomOf="@id/inputtarefa2"
+        app:layout_constraintTop_toBottomOf="@id/charCountTextView2"
         android:fontFamily="@font/poppins_medium"
         android:textAllCaps="false"
         android:textSize="15sp"
@@ -74,7 +74,7 @@
         android:fontFamily="@font/poppins_medium"
         style="@style/buttondays"
         app:layout_constraintStart_toEndOf="@id/buttonToday2"
-        app:layout_constraintTop_toBottomOf="@id/inputtarefa2"
+        app:layout_constraintTop_toBottomOf="@id/charCountTextView2"
         android:textAllCaps="false"
         android:textSize="15sp"
         android:layout_marginStart="4dp"
@@ -93,13 +93,25 @@
         android:layout_gravity="center"
         android:textColor="@color/white"
         app:layout_constraintStart_toEndOf="@id/buttonchoose2"
-        app:layout_constraintTop_toBottomOf="@id/inputtarefa2"
+        app:layout_constraintTop_toBottomOf="@id/charCountTextView2"
         android:fontFamily="@font/poppins_medium"
         android:textAllCaps="false"
         android:textSize="15sp"
         style="@style/buttonsend"
         android:layout_marginStart="4dp"
         android:layout_marginEnd="1dp"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/textDaySelected"
+        android:layout_width="375dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/poppins"
+        android:text="@string/taskaddedin"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@id/buttonToday2"
+        app:layout_constraintTop_toBottomOf="@id/buttonToday2" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="180dp"
