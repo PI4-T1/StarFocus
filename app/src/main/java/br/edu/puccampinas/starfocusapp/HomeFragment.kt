@@ -329,6 +329,7 @@ class HomeFragment : Fragment() {
             dataTarefas[dataSelecionada] = tarefasDoDia
             tarefasRef.update("tarefas", dataTarefas).addOnSuccessListener {
                 Log.d("Firestore", "Tarefa marcada como concluída com sucesso.")
+                loadTasksForSelectedDay(dataSelecionada)
             }.addOnFailureListener { e ->
                 Log.w("Firestore", "Erro ao marcar tarefa como concluída", e)
             }
