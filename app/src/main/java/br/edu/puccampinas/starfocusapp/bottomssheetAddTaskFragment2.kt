@@ -1,5 +1,6 @@
 package br.edu.puccampinas.starfocusapp
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,6 +14,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class BottomsSheetAddTaskFragment2(private val onTaskAdded: () -> Unit) : BottomSheetDialogFragment() {
 
@@ -20,6 +23,7 @@ class BottomsSheetAddTaskFragment2(private val onTaskAdded: () -> Unit) : Bottom
     private val binding get() = _binding!!
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
+    private var selectedDate: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,7 +33,7 @@ class BottomsSheetAddTaskFragment2(private val onTaskAdded: () -> Unit) : Bottom
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance() // Inicializa o FirebaseAuth
 
-        //máximo de caracteres permitido
+        // Máximo de caracteres permitido
         val maxLength = 50
 
         // Inicializa o botão como desativado e opaco
@@ -45,13 +49,11 @@ class BottomsSheetAddTaskFragment2(private val onTaskAdded: () -> Unit) : Bottom
                 binding.charCountTextView2.text = "$currentLength/$maxLength"
 
                 if (currentLength == 0 || currentLength > maxLength) {
-                    // Caso o campo esteja vazio ou exceda o limite, mantenha o botão desativado e as cores vermelhas
                     binding.charCountTextView2.setTextColor(resources.getColor(R.color.red, null))
                     binding.inputtarefa2.setTextColor(resources.getColor(R.color.red, null))
                     binding.buttonSaveTask.isEnabled = false
                     binding.buttonSaveTask.alpha = 0.5f  // Reduz a opacidade para indicar que está desativado
                 } else {
-                    // Caso o campo tenha texto dentro do limite, ative o botão e restaure as cores normais
                     binding.charCountTextView2.setTextColor(resources.getColor(R.color.black, null))
                     binding.inputtarefa2.setTextColor(resources.getColor(R.color.black, null))
                     binding.buttonSaveTask.isEnabled = true
@@ -62,15 +64,31 @@ class BottomsSheetAddTaskFragment2(private val onTaskAdded: () -> Unit) : Bottom
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        // Obtendo os dados da data completa
-        val diaSelecionado = arguments?.getInt("diaSelecionado")
-        val mesSelecionado = arguments?.getInt("mesSelecionado")
-        val anoSelecionado = arguments?.getInt("anoSelecionado")
+        // Configura o botão para hoje
+        binding.buttonToday2.setOnClickListener {
+            val currentDate = LocalDate.now()
+            selectedDate = currentDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+            binding.textDaySelected.text = "A tarefa será adicionada em: $selectedDate" // Atualiza o TextView
+            Log.d("BottomSheetAddTask", "Data selecionada: $selectedDate")
+        }
 
-        // Formatar a data no formato "dd-MM-yyyy"
-        val dataSelecionada = String.format("%02d-%02d-%04d", diaSelecionado, mesSelecionado, anoSelecionado)
-        Log.d("BottomSheetAddTask", "Data formatada selecionada: $dataSelecionada")
+// Configura o botão para escolher a data
+        binding.buttonchoose2.setOnClickListener {
+            val datePickerDialog = DatePickerDialog(
+                requireContext(),
+                { _, year, month, dayOfMonth ->
+                    selectedDate = String.format("%02d-%02d-%04d", dayOfMonth, month + 1, year)
+                    binding.textDaySelected.text = "A tarefa será adicionada em: $selectedDate" // Atualiza o TextView
+                    Log.d("BottomSheetAddTask", "Data selecionada: $selectedDate")
+                },
+                LocalDate.now().year,
+                LocalDate.now().monthValue - 1,
+                LocalDate.now().dayOfMonth
+            )
+            datePickerDialog.show()
+        }
 
+        // Configura o listener do botão de salvar tarefa
         binding.buttonSaveTask.setOnClickListener {
             val tarefaTexto = binding.inputtarefa2.text.toString()
             val userId = auth.currentUser?.uid
@@ -80,13 +98,13 @@ class BottomsSheetAddTaskFragment2(private val onTaskAdded: () -> Unit) : Bottom
                 return@setOnClickListener
             }
 
-            if (tarefaTexto.isNotEmpty()) {
+            if (tarefaTexto.isNotEmpty() && selectedDate.isNotEmpty()) {
                 // Referência ao documento do usuário na coleção "Tarefas"
                 val tarefasRef = db.collection("Tarefas").document(userId)
 
                 tarefasRef.get().addOnSuccessListener { document ->
                     val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableList<Map<String, Any>>> ?: mutableMapOf()
-                    val tarefasDoDia = dataTarefas[dataSelecionada] ?: mutableListOf()
+                    val tarefasDoDia = dataTarefas[selectedDate] ?: mutableListOf()
 
                     // Adiciona a nova tarefa com o campo "concluído" padrão como false
                     val novaTarefa = mapOf(
@@ -94,7 +112,7 @@ class BottomsSheetAddTaskFragment2(private val onTaskAdded: () -> Unit) : Bottom
                         "concluido" to false
                     )
                     tarefasDoDia.add(novaTarefa)
-                    dataTarefas[dataSelecionada] = tarefasDoDia
+                    dataTarefas[selectedDate] = tarefasDoDia
 
                     // Atualiza o documento com as tarefas modificadas
                     tarefasRef.set(hashMapOf("tarefas" to dataTarefas), SetOptions.merge())
@@ -112,7 +130,7 @@ class BottomsSheetAddTaskFragment2(private val onTaskAdded: () -> Unit) : Bottom
                 }
 
             } else {
-                binding.inputtarefa2.error = "Por favor, insira uma tarefa."
+                binding.inputtarefa2.error = "Por favor, insira uma tarefa e selecione uma data."
             }
         }
 

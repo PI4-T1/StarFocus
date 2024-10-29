@@ -4,14 +4,17 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import br.edu.puccampinas.starfocusapp.databinding.BottomNavBinding
 
 class BottomNav : AppCompatActivity() {
 
+    private lateinit var binding: BottomNavBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.bottom_nav)
-
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        binding = BottomNavBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // Carrega o fragmento inicial
         if (savedInstanceState == null) {
@@ -21,16 +24,15 @@ class BottomNav : AppCompatActivity() {
         }
 
         // Listener para o item da navegação
-        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+        binding.bottomNavigation.setOnNavigationItemSelectedListener { item ->
             val fragment: Fragment = when (item.itemId) {
                 R.id.bottom_home -> HomeFragment()
                 R.id.bottom_closet -> ClosetFragment()
                 R.id.map -> MapFragment()
                 R.id.profile -> ProfileFragment()
-                else -> HomeFragment() // Volta para o fragment home, caso nenhum item corresponda a outro fragment
+                else -> HomeFragment()
             }
 
-            // Troca de fragmentos com animação
             supportFragmentManager.beginTransaction()
                 .setCustomAnimations(
                     R.anim.slide_in_right,
@@ -41,14 +43,23 @@ class BottomNav : AppCompatActivity() {
 
             true
         }
+
+        // Listener de clique no FAB para abrir o BottomSheetDialogFragment de adicionar tarefas
+        binding.fab.setOnClickListener {
+            val bottomSheetFragment = BottomsSheetAddTaskFragment2 {
+                // Callback para atualizar a interface após adicionar uma nova tarefa
+                // Aqui você pode implementar o que for necessário para atualizar a lista de tarefas
+            }
+            bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
+        }
     }
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount > 0) {
-            supportFragmentManager.popBackStack() // Volta para o fragmento anterior
+            supportFragmentManager.popBackStack()
         } else {
-            super.onBackPressed() // Sai da Activity
+            super.onBackPressed()
         }
     }
 }

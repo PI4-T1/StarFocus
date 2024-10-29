@@ -153,7 +153,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/TaskContainer" />
 
-    <androidx.appcompat.widget.AppCompatButton
+    <!--<androidx.appcompat.widget.AppCompatButton
         android:id="@+id/sendProgress"
         style="@style/sendProgress"
         android:layout_width="190dp"
@@ -169,7 +169,7 @@
         android:textColor="@color/white"
         android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="@id/InputTask"
-        app:layout_constraintTop_toBottomOf="@id/InputTask" />
+        app:layout_constraintTop_toBottomOf="@id/InputTask" />-->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/buttonProgress"
@@ -182,7 +182,7 @@
         android:focusable="true"
         app:layout_constraintEnd_toEndOf="@id/InputTask"
         app:layout_constraintStart_toStartOf="@id/InputTask"
-        app:layout_constraintTop_toBottomOf="@id/sendProgress">
+        app:layout_constraintTop_toBottomOf="@id/InputTask">
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/textProgresso"
