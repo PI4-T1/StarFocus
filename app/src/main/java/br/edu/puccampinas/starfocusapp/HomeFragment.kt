@@ -36,6 +36,8 @@ class HomeFragment : Fragment() {
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
 
+    private var selectedDate: String? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         db = FirebaseFirestore.getInstance()
@@ -62,6 +64,11 @@ class HomeFragment : Fragment() {
             }
         }
 
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            selectedDate = it.getString("selected_date")
+        }
+
         // Ação de adicionar nova tarefa
         binding.InputTask.setOnClickListener {
             val bottomSheetFragment = BottomsSheetAddTaskFragment {
@@ -75,6 +82,8 @@ class HomeFragment : Fragment() {
                 }
             }
             bottomSheetFragment.show(requireActivity().supportFragmentManager, bottomSheetFragment.tag)
+
+
         }
 
         // Carregar as tarefas para o dia selecionado ao iniciar o fragmento
@@ -208,7 +217,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun loadTasksForSelectedDay(selectedDate: String) {
+    public fun loadTasksForSelectedDay(selectedDate: String) {
         val userId = auth.currentUser?.uid ?: return
 
         db.collection("Tarefas").document(userId).get()

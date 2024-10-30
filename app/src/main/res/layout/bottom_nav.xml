@@ -35,7 +35,7 @@
 
     <!-- FloatingActionButton centralizado e ancorado à BottomNavigationView -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/Fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center|bottom"
