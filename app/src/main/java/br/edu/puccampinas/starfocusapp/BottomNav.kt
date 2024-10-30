@@ -1,6 +1,7 @@
 package br.edu.puccampinas.starfocusapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -45,13 +46,19 @@ class BottomNav : AppCompatActivity() {
         }
 
         // Listener de clique no FAB para abrir o BottomSheetDialogFragment de adicionar tarefas
-        binding.fab.setOnClickListener {
-            val bottomSheetFragment = BottomsSheetAddTaskFragment2 {
-                // Callback para atualizar a interface após adicionar uma nova tarefa
-                // Aqui você pode implementar o que for necessário para atualizar a lista de tarefas
+        // No BottomNav
+        binding.Fab.setOnClickListener {
+            val bottomSheetFragment = BottomsSheetAddTaskFragment2 { selectedDate ->
+                val formattedDate = selectedDate
+
+                val homeFragment = supportFragmentManager.findFragmentById(R.id.container) as? HomeFragment
+                homeFragment?.loadTasksForSelectedDay(formattedDate)
             }
-            bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
+            bottomSheetFragment.show(supportFragmentManager, "bottomSheetFragment2")
         }
+
+
+
     }
 
     @Deprecated("Deprecated in Java")

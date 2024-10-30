@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import br.edu.puccampinas.starfocusapp.databinding.BottomsheetAddtask2Binding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.auth.FirebaseAuth
@@ -17,7 +18,9 @@ import com.google.firebase.firestore.SetOptions
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class BottomsSheetAddTaskFragment2(private val onTaskAdded: () -> Unit) : BottomSheetDialogFragment() {
+class BottomsSheetAddTaskFragment2(
+    private val onTaskAdded: (String) -> Unit,
+) : BottomSheetDialogFragment() {
 
     private var _binding: BottomsheetAddtask2Binding? = null
     private val binding get() = _binding!!
@@ -31,7 +34,7 @@ class BottomsSheetAddTaskFragment2(private val onTaskAdded: () -> Unit) : Bottom
     ): View? {
         _binding = BottomsheetAddtask2Binding.inflate(inflater, container, false)
         db = FirebaseFirestore.getInstance()
-        auth = FirebaseAuth.getInstance() // Inicializa o FirebaseAuth
+        auth = FirebaseAuth.getInstance()
 
         // Máximo de caracteres permitido
         val maxLength = 50
@@ -52,12 +55,12 @@ class BottomsSheetAddTaskFragment2(private val onTaskAdded: () -> Unit) : Bottom
                     binding.charCountTextView2.setTextColor(resources.getColor(R.color.red, null))
                     binding.inputtarefa2.setTextColor(resources.getColor(R.color.red, null))
                     binding.buttonSaveTask.isEnabled = false
-                    binding.buttonSaveTask.alpha = 0.5f  // Reduz a opacidade para indicar que está desativado
+                    binding.buttonSaveTask.alpha = 0.5f
                 } else {
                     binding.charCountTextView2.setTextColor(resources.getColor(R.color.black, null))
                     binding.inputtarefa2.setTextColor(resources.getColor(R.color.black, null))
                     binding.buttonSaveTask.isEnabled = true
-                    binding.buttonSaveTask.alpha = 1.0f  // Restaura a opacidade normal
+                    binding.buttonSaveTask.alpha = 1.0f
                 }
             }
 
@@ -68,17 +71,17 @@ class BottomsSheetAddTaskFragment2(private val onTaskAdded: () -> Unit) : Bottom
         binding.buttonToday2.setOnClickListener {
             val currentDate = LocalDate.now()
             selectedDate = currentDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-            binding.textDaySelected.text = "A tarefa será adicionada em: $selectedDate" // Atualiza o TextView
+            binding.textDaySelected.text = "A tarefa será adicionada em: $selectedDate"
             Log.d("BottomSheetAddTask", "Data selecionada: $selectedDate")
         }
 
-// Configura o botão para escolher a data
+        // Configura o botão para escolher a data
         binding.buttonchoose2.setOnClickListener {
             val datePickerDialog = DatePickerDialog(
                 requireContext(),
                 { _, year, month, dayOfMonth ->
                     selectedDate = String.format("%02d-%02d-%04d", dayOfMonth, month + 1, year)
-                    binding.textDaySelected.text = "A tarefa será adicionada em: $selectedDate" // Atualiza o TextView
+                    binding.textDaySelected.text = "A tarefa será adicionada em: $selectedDate"
                     Log.d("BottomSheetAddTask", "Data selecionada: $selectedDate")
                 },
                 LocalDate.now().year,
@@ -99,14 +102,12 @@ class BottomsSheetAddTaskFragment2(private val onTaskAdded: () -> Unit) : Bottom
             }
 
             if (tarefaTexto.isNotEmpty() && selectedDate.isNotEmpty()) {
-                // Referência ao documento do usuário na coleção "Tarefas"
                 val tarefasRef = db.collection("Tarefas").document(userId)
 
                 tarefasRef.get().addOnSuccessListener { document ->
                     val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableList<Map<String, Any>>> ?: mutableMapOf()
                     val tarefasDoDia = dataTarefas[selectedDate] ?: mutableListOf()
 
-                    // Adiciona a nova tarefa com o campo "concluído" padrão como false
                     val novaTarefa = mapOf(
                         "texto" to tarefaTexto,
                         "concluido" to false
@@ -114,11 +115,10 @@ class BottomsSheetAddTaskFragment2(private val onTaskAdded: () -> Unit) : Bottom
                     tarefasDoDia.add(novaTarefa)
                     dataTarefas[selectedDate] = tarefasDoDia
 
-                    // Atualiza o documento com as tarefas modificadas
                     tarefasRef.set(hashMapOf("tarefas" to dataTarefas), SetOptions.merge())
                         .addOnSuccessListener {
                             binding.inputtarefa2.text?.clear()
-                            onTaskAdded()
+                            onTaskAdded(selectedDate)
                             dismiss()
                         }
                         .addOnFailureListener { e ->
@@ -136,6 +136,8 @@ class BottomsSheetAddTaskFragment2(private val onTaskAdded: () -> Unit) : Bottom
 
         return binding.root
     }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()

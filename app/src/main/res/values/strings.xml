@@ -66,11 +66,12 @@
     <string name="hiistoryone">Em um reino, não tão distante, vivia um monstro...</string>
     <string name="jumphistory"><u>Pular história</u></string>
 
-    <string name="historytwo">Salve seu amigo imaginário das garras da babá rodopinho, frank, deixa para amanhã e desorganizadinho</string>
+    <string name="historytwo">Salve seu amigo imaginário das garras da babá rodopinho, frank deixa para amanhã e desorganizadinho</string>
     <string name="historytop">Rodeado pelos seus piores pesadelos, que o observavam dia e noite</string>
 
     <string name="vamosComecar">Vamos começar?</string>
     <string name="taskaddedin">A tarefa será adicionada em:</string>
+    <string name="namemonster">Esse é o nome do seu monstrinho...</string>
 
 
 </resources>

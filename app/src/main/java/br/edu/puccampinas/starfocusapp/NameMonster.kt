@@ -84,7 +84,6 @@ class NameMonster : AppCompatActivity() {
             // Adiciona o nome criado na coleção "Pessoas"
             database.collection("Pessoas").document(currentUser.uid).update(monsterData)
                 .addOnSuccessListener {
-                    showToast("Nome salvo com sucesso!")
                     // Navegar para outra tela ou finalizar o fluxo de cadastro
                     startActivity(
                         Intent(

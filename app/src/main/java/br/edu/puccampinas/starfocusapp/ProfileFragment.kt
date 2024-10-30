@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
@@ -27,15 +26,6 @@ class ProfileFragment : Fragment() {
 
         // Referência à TextView onde o nome de usuário será exibido
         usernameTextView = view.findViewById(R.id.username)
-
-        // Referência ao botão de trocar nome
-        val btnChangeName = view.findViewById<AppCompatImageButton>(R.id.changenamepage)
-
-        // Ao clicar no botão, navega para a tela de troca de nome
-        btnChangeName.setOnClickListener {
-            val intent = Intent(activity, ChangeName::class.java)
-            startActivity(intent)
-        }
 
         // Referência ao botão de logout
         val btnLogout = view.findViewById<Button>(R.id.btnLogout)
