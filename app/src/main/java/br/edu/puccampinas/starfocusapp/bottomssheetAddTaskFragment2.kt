@@ -18,7 +18,9 @@ import com.google.firebase.firestore.SetOptions
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class BottomsSheetAddTaskFragment2(private val onTaskAdded: () -> Unit) : BottomSheetDialogFragment() {
+class BottomsSheetAddTaskFragment2(
+    private val onTaskAdded: (String) -> Unit,
+) : BottomSheetDialogFragment() {
 
     private var _binding: BottomsheetAddtask2Binding? = null
     private val binding get() = _binding!!
@@ -116,9 +118,7 @@ class BottomsSheetAddTaskFragment2(private val onTaskAdded: () -> Unit) : Bottom
                     tarefasRef.set(hashMapOf("tarefas" to dataTarefas), SetOptions.merge())
                         .addOnSuccessListener {
                             binding.inputtarefa2.text?.clear()
-                            onTaskAdded()
-
-                            recarregarFragmento(HomeFragment()) // Chama a função para recarregar o HomeFragment
+                            onTaskAdded(selectedDate)
                             dismiss()
                         }
                         .addOnFailureListener { e ->
@@ -137,13 +137,7 @@ class BottomsSheetAddTaskFragment2(private val onTaskAdded: () -> Unit) : Bottom
         return binding.root
     }
 
-    // Função para recarregar o fragmento
-    private fun recarregarFragmento(fragment: Fragment) {
-        val fragmentManager = requireActivity().supportFragmentManager
-        fragmentManager.beginTransaction()
-            .replace(R.id.fragmentoHome, fragment) // Altere 'R.id.fragment_container' para o ID do seu container de fragmentos
-            .commit()
-    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
