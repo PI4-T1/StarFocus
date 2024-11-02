@@ -189,6 +189,7 @@ class HomeFragment : Fragment() {
 
             // Atualiza a exibição dos dias e o botão de calendário
             addDaysToView(calendar)
+            loadTasksForSelectedDay(String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear))
             updateCalendarButtonText()
         }
 
