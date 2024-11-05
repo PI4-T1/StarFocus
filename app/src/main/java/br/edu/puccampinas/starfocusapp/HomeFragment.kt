@@ -29,7 +29,9 @@ class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private var calendar = Calendar.getInstance()
     private var currentDayPosition = -1
+
     private var isScrollAdjusted = false
+    private var isProgressAvailable = false
 
     private var selectedDay: Int = calendar.get(Calendar.DAY_OF_MONTH)
     private var selectedMonth: Int = calendar.get(Calendar.MONTH)
@@ -44,6 +46,10 @@ class HomeFragment : Fragment() {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
+
+        // Configura o botão 'sendProgress' para estar indisponível inicialmente
+        binding.sendProgress.isEnabled = false
+        binding.sendProgress.alpha = 0.7f // opacidade para indicar indisponibilidade
 
         // Atualiza o botão de calendário com o mês e ano atuais
         updateCalendarButtonText()
@@ -84,13 +90,16 @@ class HomeFragment : Fragment() {
                 }
             }
             bottomSheetFragment.show(requireActivity().supportFragmentManager, bottomSheetFragment.tag)
-
-
         }
 
         // Carregar as tarefas para o dia selecionado ao iniciar o fragmento
         if (auth.currentUser != null) {
             loadTasksForSelectedDay(String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear))
+        }
+
+        binding.sendProgress.setOnClickListener {
+            // envia para a barra de progresso e depois fica indisponivel de novo
+
         }
 
         return binding.root
@@ -254,6 +263,9 @@ class HomeFragment : Fragment() {
     private fun displayTasks(tarefas: List<Pair<String?, Boolean>>, selectedDate: String) {
         binding.TaskContainer.removeAllViews() // Limpa tarefas anteriores
 
+        // Atualiza a disponibilidade do botão baseado nas tarefas concluídas
+        updateProgressButtonAvailability(tarefas)
+
         val userId = auth.currentUser?.uid ?: return
 
         tarefas.forEach { (tarefaTexto, concluido) ->
@@ -401,6 +413,13 @@ class HomeFragment : Fragment() {
         }.addOnFailureListener { e ->
             Log.w("Firestore", "Erro ao obter tarefas", e)
         }
+    }
+
+    // Função para verificar se há tarefas concluídas
+    private fun updateProgressButtonAvailability(tarefas: List<Pair<String?, Boolean>>) {
+        isProgressAvailable = tarefas.any { it.second } // Verifica se há alguma tarefa concluída
+        binding.sendProgress.isEnabled = isProgressAvailable
+        binding.sendProgress.alpha = if (isProgressAvailable) 1.0f else 0.7f
     }
 
 }
