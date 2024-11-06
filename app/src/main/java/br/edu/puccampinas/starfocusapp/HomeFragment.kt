@@ -22,6 +22,8 @@ import android.widget.Spinner
 import br.edu.puccampinas.starfocusapp.databinding.FragmentHomeBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
+import java.util.*
 
 class HomeFragment : Fragment() {
 
@@ -97,9 +99,13 @@ class HomeFragment : Fragment() {
             loadTasksForSelectedDay(String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear))
         }
 
+        // Evento de clique para o botão sendProgress
         binding.sendProgress.setOnClickListener {
-            // envia para a barra de progresso e depois fica indisponivel de novo
-
+            val userId = auth.currentUser?.uid
+            val dataSelecionada = String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear)
+            if (userId != null) {
+                sendProgress(userId, dataSelecionada)
+            }
         }
 
         return binding.root
@@ -229,7 +235,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-    public fun loadTasksForSelectedDay(selectedDate: String) {
+    fun loadTasksForSelectedDay(selectedDate: String) {
         val userId = auth.currentUser?.uid ?: return
 
         db.collection("Tarefas").document(userId).get()
@@ -241,9 +247,10 @@ class HomeFragment : Fragment() {
                     if (dataTarefas != null) {
                         // Seleciona as tarefas do dia específico
                         val tarefasDoDia = dataTarefas[selectedDate]?.mapNotNull { tarefa ->
+                            val id = tarefa["id"] as? String
                             val texto = tarefa["texto"] as? String
-                            val concluido = tarefa["concluido"] as? Boolean ?: false
-                            Pair(texto, concluido) // Retorna um par com o texto e o status de conclusão
+                            val status = tarefa["status"] as? String ?: "Pendente"
+                            Triple(id, texto, status) // Retorna um triple com o ID, texto e status
                         } ?: emptyList()
 
                         Log.d("Firestore", "Tarefas para $selectedDate: $tarefasDoDia")
@@ -260,16 +267,16 @@ class HomeFragment : Fragment() {
             }
     }
 
-    private fun displayTasks(tarefas: List<Pair<String?, Boolean>>, selectedDate: String) {
+    private fun displayTasks(tarefas: List<Triple<String?, String?, String>>, selectedDate: String) {
         binding.TaskContainer.removeAllViews() // Limpa tarefas anteriores
 
-        // Atualiza a disponibilidade do botão baseado nas tarefas concluídas
-        updateProgressButtonAvailability(tarefas)
-
         val userId = auth.currentUser?.uid ?: return
+        var hasConcludedTask = false
 
-        tarefas.forEach { (tarefaTexto, concluido) ->
-            if (tarefaTexto != null) {
+        tarefas.forEach { (tarefaId, tarefaTexto, status) ->
+            if (tarefaId != null && tarefaTexto != null) {
+                val concluido = status == "Concluída"
+                val enviada = status == "Enviada"  // Verifica se a tarefa está com status "Enviada"
                 val tarefaView = RadioButton(requireContext()).apply {
                     text = tarefaTexto
                     textSize = 20f
@@ -280,96 +287,109 @@ class HomeFragment : Fragment() {
                     setTextColor(Color.parseColor("#3D3D3D"))
 
                     buttonDrawable = null // Remove o botão padrão do RadioButton
-                    setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_outline_24, 0, 0, 0) // Adiciona o drawable à esquerda do texto
                     compoundDrawablePadding = 37 // Ajusta o espaço entre o texto e o botão
                     setPadding(70, 10, 60, 10) // Ajusta o padding para o texto e o botão à direita
 
-                    isChecked = concluido // Define o estado do RadioButton conforme o campo 'concluido' da tarefa
-
-                    paintFlags = if (concluido) {
-                        setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_24, 0, 0, 0) // Drawable de tarefa concluída
-                        paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                    } else {
-                        setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_outline_24, 0, 0, 0) // Drawable de tarefa não concluída
-                        paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-                    }
-
-                    setOnClickListener {
-                        if (!concluido) { // Só marca como concluído se ainda não estiver
-                            updateTaskStatusTrue(userId, selectedDate, tarefaTexto)
+                    when {
+                        enviada -> { // Configura o visual de tarefas enviadas
+                            setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_send_24, 0, 0, 0) // Ícone de "Enviada"
+                            setTextColor(Color.GRAY) // Cor cinza para indicar inatividade
+                            paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG // Texto riscado
+                            isEnabled = false // Desabilita a interação
+                        }
+                        concluido -> { // Visual para tarefas concluídas, mas não enviadas
+                            setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_24, 0, 0, 0) // Ícone de concluído
                             paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                             isChecked = true
-                            setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_24, 0, 0, 0) // Muda o drawable para indicar conclusão
-
-                            // Exibe o drawable de conclusão com animação
-                            binding.feedback1.apply {
-                                alpha = 0f // Começa invisível
-                                visibility = View.VISIBLE
-                                animate().alpha(1f).setDuration(300).start() // Faz o fade-in em 300ms
-                            }
-
-                            // Cria um Handler para esconder o drawable após 3 segundos com animação de fade-out
-                            Handler(Looper.getMainLooper()).postDelayed({
-                                binding.feedback1.animate()
-                                    .alpha(0f)
-                                    .setDuration(300) // Duração do fade-out
-                                    .withEndAction {
-                                        binding.feedback1.visibility = View.GONE
-                                    }
-                                    .start()
-                            }, 3000) // 3000 milissegundos = 3 segundos
-                        } else {
-                            // Desmarcar a tarefa e remover o risco
-                            updateTaskStatusFalse(userId, selectedDate, tarefaTexto) // Atualiza o status para não concluído
-                            paintFlags = paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv() // Remove o risco
-                            isChecked = false
-                            setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_outline_24, 0, 0, 0) // Muda o drawable para indicar não conclusão
+                        }
+                        else -> { // Visual para tarefas pendentes
+                            setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_outline_24, 0, 0, 0)
+                            paintFlags = paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
                         }
                     }
 
+                    // Configura o clique somente se a tarefa não estiver "Enviada"
+                    if (!enviada) {
+                        setOnClickListener {
+                            if (!concluido) { // Só marca como concluído se ainda não estiver
+                                updateTaskStatusConcluida(userId, selectedDate, tarefaId)
+                                paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                                isChecked = true
+                                setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_24, 0, 0, 0)
+
+                                // Exibe o drawable de conclusão com animação
+                                binding.feedback1.apply {
+                                    alpha = 0f
+                                    visibility = View.VISIBLE
+                                    animate().alpha(1f).setDuration(300).start()
+                                }
+
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    binding.feedback1.animate()
+                                        .alpha(0f)
+                                        .setDuration(300)
+                                        .withEndAction {
+                                            binding.feedback1.visibility = View.GONE
+                                        }
+                                        .start()
+                                }, 3000)
+                            } else {
+                                updateTaskStatusPendente(userId, selectedDate, tarefaId)
+                                paintFlags = paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                                isChecked = false
+                                setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_outline_24, 0, 0, 0)
+                            }
+                        }
+                    }
                 }
 
                 val layoutParams = LinearLayout.LayoutParams(
-                    binding.InputTask.width, //mesmo tamanho do botao
-                    binding.InputTask.height //mesmo tamanho do botao
+                    binding.InputTask.width,
+                    binding.InputTask.height
                 ).apply {
-                    setMargins(16, 0, 16, 0) // Margens horizontais para espaçamento
+                    setMargins(16, 0, 16, 0)
                 }
                 tarefaView.layoutParams = layoutParams
                 binding.TaskContainer.addView(tarefaView)
+
+                if (concluido) {
+                    hasConcludedTask = true
+                }
             }
         }
 
-        // Remove o botão 'InputTask' do seu pai, se ele já tiver um
+        if (hasConcludedTask) {
+            binding.sendProgress.isEnabled = true
+            binding.sendProgress.alpha = 1f
+        } else {
+            binding.sendProgress.isEnabled = false
+            binding.sendProgress.alpha = 0.7f
+        }
+
         val inputTaskParent = binding.InputTask.parent
         if (inputTaskParent is ViewGroup) {
             inputTaskParent.removeView(binding.InputTask)
         }
-
-        // Adiciona o botão 'InputTask'
         binding.TaskContainer.addView(binding.InputTask)
 
-        // Remove o botão 'buttonProgress' do seu pai, se ele já tiver um
         val buttonProgressParent = binding.buttonProgress.parent
         if (buttonProgressParent is ViewGroup) {
             buttonProgressParent.removeView(binding.buttonProgress)
         }
-
-        // Adiciona o botão 'buttonProgress' logo após o 'InputTask'
         binding.TaskContainer.addView(binding.buttonProgress)
     }
 
-    private fun updateTaskStatusTrue(userId: String, dataSelecionada: String, tarefaTexto: String) {
+    private fun updateTaskStatusConcluida(userId: String, dataSelecionada: String, tarefaId: String) {
         val tarefasRef = db.collection("Tarefas").document(userId)
 
         tarefasRef.get().addOnSuccessListener { document ->
             val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableList<MutableMap<String, Any>>> ?: mutableMapOf()
             val tarefasDoDia = dataTarefas[dataSelecionada] ?: mutableListOf()
 
-            // Encontra a tarefa com o texto correspondente e atualiza o campo "concluido" para true
+            // Encontra a tarefa com o id correspondente e atualiza o campo "status" para "Concluída"
             for (tarefa in tarefasDoDia) {
-                if (tarefa["texto"] == tarefaTexto) {
-                    tarefa["concluido"] = true
+                if (tarefa["id"] == tarefaId) {
+                    tarefa["status"] = "Concluída"
                     break
                 }
             }
@@ -387,17 +407,17 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun updateTaskStatusFalse(userId: String, dataSelecionada: String, tarefaTexto: String) {
+    private fun updateTaskStatusPendente(userId: String, dataSelecionada: String, tarefaId: String) {
         val tarefasRef = db.collection("Tarefas").document(userId)
 
         tarefasRef.get().addOnSuccessListener { document ->
             val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableList<MutableMap<String, Any>>> ?: mutableMapOf()
             val tarefasDoDia = dataTarefas[dataSelecionada] ?: mutableListOf()
 
-            // Encontra a tarefa com o texto correspondente e atualiza o campo "concluido" para true
+            // Encontra a tarefa com o id correspondente e atualiza o campo "status" para "Pendente"
             for (tarefa in tarefasDoDia) {
-                if (tarefa["texto"] == tarefaTexto) {
-                    tarefa["concluido"] = false
+                if (tarefa["id"] == tarefaId) {
+                    tarefa["status"] = "Pendente"
                     break
                 }
             }
@@ -405,21 +425,84 @@ class HomeFragment : Fragment() {
             // Atualiza o campo "tarefas" no Firestore com a modificação
             dataTarefas[dataSelecionada] = tarefasDoDia
             tarefasRef.update("tarefas", dataTarefas).addOnSuccessListener {
-                Log.d("Firestore", "Tarefa marcada como concluída com sucesso.")
+                Log.d("Firestore", "Tarefa marcada como pendente com sucesso.")
                 loadTasksForSelectedDay(dataSelecionada)
             }.addOnFailureListener { e ->
-                Log.w("Firestore", "Erro ao marcar tarefa como concluída", e)
+                Log.w("Firestore", "Erro ao marcar tarefa como pendente", e)
             }
         }.addOnFailureListener { e ->
             Log.w("Firestore", "Erro ao obter tarefas", e)
         }
     }
 
-    // Função para verificar se há tarefas concluídas
-    private fun updateProgressButtonAvailability(tarefas: List<Pair<String?, Boolean>>) {
-        isProgressAvailable = tarefas.any { it.second } // Verifica se há alguma tarefa concluída
-        binding.sendProgress.isEnabled = isProgressAvailable
-        binding.sendProgress.alpha = if (isProgressAvailable) 1.0f else 0.7f
+    // Função modificada para atualizar o status de várias tarefas como "Enviada"
+    private fun updateTaskStatusEnviada(userId: String, dataSelecionada: String, tarefasIds: List<String>) {
+        val tarefasRef = db.collection("Tarefas").document(userId)
+
+        tarefasRef.get().addOnSuccessListener { document ->
+            val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableList<MutableMap<String, Any>>> ?: mutableMapOf()
+            val tarefasDoDia = dataTarefas[dataSelecionada] ?: mutableListOf()
+
+            // Atualiza o status de todas as tarefas concluídas para "Enviada"
+            for (tarefa in tarefasDoDia) {
+                if (tarefasIds.contains(tarefa["id"])) {
+                    tarefa["status"] = "Enviada"
+                }
+            }
+
+            // Atualiza o campo "tarefas" no Firestore com todas as modificações em uma única operação
+            dataTarefas[dataSelecionada] = tarefasDoDia
+            tarefasRef.update("tarefas", dataTarefas).addOnSuccessListener {
+                Log.d("Firestore", "Tarefas marcadas como enviadas com sucesso.")
+                loadTasksForSelectedDay(dataSelecionada)
+            }.addOnFailureListener { e ->
+                Log.w("Firestore", "Erro ao marcar tarefas como enviadas", e)
+            }
+        }.addOnFailureListener { e ->
+            Log.w("Firestore", "Erro ao obter tarefas", e)
+        }
+    }
+
+    // Função sendProgress que envia o progresso de todas as tarefas concluídas
+    private fun sendProgress(userId: String, dataSelecionada: String) {
+        db.collection("Tarefas").document(userId).get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    val dataTarefas = document.get("tarefas") as? Map<String, List<Map<String, Any>>>
+                    val tarefasIdsConcluidas = mutableListOf<String>()
+
+                    // Coleta todos os IDs de tarefas concluídas
+                    dataTarefas?.get(dataSelecionada)?.forEach { tarefa ->
+                        val tarefaId = tarefa["id"] as? String
+                        val status = tarefa["status"] as? String
+
+                        if (tarefaId != null && status == "Concluída") {
+                            tarefasIdsConcluidas.add(tarefaId)
+                        }
+                    }
+
+                    // Atualiza o status das tarefas concluídas em lote
+                    if (tarefasIdsConcluidas.isNotEmpty()) {
+                        updateTaskStatusEnviada(userId, dataSelecionada, tarefasIdsConcluidas)
+                    }
+
+                    // Desativa o botão e ajusta a transparência
+                    binding.sendProgress.isEnabled = false
+                    binding.sendProgress.alpha = 0.7f
+                } else {
+                    Log.d("Firestore", "Documento não encontrado")
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "Erro ao enviar progresso", e)
+            }
+    }
+
+    private fun isTaskEditable(taskDate: String): Boolean {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val currentDate = dateFormat.format(Date())
+
+        return taskDate >= currentDate // Retorna true se a tarefa for da data atual ou futura
     }
 
 }

@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import br.edu.puccampinas.starfocusapp.databinding.BottomsheetAddtask2Binding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.auth.FirebaseAuth
@@ -108,10 +107,16 @@ class BottomsSheetAddTaskFragment2(
                     val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableList<Map<String, Any>>> ?: mutableMapOf()
                     val tarefasDoDia = dataTarefas[selectedDate] ?: mutableListOf()
 
+                    // Cria um ID único para a nova tarefa
+                    val tarefaId = db.collection("Tarefas").document().id
+
+                    // Adiciona a nova tarefa com o ID, texto e status padrão como "Pendente"
                     val novaTarefa = mapOf(
+                        "id" to tarefaId,
                         "texto" to tarefaTexto,
-                        "concluido" to false
+                        "status" to "Pendente"  // Status inicial
                     )
+
                     tarefasDoDia.add(novaTarefa)
                     dataTarefas[selectedDate] = tarefasDoDia
 
