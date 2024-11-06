@@ -1,11 +1,8 @@
 package br.edu.puccampinas.starfocusapp
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import br.edu.puccampinas.starfocusapp.databinding.BottomNavBinding
 
 class BottomNav : AppCompatActivity() {
@@ -49,10 +46,9 @@ class BottomNav : AppCompatActivity() {
         // No BottomNav
         binding.Fab.setOnClickListener {
             val bottomSheetFragment = BottomsSheetAddTaskFragment2 { selectedDate ->
-                val formattedDate = selectedDate
 
                 val homeFragment = supportFragmentManager.findFragmentById(R.id.container) as? HomeFragment
-                homeFragment?.loadTasksForSelectedDay(formattedDate)
+                homeFragment?.loadTasksForSelectedDay(selectedDate)
             }
             bottomSheetFragment.show(supportFragmentManager, "bottomSheetFragment2")
         }

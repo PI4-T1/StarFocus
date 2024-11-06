@@ -33,7 +33,6 @@ class HomeFragment : Fragment() {
     private var currentDayPosition = -1
 
     private var isScrollAdjusted = false
-    private var isProgressAvailable = false
 
     private var selectedDay: Int = calendar.get(Calendar.DAY_OF_MONTH)
     private var selectedMonth: Int = calendar.get(Calendar.MONTH)
