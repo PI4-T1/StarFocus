@@ -292,6 +292,8 @@ class HomeFragment : Fragment() {
     private fun displayTasks(tarefas: List<Triple<String?, String?, String>>, selectedDate: String) {
         binding.TaskContainer.removeAllViews() // Limpa tarefas anteriores
 
+        var hasConcludedTask = false
+
         val userId = auth.currentUser?.uid ?: return
         val today = Calendar.getInstance()
         val selectedDateCalendar = Calendar.getInstance().apply {
