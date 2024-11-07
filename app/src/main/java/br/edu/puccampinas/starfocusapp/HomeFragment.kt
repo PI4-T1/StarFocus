@@ -123,17 +123,25 @@ class HomeFragment : Fragment() {
                 text = getDayOfWeekSymbol(calendar, day)
                 textSize = 12f
                 gravity = Gravity.CENTER
+                setTextColor(Color.parseColor("#3D3D3D"))
             }
 
             val dayNumberTextView = TextView(requireContext()).apply {
                 text = "$day"
-                textSize = 22f
+                textSize = 16f
                 gravity = Gravity.CENTER
+                setPadding(0, 12, 0, 0)
                 setTextColor(Color.parseColor("#3D3D3D"))
+
                 if (day == selectedDay) {
                     setTextColor(Color.WHITE)
                     background = resources.getDrawable(R.drawable.circle_selected_day, null)
-                    setPadding(12, 0, 12, 0)
+                    setPadding(0, 0, 0, 0)
+                }
+
+                // Verifica se é o dia atual e aplica o fundo amarelo
+                if (day == Calendar.getInstance().get(Calendar.DAY_OF_MONTH) && calendar.get(Calendar.MONTH) == Calendar.getInstance().get(Calendar.MONTH) && calendar.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR)) {
+                    background = resources.getDrawable(R.drawable.circle_today_day, null)
                 }
             }
 
@@ -234,8 +242,20 @@ class HomeFragment : Fragment() {
         }
     }
 
-    fun loadTasksForSelectedDay(selectedDate: String) {
+    // Função atualizada para carregar tarefas e atualizar o dia selecionado
+    public fun loadTasksForSelectedDay(selectedDate: String) {
         val userId = auth.currentUser?.uid ?: return
+
+        // Divide a data selecionada para obter o dia, mês e ano
+        val parts = selectedDate.split("-")
+        val day = parts[0].toInt()
+        val month = parts[1].toInt() - 1 // Janeiro é 0, então subtrai 1
+        val year = parts[2].toInt()
+
+        // Atualiza as variáveis selecionadas
+        selectedDay = day
+        selectedMonth = month
+        selectedYear = year
 
         db.collection("Tarefas").document(userId).get()
             .addOnSuccessListener { document ->
@@ -254,6 +274,9 @@ class HomeFragment : Fragment() {
 
                         Log.d("Firestore", "Tarefas para $selectedDate: $tarefasDoDia")
                         displayTasks(tarefasDoDia, selectedDate)
+
+                        // Atualiza o calendário com o novo dia selecionado
+                        addDaysToView(calendar)
                     } else {
                         Log.d("Firestore", "Campo 'tarefas' está vazio ou não encontrado")
                     }
@@ -270,7 +293,15 @@ class HomeFragment : Fragment() {
         binding.TaskContainer.removeAllViews() // Limpa tarefas anteriores
 
         val userId = auth.currentUser?.uid ?: return
-        var hasConcludedTask = false
+        val today = Calendar.getInstance()
+        val selectedDateCalendar = Calendar.getInstance().apply {
+            val parts = selectedDate.split("-")
+            set(Calendar.DAY_OF_MONTH, parts[0].toInt())
+            set(Calendar.MONTH, parts[1].toInt() - 1) // Janeiro é 0
+            set(Calendar.YEAR, parts[2].toInt())
+        }
+
+        val isPastDate = selectedDateCalendar.before(today)
 
         tarefas.forEach { (tarefaId, tarefaTexto, status) ->
             if (tarefaId != null && tarefaTexto != null) {
@@ -289,15 +320,24 @@ class HomeFragment : Fragment() {
                     compoundDrawablePadding = 37 // Ajusta o espaço entre o texto e o botão
                     setPadding(70, 10, 60, 10) // Ajusta o padding para o texto e o botão à direita
 
-                    when {
-                        enviada -> { // Configura o visual de tarefas enviadas
-                            setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_send_24, 0, 0, 0) // Ícone de "Enviada"
-                            setTextColor(Color.GRAY) // Cor cinza para indicar inatividade
-                            paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG // Texto riscado
-                            isEnabled = false // Desabilita a interação
-                        }
-                        concluido -> { // Visual para tarefas concluídas, mas não enviadas
-                            setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_24, 0, 0, 0) // Ícone de concluído
+                    isChecked = concluido // Define o estado do RadioButton conforme o campo 'concluido' da tarefa
+
+                    paintFlags = if (concluido) {
+                        setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_24, 0, 0, 0) // Drawable de tarefa concluída
+                        paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                    } else {
+                        setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_outline_24, 0, 0, 0) // Drawable de tarefa não concluída
+                        paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                    }
+
+                    isEnabled = !isPastDate
+                    if (isPastDate) {
+                        setTextColor(Color.GRAY) // Altera a cor do texto para indicar que está desabilitado
+                    }
+
+                    setOnClickListener {
+                        if (!concluido) { // Só marca como concluído se ainda não estiver
+                            updateTaskStatusTrue(userId, selectedDate, tarefaTexto)
                             paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                             isChecked = true
                         }
