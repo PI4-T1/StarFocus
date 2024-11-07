@@ -30,7 +30,7 @@ class BottomsSheetAddTaskFragment2(
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = BottomsheetAddtask2Binding.inflate(inflater, container, false)
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
@@ -87,6 +87,9 @@ class BottomsSheetAddTaskFragment2(
                 LocalDate.now().monthValue - 1,
                 LocalDate.now().dayOfMonth
             )
+            // Define a data mínima como a data atual para desabilitar dias anteriores
+            datePickerDialog.datePicker.minDate = System.currentTimeMillis()
+
             datePickerDialog.show()
         }
 

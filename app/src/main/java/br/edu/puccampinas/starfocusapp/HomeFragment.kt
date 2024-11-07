@@ -243,7 +243,7 @@ class HomeFragment : Fragment() {
     }
 
     // Função atualizada para carregar tarefas e atualizar o dia selecionado
-    public fun loadTasksForSelectedDay(selectedDate: String) {
+    fun loadTasksForSelectedDay(selectedDate: String) {
         val userId = auth.currentUser?.uid ?: return
 
         // Divide a data selecionada para obter o dia, mês e ano
@@ -256,6 +256,25 @@ class HomeFragment : Fragment() {
         selectedDay = day
         selectedMonth = month
         selectedYear = year
+
+        calendar.set(Calendar.YEAR, selectedYear)
+        calendar.set(Calendar.MONTH, selectedMonth)
+        calendar.set(Calendar.DAY_OF_MONTH, selectedDay)
+
+        // Recria o layout
+        addDaysToView(calendar)
+
+        // Reposiciona o scroll
+        binding.BarDaysScroll.post {
+            val targetPosition = (selectedDay - 1).coerceAtLeast(0)
+            val dayView = binding.linearLayoutDays.getChildAt(targetPosition)
+
+            // Calcula a posição para centralizar melhor
+            if (dayView != null) {
+                val scrollCenter = (binding.BarDaysScroll.width / 2) - (dayView.width / 2)
+                binding.BarDaysScroll.scrollTo(dayView.left - scrollCenter, 0)
+            }
+        }
 
         db.collection("Tarefas").document(userId).get()
             .addOnSuccessListener { document ->
@@ -276,6 +295,7 @@ class HomeFragment : Fragment() {
                         displayTasks(tarefasDoDia, selectedDate)
 
                         // Atualiza o calendário com o novo dia selecionado
+                        updateCalendarButtonText()
                         addDaysToView(calendar)
                     } else {
                         Log.d("Firestore", "Campo 'tarefas' está vazio ou não encontrado")
