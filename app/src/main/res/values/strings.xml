@@ -73,5 +73,8 @@
     <string name="taskaddedin">A tarefa será adicionada em:</string>
     <string name="namemonster">Esse é o nome do seu monstrinho...</string>
 
+    <string name="historyprogressOne">Oh não, a Babá Rodopinho está atrás de mim! </string>
+    <string name="historyprogressTwo">Obrigada por ter me ajudado a vencer a Babá Rodopinho!</string>
+
 
 </resources>
