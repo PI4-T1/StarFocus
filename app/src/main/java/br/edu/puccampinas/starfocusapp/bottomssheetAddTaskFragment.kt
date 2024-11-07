@@ -88,10 +88,14 @@ class BottomsSheetAddTaskFragment(private val onTaskAdded: () -> Unit) : BottomS
                     val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableList<Map<String, Any>>> ?: mutableMapOf()
                     val tarefasDoDia = dataTarefas[dataSelecionada] ?: mutableListOf()
 
-                    // Adiciona a nova tarefa com o campo "concluído" padrão como false
+                    // Cria um ID único para a nova tarefa
+                    val tarefaId = db.collection("Tarefas").document().id
+
+                    // Adiciona a nova tarefa com o ID, texto e status padrão como "Pendente"
                     val novaTarefa = mapOf(
+                        "id" to tarefaId,
                         "texto" to tarefaTexto,
-                        "concluido" to false
+                        "status" to "Pendente"  // Status inicial
                     )
                     tarefasDoDia.add(novaTarefa)
                     dataTarefas[dataSelecionada] = tarefasDoDia

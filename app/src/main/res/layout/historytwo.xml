@@ -43,11 +43,9 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:background="@drawable/baseline_arrow_forward_24_offwhite"
-        app:layout_constraintStart_toStartOf="@id/history"
+        app:layout_constraintStart_toEndOf="@id/history"
         app:layout_constraintBottom_toBottomOf="@id/history"
-        app:layout_constraintEnd_toEndOf="@id/history"
         android:layout_marginBottom="20dp"
-        android:layout_marginStart="320dp"
 
         />
 </androidx.constraintlayout.widget.ConstraintLayout>
