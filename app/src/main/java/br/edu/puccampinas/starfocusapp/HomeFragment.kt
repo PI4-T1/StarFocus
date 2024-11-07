@@ -109,17 +109,25 @@ class HomeFragment : Fragment() {
                 text = getDayOfWeekSymbol(calendar, day)
                 textSize = 12f
                 gravity = Gravity.CENTER
+                setTextColor(Color.parseColor("#3D3D3D"))
             }
 
             val dayNumberTextView = TextView(requireContext()).apply {
                 text = "$day"
-                textSize = 22f
+                textSize = 16f
                 gravity = Gravity.CENTER
+                setPadding(0, 12, 0, 0)
                 setTextColor(Color.parseColor("#3D3D3D"))
+
                 if (day == selectedDay) {
                     setTextColor(Color.WHITE)
                     background = resources.getDrawable(R.drawable.circle_selected_day, null)
-                    setPadding(12, 0, 12, 0)
+                    setPadding(0, 0, 0, 0)
+                }
+
+                // Verifica se é o dia atual e aplica o fundo amarelo
+                if (day == Calendar.getInstance().get(Calendar.DAY_OF_MONTH) && calendar.get(Calendar.MONTH) == Calendar.getInstance().get(Calendar.MONTH) && calendar.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR)) {
+                    background = resources.getDrawable(R.drawable.circle_today_day, null)
                 }
             }
 
@@ -220,8 +228,20 @@ class HomeFragment : Fragment() {
         }
     }
 
+    // Função atualizada para carregar tarefas e atualizar o dia selecionado
     public fun loadTasksForSelectedDay(selectedDate: String) {
         val userId = auth.currentUser?.uid ?: return
+
+        // Divide a data selecionada para obter o dia, mês e ano
+        val parts = selectedDate.split("-")
+        val day = parts[0].toInt()
+        val month = parts[1].toInt() - 1 // Janeiro é 0, então subtrai 1
+        val year = parts[2].toInt()
+
+        // Atualiza as variáveis selecionadas
+        selectedDay = day
+        selectedMonth = month
+        selectedYear = year
 
         db.collection("Tarefas").document(userId).get()
             .addOnSuccessListener { document ->
@@ -239,6 +259,9 @@ class HomeFragment : Fragment() {
 
                         Log.d("Firestore", "Tarefas para $selectedDate: $tarefasDoDia")
                         displayTasks(tarefasDoDia, selectedDate)
+
+                        // Atualiza o calendário com o novo dia selecionado
+                        addDaysToView(calendar)
                     } else {
                         Log.d("Firestore", "Campo 'tarefas' está vazio ou não encontrado")
                     }
