@@ -55,7 +55,7 @@
 
     <string name="adviceProfile">Trocar nome do seu monstrinho.</string>
     <string name="name">Name</string>
-    
+
     <string name="JaVai">Já vai?</string>
     <string name="Poxa">Poxa, espero te ver na próxima aventura!</string>
 
@@ -72,6 +72,11 @@
     <string name="vamosComecar">Vamos começar?</string>
     <string name="taskaddedin">A tarefa será adicionada em:</string>
     <string name="namemonster">Esse é o nome do seu monstrinho...</string>
+
+    <string name="historyprogressOne">Oh não, a Babá Rodopinho está atrás de mim! </string>
+    <string name="historyprogressTwo">Obrigada por ter me ajudado a vencer a Babá Rodopinho!</string>
+    <string name="historyprogressThree">Frank, deixa para amanhã, quer me prender na sa torre do relógio e me impedir de fazer minhas tarefas!</string>
+    <string name="historyprogressFour">Nada ficará para amanhã! Frank foi derrotado!</string>
 
 
 </resources>

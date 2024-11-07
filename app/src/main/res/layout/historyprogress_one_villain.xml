@@ -5,47 +5,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/historiatwobackground"
+    android:background="@drawable/historiaprogressoum"
     android:orientation="vertical"
     android:id="@+id/history_one"
-    tools:context=".HistoryOne">
+    tools:context=".HistoryProgressOneVillain">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/history"
-        android:layout_width="320dp"
-        android:layout_height="80dp"
-        android:text="@string/historytwo"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:text="@string/historyprogressOne"
         android:textColor="@color/off_white"
         android:fontFamily="@font/poppins_medium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginStart="20dp"
         android:textSize="15sp"
-        android:layout_marginBottom="220dp"
+        android:layout_marginBottom="50dp"
         />
-
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/historytop"
-        android:layout_width="280dp"
-        android:layout_height="40dp"
-        android:text="@string/historytop"
-        android:textColor="@color/off_white"
-        android:fontFamily="@font/poppins_medium"
-        app:layout_constraintStart_toStartOf="@id/history"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="800dp"
-        />
-
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/nexthistory"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:background="@drawable/baseline_arrow_forward_24_offwhite"
-        app:layout_constraintStart_toEndOf="@id/history"
+        app:layout_constraintStart_toStartOf="@id/history"
         app:layout_constraintBottom_toBottomOf="@id/history"
-        android:layout_marginBottom="20dp"
+        app:layout_constraintEnd_toEndOf="@id/history"
+        android:layout_marginStart="260dp"
 
         />
 </androidx.constraintlayout.widget.ConstraintLayout>
