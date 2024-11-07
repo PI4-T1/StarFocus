@@ -22,8 +22,6 @@ import android.widget.Spinner
 import br.edu.puccampinas.starfocusapp.databinding.FragmentHomeBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import java.text.SimpleDateFormat
-import java.util.*
 
 /**
  * Fragmento que exibe a tela inicial com o calendário,
@@ -512,49 +510,65 @@ class HomeFragment : Fragment() {
 
                     // Permite a interação apenas se a tarefa não estiver "Enviada"
                     if (!enviada) {
+                        // Define o comportamento do clique na tarefa
                         setOnClickListener {
-                            if (!concluido) { // Só marca como concluído se ainda não estiver
-                                updateTaskStatusConcluida(userId, selectedDate, tarefaId)
+                            // Marca a tarefa como concluída se ainda não estiver
+                            if (!concluido) {
+                                updateTaskStatusConcluida(userId, selectedDate, tarefaId) //Atualiza o status no banco
+
+                                // Aplica o efeito de riscado no texto da tarefa (indicando que foi concluída)
                                 paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                                // Marca o checkbox como "selecionado"
                                 isChecked = true
+                                // Exibe o ícone de "check" (tarefa concluída) ao lado do texto
                                 setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_24, 0, 0, 0)
-                                // Exibe o drawable de conclusão com animação
+
+                                // Exibe o drawable de conclusão
                                 binding.feedback1.apply {
-                                    alpha = 0f
-                                    visibility = View.VISIBLE
-                                    animate().alpha(1f).setDuration(300).start()
+                                    alpha = 0f // Inicializa o feedback invisível
+                                    visibility = View.VISIBLE // Torna o feedback visível
+                                    animate().alpha(1f).setDuration(300).start() // Anima a opacidade para 1 (visível)
                                 }
+
+                                // Após 3 segundos, faz o feedback desaparecer com animação
                                 Handler(Looper.getMainLooper()).postDelayed({
                                     binding.feedback1.animate()
-                                        .alpha(0f)
+                                        .alpha(0f) // Anima a opacidade para 0 (invisível)
                                         .setDuration(300)
                                         .withEndAction {
-                                            binding.feedback1.visibility = View.GONE
+                                            binding.feedback1.visibility = View.GONE // Esconde o feedback após a animação
                                         }
                                         .start()
                                 }, 3000)
                             } else {
+                                // Se a tarefa já estava concluída, marca como "Pendente" (desfaz a conclusão)
                                 updateTaskStatusPendente(userId, selectedDate, tarefaId)
+                                // Remove o efeito de riscado no texto (indica que a tarefa não está mais concluída)
                                 paintFlags = paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                                // Desmarca o checkbox (a tarefa não está mais concluída)
                                 isChecked = false
+                                // Exibe o ícone de "check-circle-outline" (tarefa não concluída) ao lado do texto
                                 setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_outline_24, 0, 0, 0)
                             }
                         }
                     }
                 }
 
-                // Define o layout da tarefa e adiciona ao container de tarefas
+                // Configura o layout da tarefa dentro do contêiner de tarefas, ajustando as margens
                 val layoutParams = LinearLayout.LayoutParams(
                     binding.InputTask.width,
                     binding.InputTask.height
                 ).apply {
-                    setMargins(16, 0, 16, 0)
+                    setMargins(16, 0, 16, 0) // Define as margens esquerda e direita
                 }
+                // Aplica o layout à view da tarefa
                 tarefaView.layoutParams = layoutParams
+                // Adiciona a tarefa ao contêiner de tarefas na tela
                 binding.TaskContainer.addView(tarefaView)
 
+                // Se a tarefa já estava concluída, marca que há uma tarefa concluída na lista
                 if (concluido) {
-                    hasConcludedTask = true // Marca que há uma tarefa concluída
+                    hasConcludedTask = true
                 }
             }
         }
@@ -568,13 +582,14 @@ class HomeFragment : Fragment() {
             binding.sendProgress.alpha = 0.7f
         }
 
-        // Reposiciona os botões de adicionar tarefa e de enviar progresso
+        // Reposiciona os botões de adicionar tarefa
         val inputTaskParent = binding.InputTask.parent
         if (inputTaskParent is ViewGroup) {
             inputTaskParent.removeView(binding.InputTask)
         }
         binding.TaskContainer.addView(binding.InputTask)
 
+        // Reposiciona os botões de enviar progresso
         val buttonProgressParent = binding.buttonProgress.parent
         if (buttonProgressParent is ViewGroup) {
             buttonProgressParent.removeView(binding.buttonProgress)
