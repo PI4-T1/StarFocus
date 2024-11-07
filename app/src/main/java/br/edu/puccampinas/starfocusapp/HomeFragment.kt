@@ -25,100 +25,148 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Fragmento que exibe a tela inicial com o calendário,
+ * permite o gerenciamento de tarefas diárias e o envio
+ * de progresso.
+ * @author Lais
+ * @version 1.0
+ */
 class HomeFragment : Fragment() {
 
-    // Variáveis scroll mensal
+    // Binding da view do fragmento, que permite acessar os elementos de UI da tela
     private lateinit var binding: FragmentHomeBinding
+    // Instância de Calendar que é usada para obter a data atual e manipular o calendário
     private var calendar = Calendar.getInstance()
+    // A posição do dia atual no layout de dias. Usado para ajustar a rolagem para o dia atual
     private var currentDayPosition = -1
-
+    // Flag para garantir que o ajuste da rolagem seja feito apenas uma vez. Inicialmente, é falso
     private var isScrollAdjusted = false
 
+    // O dia selecionado no calendário, inicialmente é o dia atual
     private var selectedDay: Int = calendar.get(Calendar.DAY_OF_MONTH)
+    // O mês selecionado no calendário, inicialmente é o mês atual (0 para janeiro, 11 para dezembro)
     private var selectedMonth: Int = calendar.get(Calendar.MONTH)
+    // O ano selecionado no calendário, inicialmente é o ano atual
     private var selectedYear: Int = calendar.get(Calendar.YEAR)
 
+    // Instância do Firebase Firestore para acessar o banco de dados do Firebase
     private lateinit var db: FirebaseFirestore
+    // Instância do FirebaseAuth para autenticação do usuário no Firebase
     private lateinit var auth: FirebaseAuth
 
+    // A data selecionada como String, utilizada para exibir ou manipular a data de maneira formatada
     private var selectedDate: String? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    /**
+     * Método chamado quando a view do fragmento é criada. Aqui são configurados os elementos da UI e as ações dos botões.
+     *
+     * @param inflater O LayoutInflater utilizado para inflar a view.
+     * @param container O container que vai hospedar a view do fragmento.
+     * @param savedInstanceState O estado salvo, caso haja alguma informação a ser restaurada.
+     * @author Lais
+     * @return A view inflada do fragmento.
+     */
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+
+        // Infla a view do fragmento usando o binding
         binding = FragmentHomeBinding.inflate(inflater, container, false)
+        // Inicializa a instância do Firestore e do FirebaseAuth
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
-        // Configura o botão 'sendProgress' para estar indisponível inicialmente
+        // Inicialmente, o botão 'sendProgress' estará desabilitado e com opacidade reduzida
         binding.sendProgress.isEnabled = false
-        binding.sendProgress.alpha = 0.7f // opacidade para indicar indisponibilidade
+        binding.sendProgress.alpha = 0.7f // Opacidade para indicar indisponibilidade
 
-        // Atualiza o botão de calendário com o mês e ano atuais
+        // Atualiza o botão de calendário para mostrar o mês e ano atuais
         updateCalendarButtonText()
 
-        // Exibe o seletor de mês e ano
+        // Configura a ação de clicar no botão para exibir o seletor de mês e ano
         binding.ButtonCalendar.setOnClickListener {
-            showMonthYearPickerDialog()
+            showMonthYearPickerDialog() // Abre o diálogo para escolher mês e ano
         }
 
-        // Adiciona os dias ao layout
+        // Adiciona os dias ao layout com base na data atual
         addDaysToView(calendar)
 
-        // Ajusta a rolagem para o dia atual
+        // Ajusta a rolagem do calendário para o dia atual, garantindo que o dia seja mostrado no meio da tela
         binding.BarDaysScroll.post {
             if (!isScrollAdjusted && currentDayPosition != -1) {
+                // Calcula a posição de rolagem desejada para o dia atual
                 val targetPosition = (currentDayPosition - 2).coerceAtLeast(1) - 1
+                // Obtém a view do dia correspondente à posição
                 val dayView = binding.linearLayoutDays.getChildAt(targetPosition)
+                // Move a rolagem para o dia calculado
                 binding.BarDaysScroll.scrollTo(dayView.left, 0)
-                isScrollAdjusted = true
+                isScrollAdjusted = true // Marca que a rolagem foi ajustada
             }
         }
 
+        // Recupera a data selecionada a partir dos argumentos, se presente
         super.onCreate(savedInstanceState)
         arguments?.let {
-            selectedDate = it.getString("selected_date")
+            selectedDate = it.getString("selected_date") // Recupera a data do argumento, caso exista
         }
 
-        // Ação de adicionar nova tarefa
+        // Ação do botão de adicionar nova tarefa
         binding.InputTask.setOnClickListener {
+            // Cria e exibe o fragmento do BottomSheet para adicionar uma nova tarefa
             val bottomSheetFragment = BottomsSheetAddTaskFragment {
-                // Chama a função que recarrega as tarefas
+                // Após adicionar a tarefa, carrega as tarefas para o dia selecionado
                 loadTasksForSelectedDay(String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear))
             }.apply {
                 arguments = Bundle().apply {
+                    // Passa a data selecionada para o BottomSheet como argumentos
                     putInt("diaSelecionado", selectedDay)
                     putInt("mesSelecionado", selectedMonth + 1)
                     putInt("anoSelecionado", selectedYear)
                 }
             }
+            // Exibe o BottomSheetFragment
             bottomSheetFragment.show(requireActivity().supportFragmentManager, bottomSheetFragment.tag)
         }
 
-        // Carregar as tarefas para o dia selecionado ao iniciar o fragmento
+        // Carrega as tarefas para o dia selecionado quando o fragmento é iniciado
         if (auth.currentUser != null) {
             loadTasksForSelectedDay(String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear))
         }
 
-        // Evento de clique para o botão sendProgress
+        // Evento de clique para o botão de envio de progresso
         binding.sendProgress.setOnClickListener {
-            val userId = auth.currentUser?.uid
-            val dataSelecionada = String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear)
+            val userId = auth.currentUser?.uid // Obtém o ID do usuário autenticado
+            val dataSelecionada = String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear) // Formata a data selecionada
             if (userId != null) {
+                // Envia o progresso do usuário para o banco de dados
                 sendProgress(userId, dataSelecionada)
             }
         }
-
+        // Retorna a view do fragmento
         return binding.root
     }
 
+    /**
+     * Adiciona os dias do mês atual no layout.
+     * Para cada dia, é criado um `LinearLayout` com o número do dia e o símbolo do dia da semana.
+     * O fundo do dia atual e do dia selecionado é modificado.
+     * @author Lais
+     * @param calendar O objeto Calendar utilizado para determinar o número de dias no mês e as datas.
+     */
     private fun addDaysToView(calendar: Calendar) {
+
+        // Remove todas as views existentes no LinearLayout antes de adicionar novas
         binding.linearLayoutDays.removeAllViews()
+        // Obtém o número total de dias no mês
         val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+        // Obtém a posição do dia atual no mês
         currentDayPosition = calendar.get(Calendar.DAY_OF_MONTH)
 
+        // Loop para criar os elementos de cada dia
         for (day in 1..daysInMonth) {
             val dayLayout = LinearLayout(requireContext())
             dayLayout.orientation = LinearLayout.VERTICAL
 
+            // Cria o TextView que exibe o símbolo do dia da semana
             val dayOfWeekTextView = TextView(requireContext()).apply {
                 text = getDayOfWeekSymbol(calendar, day)
                 textSize = 12f
@@ -126,6 +174,7 @@ class HomeFragment : Fragment() {
                 setTextColor(Color.parseColor("#3D3D3D"))
             }
 
+            // Cria o TextView que exibe o número do dia
             val dayNumberTextView = TextView(requireContext()).apply {
                 text = "$day"
                 textSize = 16f
@@ -133,62 +182,104 @@ class HomeFragment : Fragment() {
                 setPadding(0, 12, 0, 0)
                 setTextColor(Color.parseColor("#3D3D3D"))
 
+                // Marca o dia selecionado com um fundo especial
                 if (day == selectedDay) {
                     setTextColor(Color.WHITE)
                     background = resources.getDrawable(R.drawable.circle_selected_day, null)
                     setPadding(0, 0, 0, 0)
                 }
 
-                // Verifica se é o dia atual e aplica o fundo amarelo
+                // Marca o dia atual com um fundo amarelo
                 if (day == Calendar.getInstance().get(Calendar.DAY_OF_MONTH) && calendar.get(Calendar.MONTH) == Calendar.getInstance().get(Calendar.MONTH) && calendar.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR)) {
                     background = resources.getDrawable(R.drawable.circle_today_day, null)
                 }
             }
 
+            // Ao clicar em um dia, chama a função de seleção do dia
             dayNumberTextView.setOnClickListener { selectDay(day) }
             dayLayout.setOnClickListener { selectDay(day) }
 
+            // Adiciona os TextViews ao layout do dia
             dayLayout.addView(dayOfWeekTextView)
             dayLayout.addView(dayNumberTextView)
+
+            // Define a aparência do layout de cada dia
             dayLayout.setBackgroundColor(Color.TRANSPARENT)
             dayLayout.setPadding(40, 16, 40, 16)
+
+            // Adiciona o layout do dia ao LinearLayout principal
             binding.linearLayoutDays.addView(dayLayout)
         }
     }
 
+    /**
+     * Retorna o símbolo do dia da semana (primeira letra) para um dado dia do mês.
+     *
+     * @param calendar O objeto Calendar utilizado para determinar o dia da semana.
+     * @param day O número do dia para o qual o símbolo deve ser retornado.
+     * @author Lais
+     * @return O símbolo do dia da semana, sendo uma letra representativa.
+     */
     private fun getDayOfWeekSymbol(calendar: Calendar, day: Int): String {
+
+        // Atualiza o calendário para o dia específico
         calendar.set(Calendar.DAY_OF_MONTH, day)
+
+        // Retorna o símbolo do dia da semana
         return when (calendar.get(Calendar.DAY_OF_WEEK)) {
-            Calendar.MONDAY -> "S"
-            Calendar.TUESDAY -> "T"
-            Calendar.WEDNESDAY -> "Q"
-            Calendar.THURSDAY -> "Q"
-            Calendar.FRIDAY -> "S"
-            Calendar.SATURDAY -> "S"
-            Calendar.SUNDAY -> "D"
-            else -> ""
+            Calendar.MONDAY -> "S" // Segunda-feira
+            Calendar.TUESDAY -> "T" // Terça-feira
+            Calendar.WEDNESDAY -> "Q" // Quarta-feira
+            Calendar.THURSDAY -> "Q" // Quinta-feira
+            Calendar.FRIDAY -> "S" // Sexta-feira
+            Calendar.SATURDAY -> "S" // Sábado
+            Calendar.SUNDAY -> "D" // Domingo
+            else -> "" // Caso inesperado
         }
     }
 
+    /**
+     * Atualiza a data selecionada e recarrega a visualização do calendário.
+     * Ao selecionar um novo dia, o calendário é atualizado para refletir o dia escolhido
+     * e as tarefas para o dia selecionado são carregadas.
+     *
+     * @param day O número do dia que foi selecionado.
+     * @author Lais
+     */
     private fun selectDay(day: Int) {
+
+        // Atualiza o dia, mês e ano selecionado
         selectedDay = day
         selectedMonth = calendar.get(Calendar.MONTH)
         selectedYear = calendar.get(Calendar.YEAR)
+
+        // Recarrega os dias no layout
         addDaysToView(calendar)  // Atualiza a exibição do calendário com o novo dia selecionado
+
+        // Formata a data selecionada e carrega as tarefas para o dia selecionado
         val selectedDate = String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear)
-        loadTasksForSelectedDay(selectedDate) // Carrega as tarefas do novo dia selecionado
+        loadTasksForSelectedDay(selectedDate)
     }
 
+    /**
+     * Exibe um diálogo para que o usuário selecione um mês e ano específicos.
+     * O diálogo inclui spinners para escolher o mês e um `NumberPicker` para escolher o ano.
+     * Quando o usuário confirmar a escolha, o calendário será atualizado com as opções selecionadas.
+     * @author Lais
+     */
     private fun showMonthYearPickerDialog() {
         val currentYear = calendar.get(Calendar.YEAR)
         val currentMonth = calendar.get(Calendar.MONTH)
 
+        // Cria o builder para o AlertDialog
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Selecionar Mês e Ano")
 
+        // Infla o layout do diálogo
         val dialogView = layoutInflater.inflate(R.layout.dialog_month_year_picker, null)
         builder.setView(dialogView)
 
+        // Configura o spinner de meses
         val monthSpinner = dialogView.findViewById<Spinner>(R.id.monthSpinner)
         val months = arrayOf("Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro")
         val monthAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, months)
@@ -196,11 +287,13 @@ class HomeFragment : Fragment() {
         monthSpinner.adapter = monthAdapter
         monthSpinner.setSelection(currentMonth)
 
+        // Configura o NumberPicker para o ano
         val yearPicker = dialogView.findViewById<NumberPicker>(R.id.yearPicker)
         yearPicker.minValue = 2024
         yearPicker.maxValue = 2100
         yearPicker.value = currentYear
 
+        // Configura a ação do botão OK do diálogo
         builder.setPositiveButton("OK") { _, _ ->
             // Atualiza o calendário com o mês e ano selecionados
             selectedMonth = monthSpinner.selectedItemPosition
@@ -215,15 +308,31 @@ class HomeFragment : Fragment() {
             updateCalendarButtonText()
         }
 
+        // Exibe o diálogo
         builder.show()
     }
 
+    /**
+     * Atualiza o texto exibido no botão de calendário, mostrando o mês e o ano selecionados.
+     * @author Lais
+     */
     private fun updateCalendarButtonText() {
+
+        // Obtém o nome do mês e o ano
         val month = getMonthName(selectedMonth)
         val year = selectedYear
+
+        // Atualiza o texto do botão para o mês e ano selecionados
         binding.ButtonCalendar.text = "$month/$year"
     }
 
+    /**
+     * Retorna o nome do mês com base no valor numérico do mês.
+     *
+     * @param month O número do mês (0 para Janeiro, 11 para Dezembro).
+     * @author Lais
+     * @return O nome do mês correspondente.
+     */
     private fun getMonthName(month: Int): String {
         return when (month) {
             Calendar.JANUARY -> "Jan"
@@ -242,61 +351,74 @@ class HomeFragment : Fragment() {
         }
     }
 
-    // Função atualizada para carregar tarefas e atualizar o dia selecionado
+    /**
+     * Carrega as tarefas para o dia selecionado e atualiza a interface com as informações.
+     * O layout é recriado com os dias do mês e o scroll é reposicionado para o dia específico.
+     *
+     * @param selectedDate A data selecionada no formato "dd-MM-yyyy".
+     * @author Lais
+     */
     fun loadTasksForSelectedDay(selectedDate: String) {
+
+        // Obtém o ID do usuário logado, retornando imediatamente se não estiver logado
         val userId = auth.currentUser?.uid ?: return
 
-        // Divide a data selecionada para obter o dia, mês e ano
+        // Divide a data selecionada (exemplo: "05-11-2024") para extrair o dia, mês e ano
         val parts = selectedDate.split("-")
-        val day = parts[0].toInt()
-        val month = parts[1].toInt() - 1 // Janeiro é 0, então subtrai 1
-        val year = parts[2].toInt()
+        val day = parts[0].toInt() // Converte o dia para inteiro
+        val month = parts[1].toInt() - 1 // Converte o mês para inteiro e subtrai 1, porque Janeiro é 0
+        val year = parts[2].toInt() // Converte o ano para inteiro
 
-        // Atualiza as variáveis selecionadas
+        // Atualiza as variáveis de dia, mês e ano no estado do calendário
         selectedDay = day
         selectedMonth = month
         selectedYear = year
 
+        // Configura o calendário para a data selecionada
         calendar.set(Calendar.YEAR, selectedYear)
         calendar.set(Calendar.MONTH, selectedMonth)
         calendar.set(Calendar.DAY_OF_MONTH, selectedDay)
 
-        // Recria o layout
+        // Atualiza o layout com os dias do mês correspondente
         addDaysToView(calendar)
 
-        // Reposiciona o scroll
+        // Reposiciona o scroll para o dia específico
         binding.BarDaysScroll.post {
-            val targetPosition = (selectedDay - 1).coerceAtLeast(0)
-            val dayView = binding.linearLayoutDays.getChildAt(targetPosition)
+            // Calcula a posição do scroll para centralizar o dia no meio da tela
+            val targetPosition = (selectedDay - 1).coerceAtLeast(0) // Impede que a posição seja negativa
+            val dayView = binding.linearLayoutDays.getChildAt(targetPosition) // Obtém o "View" do dia
 
-            // Calcula a posição para centralizar melhor
+            // Se o "View" do dia existir, ajusta o scroll para centralizar o dia
             if (dayView != null) {
-                val scrollCenter = (binding.BarDaysScroll.width / 2) - (dayView.width / 2)
-                binding.BarDaysScroll.scrollTo(dayView.left - scrollCenter, 0)
+                val scrollCenter = (binding.BarDaysScroll.width / 2) - (dayView.width / 2) // Calcula a posição para centralização
+                binding.BarDaysScroll.scrollTo(dayView.left - scrollCenter, 0) // Posiciona o scroll para centralizar o dia
             }
         }
 
+        // Obtém as tarefas do Firestore para o usuário logado
         db.collection("Tarefas").document(userId).get()
             .addOnSuccessListener { document ->
                 if (document != null && document.exists()) {
                     // Obtém as tarefas organizadas por data no formato esperado
                     val dataTarefas = document.get("tarefas") as? Map<String, List<Map<String, Any>>>
 
+                    // Se houver tarefas no dia selecionado, processa e exibe
                     if (dataTarefas != null) {
                         // Seleciona as tarefas do dia específico
                         val tarefasDoDia = dataTarefas[selectedDate]?.mapNotNull { tarefa ->
-                            val id = tarefa["id"] as? String
-                            val texto = tarefa["texto"] as? String
-                            val status = tarefa["status"] as? String ?: "Pendente"
-                            Triple(id, texto, status) // Retorna um triple com o ID, texto e status
+                            val id = tarefa["id"] as? String // ID da tarefa
+                            val texto = tarefa["texto"] as? String // Texto da tarefa
+                            val status = tarefa["status"] as? String ?: "Pendente" // Status da tarefa (default é "Pendente")
+                            Triple(id, texto, status) // Retorna um objeto com ID, texto e status da tarefa
                         } ?: emptyList()
 
+                        // Exibe as tarefas carregadas
                         Log.d("Firestore", "Tarefas para $selectedDate: $tarefasDoDia")
-                        displayTasks(tarefasDoDia, selectedDate)
+                        displayTasks(tarefasDoDia, selectedDate) // Chama displayTasks para exibir as tarefas na interface
 
-                        // Atualiza o calendário com o novo dia selecionado
+                        // Atualiza o calendário e os botões da interface
                         updateCalendarButtonText()
-                        addDaysToView(calendar)
+                        addDaysToView(calendar) // Recria o layout dos dias
                     } else {
                         Log.d("Firestore", "Campo 'tarefas' está vazio ou não encontrado")
                     }
@@ -305,56 +427,71 @@ class HomeFragment : Fragment() {
                 }
             }
             .addOnFailureListener { e ->
-                Log.e("Firestore", "Erro ao carregar tarefas", e)
+                Log.e("Firestore", "Erro ao carregar tarefas", e) // Loga qualquer erro ao tentar carregar tarefas
             }
     }
 
+    /**
+     * Exibe as tarefas para o usuário na interface, permitindo a interação com elas.
+     *
+     * @param tarefas Lista de tarefas a serem exibidas, onde cada tarefa é representada por um Triple
+     * contendo o ID da tarefa, o texto da tarefa e seu status.
+     * @param selectedDate Data selecionada pelo usuário para visualizar as tarefas.
+     * @author Lais
+     */
     private fun displayTasks(tarefas: List<Triple<String?, String?, String>>, selectedDate: String) {
+
+        // Limpa todas as tarefas anteriores exibidas na interface
         binding.TaskContainer.removeAllViews() // Limpa tarefas anteriores
 
-        val userId = auth.currentUser?.uid ?: return
-        var hasConcludedTask = false
+        val userId = auth.currentUser?.uid ?: return // Obtém o ID do usuário atual, se disponível
+        var hasConcludedTask = false // Flag para verificar se há alguma tarefa concluída
 
-        val today = Calendar.getInstance()
+        val today = Calendar.getInstance() // Data de hoje
         val selectedDateCalendar = Calendar.getInstance().apply {
+            // Converte a data selecionada em um objeto Calendar
             val parts = selectedDate.split("-")
             set(Calendar.DAY_OF_MONTH, parts[0].toInt())
             set(Calendar.MONTH, parts[1].toInt() - 1) // Janeiro é 0
             set(Calendar.YEAR, parts[2].toInt())
         }
 
+        // Verifica se a data selecionada já passou
         val isPastDate = selectedDateCalendar.before(today)
         if (isPastDate) {
-            binding.InputTask.isEnabled = false
-            binding.InputTask.alpha = 0.5f
+            binding.InputTask.isEnabled = false // Desabilita a inserção de novas tarefas para datas passadas
+            binding.InputTask.alpha = 0.5f // Diminui a opacidade do botão
         } else {
-            binding.InputTask.isEnabled = true
+            binding.InputTask.isEnabled = true // Habilita a inserção de novas tarefas para datas futuras
             binding.InputTask.alpha = 1f
         }
 
-
+        // Itera sobre cada tarefa para configurar a exibição
         tarefas.forEach { (tarefaId, tarefaTexto, status) ->
             if (tarefaId != null && tarefaTexto != null) {
                 val concluido = status == "Concluída"
                 val enviada = status == "Enviada"  // Verifica se a tarefa está com status "Enviada"
+
+                // Cria o componente de visualização da tarefa
                 val tarefaView = RadioButton(requireContext()).apply {
                     text = tarefaTexto
                     textSize = 20f
                     gravity = Gravity.CENTER_VERTICAL
                     isAllCaps = false
 
-                    setBackgroundResource(R.drawable.rectangleaddtask)
-                    setTextColor(Color.parseColor("#3D3D3D"))
+                    setBackgroundResource(R.drawable.rectangleaddtask) // Define o fundo
+                    setTextColor(Color.parseColor("#3D3D3D")) // Define a cor do texto
 
                     buttonDrawable = null // Remove o botão padrão do RadioButton
                     compoundDrawablePadding = 37 // Ajusta o espaço entre o texto e o botão
-                    setPadding(70, 10, 60, 10) // Ajusta o padding para o texto e o botão à direita
+                    setPadding(70, 10, 60, 10) // Ajusta o padding
 
-                    isEnabled = !isPastDate
+                    isEnabled = !isPastDate // Desabilita a interação em datas passadas
                     if (isPastDate) {
-                        setTextColor(Color.GRAY) // Altera a cor do texto para indicar que está desabilitado
+                        setTextColor(Color.GRAY) // Altera a cor do texto para indicar inatividade
                     }
 
+                    // Configura o visual de acordo com o status da tarefa
                     when {
                         enviada -> { // Configura o visual de tarefas enviadas
                             setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_send_24, 0, 0, 0) // Ícone de "Enviada"
@@ -373,7 +510,7 @@ class HomeFragment : Fragment() {
                         }
                     }
 
-                    // Configura o clique somente se a tarefa não estiver "Enviada"
+                    // Permite a interação apenas se a tarefa não estiver "Enviada"
                     if (!enviada) {
                         setOnClickListener {
                             if (!concluido) { // Só marca como concluído se ainda não estiver
@@ -406,6 +543,7 @@ class HomeFragment : Fragment() {
                     }
                 }
 
+                // Define o layout da tarefa e adiciona ao container de tarefas
                 val layoutParams = LinearLayout.LayoutParams(
                     binding.InputTask.width,
                     binding.InputTask.height
@@ -416,11 +554,12 @@ class HomeFragment : Fragment() {
                 binding.TaskContainer.addView(tarefaView)
 
                 if (concluido) {
-                    hasConcludedTask = true
+                    hasConcludedTask = true // Marca que há uma tarefa concluída
                 }
             }
         }
 
+        // Ativa ou desativa o botão de progresso dependendo da presença de tarefas concluídas
         if (hasConcludedTask) {
             binding.sendProgress.isEnabled = true
             binding.sendProgress.alpha = 1f
@@ -429,6 +568,7 @@ class HomeFragment : Fragment() {
             binding.sendProgress.alpha = 0.7f
         }
 
+        // Reposiciona os botões de adicionar tarefa e de enviar progresso
         val inputTaskParent = binding.InputTask.parent
         if (inputTaskParent is ViewGroup) {
             inputTaskParent.removeView(binding.InputTask)
@@ -442,68 +582,115 @@ class HomeFragment : Fragment() {
         binding.TaskContainer.addView(binding.buttonProgress)
     }
 
+    /**
+     * Atualiza o status de uma tarefa para "Concluída" no banco de dados.
+     *
+     * @param userId ID do usuário.
+     * @param dataSelecionada Data da tarefa a ser atualizada.
+     * @param tarefaId ID da tarefa a ser marcada como concluída.
+     * @author Lais
+     */
     private fun updateTaskStatusConcluida(userId: String, dataSelecionada: String, tarefaId: String) {
+
+        // Referência ao documento de tarefas do usuário no Firestore
         val tarefasRef = db.collection("Tarefas").document(userId)
 
         tarefasRef.get().addOnSuccessListener { document ->
+            // Obtém as tarefas do documento, ou inicializa um mapa vazio caso não exista
             val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableList<MutableMap<String, Any>>> ?: mutableMapOf()
+            // Recupera as tarefas do dia específico ou inicializa uma lista vazia caso não existam tarefas para a data
             val tarefasDoDia = dataTarefas[dataSelecionada] ?: mutableListOf()
 
-            // Encontra a tarefa com o id correspondente e atualiza o campo "status" para "Concluída"
+            // Percorre as tarefas do dia para encontrar a tarefa pelo ID e atualizar o seu status para "Concluída"
             for (tarefa in tarefasDoDia) {
                 if (tarefa["id"] == tarefaId) {
-                    tarefa["status"] = "Concluída"
-                    break
+                    tarefa["status"] = "Concluída" // Atualiza o status da tarefa para "Concluída"
+                    break // Interrompe o loop após encontrar e atualizar a tarefa
                 }
             }
 
-            // Atualiza o campo "tarefas" no Firestore com a modificação
+            // Atualiza as tarefas no Firestore com a modificação do status da tarefa
             dataTarefas[dataSelecionada] = tarefasDoDia
             tarefasRef.update("tarefas", dataTarefas).addOnSuccessListener {
+                // Sucesso ao atualizar o status da tarefa
                 Log.d("Firestore", "Tarefa marcada como concluída com sucesso.")
+                // Recarrega as tarefas para o dia selecionado após a atualização
                 loadTasksForSelectedDay(dataSelecionada)
             }.addOnFailureListener { e ->
+                // Erro ao tentar atualizar o status da tarefa
                 Log.w("Firestore", "Erro ao marcar tarefa como concluída", e)
             }
         }.addOnFailureListener { e ->
+            // Erro ao tentar obter o documento de tarefas do Firestore
             Log.w("Firestore", "Erro ao obter tarefas", e)
         }
     }
 
+    /**
+     * Atualiza o status de uma tarefa para "Pendente" no Firestore.
+     * Este método localiza a tarefa pelo ID fornecido e altera o seu status de "Concluída" ou qualquer outro valor
+     * para "Pendente". Em seguida, ele atualiza o Firestore com a nova informação.
+     *
+     * @param userId O ID do usuário cujas tarefas serão atualizadas.
+     * @param dataSelecionada A data (em formato "dd-MM-yyyy") das tarefas que serão atualizadas.
+     * @param tarefaId O ID da tarefa a ser atualizada para "Pendente".
+     */
     private fun updateTaskStatusPendente(userId: String, dataSelecionada: String, tarefaId: String) {
+
+        // Referência ao documento de tarefas do usuário no Firestore
         val tarefasRef = db.collection("Tarefas").document(userId)
 
+        // Recupera o documento de tarefas do usuário
         tarefasRef.get().addOnSuccessListener { document ->
+            // Obtém as tarefas do documento ou inicializa um mapa vazio caso não existam tarefas
             val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableList<MutableMap<String, Any>>> ?: mutableMapOf()
+            // Recupera as tarefas do dia específico ou inicializa uma lista vazia caso não existam tarefas para a data
             val tarefasDoDia = dataTarefas[dataSelecionada] ?: mutableListOf()
 
-            // Encontra a tarefa com o id correspondente e atualiza o campo "status" para "Pendente"
+            // Percorre as tarefas do dia para encontrar a tarefa pelo ID e atualiza o seu status para "Pendente"
             for (tarefa in tarefasDoDia) {
                 if (tarefa["id"] == tarefaId) {
-                    tarefa["status"] = "Pendente"
-                    break
+                    tarefa["status"] = "Pendente" // Atualiza o status da tarefa para "Pendente"
+                    break // Interrompe o loop após encontrar e atualizar a tarefa
                 }
             }
 
             // Atualiza o campo "tarefas" no Firestore com a modificação
             dataTarefas[dataSelecionada] = tarefasDoDia
             tarefasRef.update("tarefas", dataTarefas).addOnSuccessListener {
+                // Sucesso ao atualizar o status da tarefa
                 Log.d("Firestore", "Tarefa marcada como pendente com sucesso.")
+                // Recarrega as tarefas para o dia selecionado após a atualização
                 loadTasksForSelectedDay(dataSelecionada)
             }.addOnFailureListener { e ->
+                // Em caso de erro ao tentar atualizar o status da tarefa
                 Log.w("Firestore", "Erro ao marcar tarefa como pendente", e)
             }
         }.addOnFailureListener { e ->
+            // Em caso de falha ao tentar obter as tarefas do Firestore
             Log.w("Firestore", "Erro ao obter tarefas", e)
         }
     }
 
-    // Função modificada para atualizar o status de várias tarefas como "Enviada"
+    /**
+     * Atualiza o status de várias tarefas para "Enviada" no Firestore.
+     * Este método localiza as tarefas pelos seus IDs fornecidos e altera o seu status para "Enviada". Em seguida,
+     * ele atualiza o Firestore com as novas informações de todas as tarefas.
+     *
+     * @param userId O ID do usuário cujas tarefas serão atualizadas.
+     * @param dataSelecionada A data (em formato "dd-MM-yyyy") das tarefas que serão atualizadas.
+     * @param tarefasIds A lista de IDs das tarefas a serem atualizadas para "Enviada".
+     * @author Lais
+     */
     private fun updateTaskStatusEnviada(userId: String, dataSelecionada: String, tarefasIds: List<String>) {
+
+        // Referência ao documento de tarefas do usuário no Firestore
         val tarefasRef = db.collection("Tarefas").document(userId)
 
         tarefasRef.get().addOnSuccessListener { document ->
+            // Obtém as tarefas do documento ou inicializa um mapa vazio caso não existam tarefas
             val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableList<MutableMap<String, Any>>> ?: mutableMapOf()
+            // Recupera as tarefas do dia específico ou inicializa uma lista vazia caso não existam tarefas para a data
             val tarefasDoDia = dataTarefas[dataSelecionada] ?: mutableListOf()
 
             // Atualiza o status de todas as tarefas concluídas para "Enviada"
@@ -516,56 +703,67 @@ class HomeFragment : Fragment() {
             // Atualiza o campo "tarefas" no Firestore com todas as modificações em uma única operação
             dataTarefas[dataSelecionada] = tarefasDoDia
             tarefasRef.update("tarefas", dataTarefas).addOnSuccessListener {
+                // Sucesso ao atualizar o status das tarefas
                 Log.d("Firestore", "Tarefas marcadas como enviadas com sucesso.")
+                // Recarrega as tarefas para o dia selecionado após a atualização
                 loadTasksForSelectedDay(dataSelecionada)
             }.addOnFailureListener { e ->
+                // Em caso de erro ao tentar atualizar o status das tarefas
                 Log.w("Firestore", "Erro ao marcar tarefas como enviadas", e)
             }
         }.addOnFailureListener { e ->
+            // Em caso de falha ao tentar obter as tarefas do Firestore
             Log.w("Firestore", "Erro ao obter tarefas", e)
         }
     }
 
-    // Função sendProgress que envia o progresso de todas as tarefas concluídas
+    /**
+     * Envia o progresso de todas as tarefas concluídas para o Firestore.
+     * Este método coleta todas as tarefas concluídas para a data selecionada e as marca como "Enviada".
+     * Após a atualização, ele desativa o botão de envio de progresso.
+     *
+     * @param userId O ID do usuário cujas tarefas serão enviadas.
+     * @param dataSelecionada A data (em formato "dd-MM-yyyy") das tarefas a serem enviadas.
+     * @author Lais
+     */
     private fun sendProgress(userId: String, dataSelecionada: String) {
+
+        // Referência ao documento de tarefas do usuário no Firestore
         db.collection("Tarefas").document(userId).get()
             .addOnSuccessListener { document ->
+                // Verifica se o documento existe
                 if (document != null && document.exists()) {
+                    // Recupera as tarefas do documento ou inicializa um mapa vazio
                     val dataTarefas = document.get("tarefas") as? Map<String, List<Map<String, Any>>>
                     val tarefasIdsConcluidas = mutableListOf<String>()
 
-                    // Coleta todos os IDs de tarefas concluídas
+                    // Coleta todos os IDs de tarefas concluídas para a data selecionada
                     dataTarefas?.get(dataSelecionada)?.forEach { tarefa ->
                         val tarefaId = tarefa["id"] as? String
                         val status = tarefa["status"] as? String
 
+                        // Adiciona os IDs das tarefas concluídas à lista
                         if (tarefaId != null && status == "Concluída") {
                             tarefasIdsConcluidas.add(tarefaId)
                         }
                     }
 
-                    // Atualiza o status das tarefas concluídas em lote
+                    // Atualiza o status das tarefas concluídas para "Enviada"
                     if (tarefasIdsConcluidas.isNotEmpty()) {
                         updateTaskStatusEnviada(userId, dataSelecionada, tarefasIdsConcluidas)
                     }
 
-                    // Desativa o botão e ajusta a transparência
+                    // Desativa o botão e ajusta a transparência após o envio
                     binding.sendProgress.isEnabled = false
                     binding.sendProgress.alpha = 0.7f
                 } else {
+                    // Caso o documento de tarefas não seja encontrado
                     Log.d("Firestore", "Documento não encontrado")
                 }
             }
             .addOnFailureListener { e ->
+                // Em caso de falha ao tentar obter as tarefas do Firestore
                 Log.e("Firestore", "Erro ao enviar progresso", e)
             }
     }
-
-    private fun isTaskEditable(taskDate: String): Boolean {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val currentDate = dateFormat.format(Date())
-
-        return taskDate >= currentDate // Retorna true se a tarefa for da data atual ou futura
-    }
-
 }
