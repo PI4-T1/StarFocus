@@ -335,17 +335,7 @@ class HomeFragment : Fragment() {
                         setTextColor(Color.GRAY) // Altera a cor do texto para indicar que está desabilitado
                     }
 
-                    setOnClickListener {
-                        if (!concluido) { // Só marca como concluído se ainda não estiver
-                            updateTaskStatusTrue(userId, selectedDate, tarefaTexto)
-                            paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                            isChecked = true
-                        }
-                        else -> { // Visual para tarefas pendentes
-                            setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_outline_24, 0, 0, 0)
-                            paintFlags = paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-                        }
-                    }
+
 
                     // Configura o clique somente se a tarefa não estiver "Enviada"
                     if (!enviada) {
