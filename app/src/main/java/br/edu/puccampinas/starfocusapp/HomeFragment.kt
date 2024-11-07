@@ -255,6 +255,15 @@ class HomeFragment : Fragment() {
         binding.TaskContainer.removeAllViews() // Limpa tarefas anteriores
 
         val userId = auth.currentUser?.uid ?: return
+        val today = Calendar.getInstance()
+        val selectedDateCalendar = Calendar.getInstance().apply {
+            val parts = selectedDate.split("-")
+            set(Calendar.DAY_OF_MONTH, parts[0].toInt())
+            set(Calendar.MONTH, parts[1].toInt() - 1) // Janeiro é 0
+            set(Calendar.YEAR, parts[2].toInt())
+        }
+
+        val isPastDate = selectedDateCalendar.before(today)
 
         tarefas.forEach { (tarefaTexto, concluido) ->
             if (tarefaTexto != null) {
@@ -280,6 +289,11 @@ class HomeFragment : Fragment() {
                     } else {
                         setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_outline_24, 0, 0, 0) // Drawable de tarefa não concluída
                         paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                    }
+
+                    isEnabled = !isPastDate
+                    if (isPastDate) {
+                        setTextColor(Color.GRAY) // Altera a cor do texto para indicar que está desabilitado
                     }
 
                     setOnClickListener {
