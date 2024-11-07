@@ -304,6 +304,14 @@ class HomeFragment : Fragment() {
         }
 
         val isPastDate = selectedDateCalendar.before(today)
+        if (isPastDate) {
+            binding.InputTask.isEnabled = false
+            binding.InputTask.alpha = 0.5f
+        } else {
+            binding.InputTask.isEnabled = true
+            binding.InputTask.alpha = 1f
+        }
+
 
         tarefas.forEach { (tarefaId, tarefaTexto, status) ->
             if (tarefaId != null && tarefaTexto != null) {
@@ -322,22 +330,28 @@ class HomeFragment : Fragment() {
                     compoundDrawablePadding = 37 // Ajusta o espaço entre o texto e o botão
                     setPadding(70, 10, 60, 10) // Ajusta o padding para o texto e o botão à direita
 
-                    isChecked = concluido // Define o estado do RadioButton conforme o campo 'concluido' da tarefa
-
-                    paintFlags = if (concluido) {
-                        setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_24, 0, 0, 0) // Drawable de tarefa concluída
-                        paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                    } else {
-                        setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_outline_24, 0, 0, 0) // Drawable de tarefa não concluída
-                        paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-                    }
-
                     isEnabled = !isPastDate
                     if (isPastDate) {
                         setTextColor(Color.GRAY) // Altera a cor do texto para indicar que está desabilitado
                     }
 
-
+                    when {
+                        enviada -> { // Configura o visual de tarefas enviadas
+                            setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_send_24, 0, 0, 0) // Ícone de "Enviada"
+                            setTextColor(Color.GRAY) // Cor cinza para indicar inatividade
+                            paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG // Texto riscado
+                            isEnabled = false // Desabilita a interação
+                        }
+                        concluido -> { // Visual para tarefas concluídas, mas não enviadas
+                            setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_24, 0, 0, 0) // Ícone de concluído
+                            paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                            isChecked = true
+                        }
+                        else -> { // Visual para tarefas pendentes
+                            setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_outline_24, 0, 0, 0)
+                            paintFlags = paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                        }
+                    }
 
                     // Configura o clique somente se a tarefa não estiver "Enviada"
                     if (!enviada) {
@@ -347,14 +361,12 @@ class HomeFragment : Fragment() {
                                 paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                                 isChecked = true
                                 setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_check_circle_24, 0, 0, 0)
-
                                 // Exibe o drawable de conclusão com animação
                                 binding.feedback1.apply {
                                     alpha = 0f
                                     visibility = View.VISIBLE
                                     animate().alpha(1f).setDuration(300).start()
                                 }
-
                                 Handler(Looper.getMainLooper()).postDelayed({
                                     binding.feedback1.animate()
                                         .alpha(0f)
