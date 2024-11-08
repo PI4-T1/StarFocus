@@ -77,6 +77,10 @@
     <string name="historyprogressTwo">Obrigada por ter me ajudado a vencer a Babá Rodopinho!</string>
     <string name="historyprogressThree">Frank, deixa para amanhã, quer me prender na sa torre do relógio e me impedir de fazer minhas tarefas!</string>
     <string name="historyprogressFour">Nada ficará para amanhã! Frank foi derrotado!</string>
+    <string name="historyprogressFive">O procrastinador quer me levar para longe de minhas tarefas!</string>
+    <string name="historyprogressSix">Bravo! Derrotado!</string>
+
+    <string name="buttonselecionar">Selecionar</string>
 
 
 </resources>

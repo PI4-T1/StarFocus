@@ -5,34 +5,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/historiaprogressodois"
+    android:background="@drawable/tela_hstoria_6"
     android:orientation="vertical"
-    android:id="@+id/history_two"
-    tools:context=".HistoryProgressTwoWin">
+    android:id="@+id/history_six"
+    tools:context=".HistoryProgressSixWin">
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/history2"
-        android:layout_width="250dp"
-        android:layout_height="50dp"
-        android:text="@string/historyprogressTwo"
+        android:id="@+id/history6"
+        android:layout_width="180dp"
+        android:layout_height="30dp"
+        android:text="@string/historyprogressSix"
         android:textColor="@color/off_white"
         android:fontFamily="@font/poppins_medium"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginStart="20dp"
-        android:textSize="15sp"
-        android:layout_marginBottom="50dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="170dp"
+        android:textSize="18sp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="60dp"
         />
 
     <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/endhistory"
+        android:id="@+id/endhistory6"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:background="@drawable/baseline_arrow_forward_24_offwhite"
-        app:layout_constraintStart_toStartOf="@id/history"
-        app:layout_constraintBottom_toBottomOf="@id/history"
-        app:layout_constraintEnd_toEndOf="@id/history"
-        android:layout_marginStart="260dp"
+        app:layout_constraintStart_toStartOf="@id/history6"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/history6"
+        android:layout_marginStart="160dp"
+        android:layout_marginBottom="60dp"
 
 
         />

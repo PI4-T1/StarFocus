@@ -5,55 +5,44 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import androidx.viewpager2.widget.ViewPager2
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [ClosetFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ClosetFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var clothesCarousel: ViewPager2
+    private lateinit var rightButton: ImageButton
+    private lateinit var leftButton: ImageButton
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+        // Inflar o layout do fragment
         return inflater.inflate(R.layout.fragment_closet, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ClosetFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ClosetFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        clothesCarousel = view.findViewById(R.id.clothesCarousel)
+        rightButton = view.findViewById(R.id.rightbutton)
+        leftButton = view.findViewById(R.id.leftbutton)
+
+        // Configurar o adaptador do ViewPager2 com as roupas
+        val images = listOf(R.drawable.monsterprincipal, R.drawable.monster2, R.drawable.monster3,R.drawable.monster4
+            ,R.drawable.monster5, ) // Substitua com suas imagens
+        clothesCarousel.adapter = ClothesCarouselAdapter(images)
+
+        //navegação pelas setas
+        rightButton.setOnClickListener {
+            val nextItem = (clothesCarousel.currentItem + 1) % images.size
+            clothesCarousel.currentItem = nextItem
+        }
+
+        leftButton.setOnClickListener {
+            val prevItem = if (clothesCarousel.currentItem - 1 < 0) images.size - 1 else clothesCarousel.currentItem - 1
+            clothesCarousel.currentItem = prevItem
+        }
     }
 }
