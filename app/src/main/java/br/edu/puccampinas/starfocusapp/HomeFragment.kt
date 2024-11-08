@@ -130,6 +130,8 @@ class HomeFragment : Fragment() {
             loadTasksForSelectedDay(String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear))
         }
 
+        val clienteAndroid = ClienteAndroid()
+
         // Evento de clique para o botão de envio de progresso
         binding.sendProgress.setOnClickListener {
             val userId = auth.currentUser?.uid // Obtém o ID do usuário autenticado
@@ -137,7 +139,12 @@ class HomeFragment : Fragment() {
             if (userId != null) {
                 // Envia o progresso do usuário para o banco de dados
                 sendProgress(userId, dataSelecionada)
+                countTasks(userId, dataSelecionada) { totalTarefas, enviadas ->
+                    // Envia o progresso ao servidor
+                    clienteAndroid.sendProgress(totalTarefas, enviadas)
+                }
             }
+
         }
         // Retorna a view do fragmento
         return binding.root
@@ -780,5 +787,44 @@ class HomeFragment : Fragment() {
                 // Em caso de falha ao tentar obter as tarefas do Firestore
                 Log.e("Firestore", "Erro ao enviar progresso", e)
             }
+    }
+
+    /**
+     * Conta o total de tarefas de um usuário para uma data específica
+     * e quantas delas possuem o status "Enviada".
+     * @param userId O ID do usuário autenticado para o qual as tarefas serão contadas.
+     * @param dataSelecionada A data específica para a qual as tarefas serão contadas, no formato "dd-MM-yyyy".
+     * @param onResult Callback que retorna o resultado da contagem. Recebe dois parâmetros:
+     *   - totalTarefas: O total de tarefas cadastradas para o dia selecionado.
+     *   - enviadas: O número de tarefas com o status "Enviada" para o dia selecionado.
+     * @author Lais
+     **/
+    private fun countTasks(userId: String, dataSelecionada: String, onResult: (totalTarefas: Int, enviadas: Int) -> Unit) {
+        // Referência ao documento de tarefas do usuário no Firestore
+        val tarefasRef = db.collection("Tarefas").document(userId)
+
+        tarefasRef.get().addOnSuccessListener { document ->
+            if (document.exists()) {
+                // Obtém o mapa de tarefas por data
+                val dataTarefas = document.get("tarefas") as? Map<String, List<Map<String, Any>>> ?: emptyMap()
+                // Recupera as tarefas do dia selecionado
+                val tarefasDoDia = dataTarefas[dataSelecionada] ?: emptyList()
+
+                // Conta o total de tarefas do dia
+                val totalTarefas = tarefasDoDia.size
+                // Conta quantas têm o status "Enviada"
+                val enviadas = tarefasDoDia.count { tarefa -> tarefa["status"] == "Enviada" }
+
+                // Retorna os resultados
+                onResult(totalTarefas, enviadas)
+            } else {
+                // Caso o documento não exista, retorna 0 para ambas as contagens
+                onResult(0, 0)
+            }
+        }.addOnFailureListener { exception ->
+            // Em caso de erro, você pode exibir uma mensagem ou logar o erro
+            Log.e("FirestoreError", "Erro ao contar as tarefas", exception)
+            onResult(0, 0) // Retorna 0 em caso de falha
+        }
     }
 }

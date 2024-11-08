@@ -37,7 +37,7 @@
     <string name="ToDo">To Do list</string>
     <string name="AddTarefa">Adicione uma tarefa</string>
     <string name="progresso">Progresso</string>
-    <string name="ProgressoWarning">Adicione tarefas para destravar o progresso!</string>
+    <string name="ProgressoWarning">Envie tarefas para destravar o progresso!</string>
     <string name="menuHome">Home</string>
     <string name="menuCloset">Closet</string>
     <string name="menuMapa">Mapa</string>
