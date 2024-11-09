@@ -3,6 +3,7 @@ package br.edu.puccampinas.starfocusapp;
 import java.io.*;
 import java.net.*;
 import java.util.concurrent.Semaphore;
+import android.util.Log;  // Para adicionar logs de depuração
 
 public class Parceiro
 {
@@ -10,83 +11,90 @@ public class Parceiro
     private final ObjectInputStream  receptor;
     private final ObjectOutputStream transmissor;
 
-    private Comunicado proximoComunicado=null;
+    private Comunicado proximoComunicado = null;
 
-    private final Semaphore mutEx = new Semaphore (1,true);
+    private final Semaphore mutEx = new Semaphore(1, true);
 
-    public Parceiro (Socket             conexao,
-                     ObjectInputStream  receptor,
-                     ObjectOutputStream transmissor)
-            throws Exception // se parametro nulos
-    {
-        if (conexao==null)
-            throw new Exception ("Conexao ausente");
+    // Construtor do Parceiro
+    public Parceiro(Socket conexao, ObjectInputStream receptor, ObjectOutputStream transmissor)
+            throws Exception {
+        if (conexao == null)
+            throw new Exception("Conexao ausente");
 
-        if (receptor==null)
-            throw new Exception ("Receptor ausente");
+        if (receptor == null)
+            throw new Exception("Receptor ausente");
 
-        if (transmissor==null)
-            throw new Exception ("Transmissor ausente");
+        if (transmissor == null)
+            throw new Exception("Transmissor ausente");
 
-        this.conexao     = conexao;
-        this.receptor    = receptor;
+        this.conexao = conexao;
+        this.receptor = receptor;
         this.transmissor = transmissor;
+
+        Log.d("Parceiro", "Parceiro instanciado com sucesso");
     }
 
-    public void receba (Comunicado x) throws Exception
-    {
-        try
-        {
-            this.transmissor.writeObject (x);
-            this.transmissor.flush       ();
+    // Método para enviar um comunicado
+    public void receba(Comunicado x) throws Exception {
+        if (x == null) {
+            Log.e("Erro", "Comunicado nulo não pode ser enviado");
+            throw new Exception("Comunicado não pode ser nulo");
         }
-        catch (IOException erro)
-        {
-            throw new Exception ("Erro de transmissao");
+
+        try {
+            this.transmissor.writeObject(x);
+            this.transmissor.flush();
+            Log.d("Parceiro", "Comunicado enviado: " + x);
+        } catch (IOException erro) {
+            Log.e("Erro de transmissão", erro.getMessage(), erro);
+            throw new Exception("Erro de transmissão");
         }
     }
 
-    public Comunicado espie () throws Exception
-    {
-        try
-        {
+    // Método para espiar o próximo comunicado
+    public Comunicado espie() throws Exception {
+        try {
             this.mutEx.acquireUninterruptibly();
-            if (this.proximoComunicado==null) this.proximoComunicado = (Comunicado)this.receptor.readObject();
+            if (this.proximoComunicado == null)
+                this.proximoComunicado = (Comunicado) this.receptor.readObject();
             this.mutEx.release();
+
+            Log.d("Parceiro", "Comunicado espiado: " + this.proximoComunicado);
             return this.proximoComunicado;
-        }
-        catch (Exception erro)
-        {
-            throw new Exception ("Erro de recepcao");
+        } catch (Exception erro) {
+            Log.e("Erro de recepção", erro.getMessage(), erro);
+            throw new Exception("Erro de recepção");
         }
     }
 
-    public Comunicado envie () throws Exception
-    {
-        try
-        {
-            if (this.proximoComunicado==null) this.proximoComunicado = (Comunicado)this.receptor.readObject();
-            Comunicado ret         = this.proximoComunicado;
+    // Método para enviar o próximo comunicado
+    public Comunicado envie() throws Exception {
+        try {
+            if (this.proximoComunicado == null)
+                this.proximoComunicado = (Comunicado) this.receptor.readObject();
+
+            Comunicado ret = this.proximoComunicado;
             this.proximoComunicado = null;
+
+            Log.d("Parceiro", "Comunicado enviado: " + ret);
             return ret;
-        }
-        catch (Exception erro)
-        {
-            throw new Exception ("Erro de recepcao");
+        } catch (Exception erro) {
+            Log.e("Erro de recepção", erro.getMessage(), erro);
+            throw new Exception("Erro de recepção");
         }
     }
 
-    public void adeus () throws Exception
-    {
-        try
-        {
+    // Método para fechar a conexão e os fluxos
+    public void adeus() throws Exception {
+        try {
             this.transmissor.close();
-            this.receptor   .close();
-            this.conexao    .close();
-        }
-        catch (Exception erro)
-        {
-            throw new Exception ("Erro de desconexao");
+            this.receptor.close();
+            this.conexao.close();
+
+            Log.d("Parceiro", "Conexão encerrada com sucesso");
+        } catch (Exception erro) {
+            Log.e("Erro de desconexão", erro.getMessage(), erro);
+            throw new Exception("Erro de desconexão");
         }
     }
 }

@@ -1,27 +1,27 @@
 package br.edu.puccampinas.starfocusapp
 
+import android.app.AlertDialog
 import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.fragment.app.Fragment
-import java.util.Calendar
-import android.app.AlertDialog
-import android.graphics.Paint
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.widget.ArrayAdapter
+import android.widget.LinearLayout
 import android.widget.NumberPicker
 import android.widget.RadioButton
 import android.widget.Spinner
+import android.widget.TextView
+import androidx.fragment.app.Fragment
 import br.edu.puccampinas.starfocusapp.databinding.FragmentHomeBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.util.Calendar
 
 /**
  * Fragmento que exibe a tela inicial com o calendário,
@@ -88,6 +88,8 @@ class HomeFragment : Fragment() {
         // Adiciona os dias ao layout com base na data atual
         addDaysToView(calendar)
 
+        conectarAoServidor();
+
         // Ajusta a rolagem do calendário para o dia atual, garantindo que o dia seja mostrado no meio da tela
         binding.BarDaysScroll.post {
             if (!isScrollAdjusted && currentDayPosition != -1) {
@@ -141,7 +143,7 @@ class HomeFragment : Fragment() {
                 sendProgress(userId, dataSelecionada)
                 countTasks(userId, dataSelecionada) { totalTarefas, enviadas ->
                     // Envia o progresso ao servidor
-                    clienteAndroid.sendProgress(totalTarefas, enviadas)
+                    //clienteAndroid.sendProgress(totalTarefas, enviadas)
                 }
             }
 
@@ -826,5 +828,15 @@ class HomeFragment : Fragment() {
             Log.e("FirestoreError", "Erro ao contar as tarefas", exception)
             onResult(0, 0) // Retorna 0 em caso de falha
         }
+    }
+
+    private fun conectarAoServidor() {
+        Thread {
+            try {
+                ClienteAndroid.conectarAoServidor()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }.start()
     }
 }
