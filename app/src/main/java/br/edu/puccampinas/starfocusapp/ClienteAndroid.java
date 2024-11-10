@@ -2,6 +2,7 @@ package br.edu.puccampinas.starfocusapp;
 
 import java.io.*;
 import java.net.Socket;
+import kotlinx.coroutines.*;
 
 public class ClienteAndroid {
 
@@ -9,30 +10,35 @@ public class ClienteAndroid {
     private static final int SERVER_PORT = 3000; // Porta do servidor
 
     public static void conectarAoServidor() {
-        try {
-            // Conecta-se ao servidor na porta especificada
-            Socket socket = new Socket(SERVER_IP, SERVER_PORT);
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Estabelece a conexão com o servidor
+                val socket = Socket("IP_DO_SERVIDOR", 3000)
+                val outputStream = ObjectOutputStream(socket.getOutputStream())
+                val inputStream = ObjectInputStream(socket.getInputStream())
 
-            // Fluxo de entrada e saída
-            ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
-            ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+                // Envia o comunicado ao servidor
+                val comunicado = Comunicado("Solicitar barra de progresso")
+                outputStream.writeObject(comunicado)
+                outputStream.flush()
 
-            // Envia uma mensagem para o servidor
-            String mensagem = "Olá, servidor!";
-            outputStream.writeObject(mensagem);
-            outputStream.flush();
+                // Espera pela resposta com a BarraDeProgresso
+                val progresso = inputStream.readObject() as BarraDeProgresso
 
-            // Recebe a resposta do servidor
-            String resposta = (String) inputStream.readObject();
-            System.out.println("Resposta do servidor: " + resposta);
+                // Exibe a barra de progresso recebida
+                withContext(Dispatchers.Main) {
+                    println("Progresso recebido: ${progresso.toString()}")
+                }
 
-            // Fecha as conexões
-            inputStream.close();
-            outputStream.close();
-            socket.close();
-
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+                // Fecha os streams e o socket
+                inputStream.close()
+                outputStream.close()
+                socket.close()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    println("Erro: ${e.message}")
+                }
+            }
         }
-    }
 }

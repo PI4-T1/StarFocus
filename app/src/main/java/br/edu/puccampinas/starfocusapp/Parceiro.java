@@ -5,19 +5,16 @@ import java.net.*;
 import java.util.concurrent.Semaphore;
 import android.util.Log;  // Para adicionar logs de depuração
 
-public class Parceiro
-{
-    private final Socket             conexao;
-    private final ObjectInputStream  receptor;
+public class Parceiro {
+    private final Socket conexao;
+    private final ObjectInputStream receptor;
     private final ObjectOutputStream transmissor;
 
     private Comunicado proximoComunicado = null;
-
     private final Semaphore mutEx = new Semaphore(1, true);
 
     // Construtor do Parceiro
-    public Parceiro(Socket conexao, ObjectInputStream receptor, ObjectOutputStream transmissor)
-            throws Exception {
+    public Parceiro(Socket conexao, ObjectInputStream receptor, ObjectOutputStream transmissor) throws Exception {
         if (conexao == null)
             throw new Exception("Conexao ausente");
 
