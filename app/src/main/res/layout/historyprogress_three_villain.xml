@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/tela_hstoria_3"
     android:orientation="vertical"
-    android:id="@+id/history_one"
+    android:id="@+id/history_three"
     tools:context=".HistoryProgressTwoWin">
 
     <androidx.appcompat.widget.AppCompatTextView
