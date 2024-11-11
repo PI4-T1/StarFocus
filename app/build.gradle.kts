@@ -80,5 +80,6 @@ dependencies {
     implementation (libs.androidx.viewpager2)
     implementation (libs.material.v1100)
     implementation (libs.play.services.auth)
+    implementation(libs.kotlinx.coroutines.android)
 
 }

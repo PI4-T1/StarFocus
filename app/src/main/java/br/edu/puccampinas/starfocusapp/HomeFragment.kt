@@ -18,9 +18,18 @@ import android.widget.RadioButton
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import br.edu.puccampinas.starfocusapp.databinding.FragmentHomeBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
+import java.net.Socket
 import java.util.Calendar
 
 /**
@@ -30,7 +39,7 @@ import java.util.Calendar
  * @author Lais
  * @version 1.0
  */
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), ProgressListener {
 
     // Binding da view do fragmento, que permite acessar os elementos de UI da tela
     private lateinit var binding: FragmentHomeBinding
@@ -56,6 +65,14 @@ class HomeFragment : Fragment() {
     // A data selecionada como String, utilizada para exibir ou manipular a data de maneira formatada
     private var selectedDate: String? = null
 
+    // Variável que instância a barra de progresso
+    private lateinit var clienteAndroid: ClienteAndroid
+    private lateinit var parceiro: Parceiro
+    private var isClienteAndroidInitialized = false
+    private val clientInitializationDeferred = CompletableDeferred<Unit>()
+    private var isInitializingClient = false
+
+
     /**
      * Método chamado quando a view do fragmento é criada. Aqui são configurados os elementos da UI e as ações dos botões.
      *
@@ -66,90 +83,145 @@ class HomeFragment : Fragment() {
      * @return A view inflada do fragmento.
      */
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        Log.d("HomeFragment", "onViewCreated chamada")
 
         // Infla a view do fragmento usando o binding
         binding = FragmentHomeBinding.inflate(inflater, container, false)
-        // Inicializa a instância do Firestore e do FirebaseAuth
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
+        // Inicializa o clienteAndroid em uma Coroutine usando async e retorna sucesso/falha
+        val clientInitializationDeferred = viewLifecycleOwner.lifecycleScope.async(Dispatchers.IO) {
+            initializeClientAndroid()
+        }
+
+        lifecycleScope.launch(Dispatchers.Main) {
+            try {
+                Log.d("HomeFragment", "Iniciando a atualização do progresso...")
+
+                // Aguardar a inicialização do clienteAndroid
+                val initializedSuccessfully = clientInitializationDeferred.await()
+                if (initializedSuccessfully && isClienteAndroidInitialized) {
+                    Log.d("HomeFragment", "clienteAndroid inicializado, atualizando barra de progresso...")
+
+                    val userId = auth.currentUser?.uid
+                    val dataSelecionada = String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear)
+                    if (userId != null) {
+                        countTasks(userId, dataSelecionada) { totalTarefas, enviadas ->
+                            Log.d("HomeFragment", "Chamando sendProgress com totalTarefas=$totalTarefas e enviadas=$enviadas")
+                            clienteAndroid.sendProgress(totalTarefas, enviadas)
+                            Log.d("HomeFragment", "Progresso enviado com sucesso: totalTarefas=$totalTarefas, enviadas=$enviadas")
+                        }
+                    }
+                } else {
+                    Log.e("HomeFragment", "clienteAndroid não foi inicializado.")
+                }
+
+            } catch (e: Exception) {
+                Log.e("HomeFragment", "Falha na inicialização do clienteAndroid", e)
+            }
+        }
+
+        // Configuração de interface e eventos
+        setupUI()
+        return binding.root
+    }
+
+    // Método de inicialização do clienteAndroid
+    private suspend fun initializeClientAndroid(): Boolean {
+        if (isInitializingClient) {
+            return false
+        }
+
+        isInitializingClient = true
+        try {
+            Log.d("HomeFragment", "Iniciando a conexão com o servidor...")
+
+            val socket = withContext(Dispatchers.IO) {
+                Socket("10.0.2.2", 3000)
+            }
+            Log.d("HomeFragment", "Conexão com o servidor estabelecida.")
+
+            val inputStream = withContext(Dispatchers.IO) {
+                ObjectInputStream(socket.getInputStream())
+            }
+            Log.d("HomeFragment", "InputStream criado.")
+
+            val outputStream = withContext(Dispatchers.IO) {
+                ObjectOutputStream(socket.getOutputStream())
+            }
+            Log.d("HomeFragment", "OutputStream criado.")
+
+            parceiro = Parceiro(socket, inputStream, outputStream)
+            Log.d("HomeFragment", "Parceiro criado com sucesso.")
+
+            clienteAndroid = ClienteAndroid(this, parceiro)
+            Log.d("HomeFragment", "clienteAndroid inicializado com sucesso.")
+
+            isClienteAndroidInitialized = true
+            return true // Indica que a inicialização foi bem-sucedida
+
+        } catch (e: Exception) {
+            Log.e("HomeFragment", "Erro na inicialização do clienteAndroid", e)
+            return false
+        } finally {
+            isInitializingClient = false
+        }
+    }
+
+    // Implementação do método da interface ProgressListener
+    override fun onProgressUpdate(progresso: Int) {
+        activity?.runOnUiThread {
+            binding.progressBar.progress = progresso
+            Log.d("HomeFragment", "Progresso atualizado: $progresso%")
+        }
+    }
+
+    private fun setupUI() {
         // Inicialmente, o botão 'sendProgress' estará desabilitado e com opacidade reduzida
         binding.sendProgress.isEnabled = false
-        binding.sendProgress.alpha = 0.7f // Opacidade para indicar indisponibilidade
+        binding.sendProgress.alpha = 0.7f
 
-        // Atualiza o botão de calendário para mostrar o mês e ano atuais
+        // Configurações de botão de calendário e tarefas
         updateCalendarButtonText()
-
-        // Configura a ação de clicar no botão para exibir o seletor de mês e ano
-        binding.ButtonCalendar.setOnClickListener {
-            showMonthYearPickerDialog() // Abre o diálogo para escolher mês e ano
-        }
-
-        // Adiciona os dias ao layout com base na data atual
+        binding.ButtonCalendar.setOnClickListener { showMonthYearPickerDialog() }
         addDaysToView(calendar)
 
-        conectarAoServidor();
-
-        // Ajusta a rolagem do calendário para o dia atual, garantindo que o dia seja mostrado no meio da tela
         binding.BarDaysScroll.post {
             if (!isScrollAdjusted && currentDayPosition != -1) {
-                // Calcula a posição de rolagem desejada para o dia atual
                 val targetPosition = (currentDayPosition - 2).coerceAtLeast(1) - 1
-                // Obtém a view do dia correspondente à posição
                 val dayView = binding.linearLayoutDays.getChildAt(targetPosition)
-                // Move a rolagem para o dia calculado
                 binding.BarDaysScroll.scrollTo(dayView.left, 0)
-                isScrollAdjusted = true // Marca que a rolagem foi ajustada
+                isScrollAdjusted = true
             }
         }
 
-        // Recupera a data selecionada a partir dos argumentos, se presente
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            selectedDate = it.getString("selected_date") // Recupera a data do argumento, caso exista
-        }
+        arguments?.let { selectedDate = it.getString("selected_date") }
+        binding.InputTask.setOnClickListener { openAddTaskBottomSheet() }
 
-        // Ação do botão de adicionar nova tarefa
-        binding.InputTask.setOnClickListener {
-            // Cria e exibe o fragmento do BottomSheet para adicionar uma nova tarefa
-            val bottomSheetFragment = BottomsSheetAddTaskFragment {
-                // Após adicionar a tarefa, carrega as tarefas para o dia selecionado
-                loadTasksForSelectedDay(String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear))
-            }.apply {
-                arguments = Bundle().apply {
-                    // Passa a data selecionada para o BottomSheet como argumentos
-                    putInt("diaSelecionado", selectedDay)
-                    putInt("mesSelecionado", selectedMonth + 1)
-                    putInt("anoSelecionado", selectedYear)
-                }
-            }
-            // Exibe o BottomSheetFragment
-            bottomSheetFragment.show(requireActivity().supportFragmentManager, bottomSheetFragment.tag)
-        }
-
-        // Carrega as tarefas para o dia selecionado quando o fragmento é iniciado
         if (auth.currentUser != null) {
             loadTasksForSelectedDay(String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear))
         }
 
-        val clienteAndroid = ClienteAndroid()
-
         // Evento de clique para o botão de envio de progresso
         binding.sendProgress.setOnClickListener {
-            val userId = auth.currentUser?.uid // Obtém o ID do usuário autenticado
-            val dataSelecionada = String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear) // Formata a data selecionada
-            if (userId != null) {
-                // Envia o progresso do usuário para o banco de dados
-                sendProgress(userId, dataSelecionada)
-                countTasks(userId, dataSelecionada) { totalTarefas, enviadas ->
-                    // Envia o progresso ao servidor
-                    //clienteAndroid.sendProgress(totalTarefas, enviadas)
-                }
-            }
-
+            val userId = auth.currentUser?.uid
+            val dataSelecionada = String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear)
+            if (userId != null) sendProgress(userId, dataSelecionada)
         }
-        // Retorna a view do fragmento
-        return binding.root
+    }
+
+    private fun openAddTaskBottomSheet() {
+        val bottomSheetFragment = BottomsSheetAddTaskFragment {
+            loadTasksForSelectedDay(String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear))
+        }.apply {
+            arguments = Bundle().apply {
+                putInt("diaSelecionado", selectedDay)
+                putInt("mesSelecionado", selectedMonth + 1)
+                putInt("anoSelecionado", selectedYear)
+            }
+        }
+        bottomSheetFragment.show(requireActivity().supportFragmentManager, bottomSheetFragment.tag)
     }
 
     /**
@@ -751,6 +823,7 @@ class HomeFragment : Fragment() {
      * @author Lais
      */
     private fun sendProgress(userId: String, dataSelecionada: String) {
+        Log.d("HomeFragment", "Função sendProgress chamada. userId: $userId, dataSelecionada: $dataSelecionada")
 
         // Referência ao documento de tarefas do usuário no Firestore
         db.collection("Tarefas").document(userId).get()
@@ -802,6 +875,7 @@ class HomeFragment : Fragment() {
      * @author Lais
      **/
     private fun countTasks(userId: String, dataSelecionada: String, onResult: (totalTarefas: Int, enviadas: Int) -> Unit) {
+        Log.d("HomeFragment", "Contando tarefas para userId: $userId, data: $dataSelecionada")
         // Referência ao documento de tarefas do usuário no Firestore
         val tarefasRef = db.collection("Tarefas").document(userId)
 
@@ -830,13 +904,4 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun conectarAoServidor() {
-        Thread {
-            try {
-                ClienteAndroid.conectarAoServidor()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }.start()
-    }
 }

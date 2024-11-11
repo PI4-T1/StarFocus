@@ -19,6 +19,7 @@ firebaseAuthKtx = "23.0.0"
 firebaseFirestoreKtx = "25.1.0"
 viewpager2 = "1.1.0"
 activity = "1.8.0"
+kotlinx_coroutines = "1.6.0"
 
 [libraries]
 androidx-constraintlayout-v204 = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayoutVersion" }
@@ -47,6 +48,7 @@ firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-fires
 material-v1100 = { module = "com.google.android.material:material", version.ref = "googleMaterial" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "play-services-auth" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx_coroutines" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

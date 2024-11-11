@@ -20,7 +20,6 @@ public class BarraDeProgresso extends Comunicado implements Serializable {
 
     private double calcularPorcentagem() {
         return (double) tarefasConcluidas / totalTarefas * 100;
-        //fazer if no codigo para saber se recebeu recompensa.
     }
 
     public int getTotalTarefas() {
