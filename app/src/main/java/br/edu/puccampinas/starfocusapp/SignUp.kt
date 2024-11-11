@@ -237,7 +237,16 @@ class SignUp : AppCompatActivity() {
                     "email" to user.email,
                     "nomeCompleto" to user.nomeCompleto,
                     "telefone" to user.telefone,
-                    "dataDeNascimento" to user.dataDeNascimento
+                    "dataDeNascimento" to user.dataDeNascimento,
+                    "monster1" to true,
+                    "monster2" to true,
+                    "monster3" to true,
+                    "monster4" to true,
+                    "monster5" to true,
+                    "history1" to true,
+                    "history2" to true,
+                    "history3" to true,
+                    "history4" to true
                 )
 
                 // Salvar o usuário no Firestore sem a senha

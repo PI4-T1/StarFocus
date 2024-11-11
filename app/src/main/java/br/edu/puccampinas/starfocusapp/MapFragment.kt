@@ -1,59 +1,67 @@
-package br.edu.puccampinas.starfocusapp
-
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.google.firebase.firestore.FirebaseFirestore
+import com.example.app.databinding.FragmentMapBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [MapFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class MapFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var _binding: FragmentMapBinding? = null
+    private val binding get() = _binding!!
+
+    private lateinit var db: FirebaseFirestore
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_map, container, false)
+        // Inflando o layout com ViewBinding
+        _binding = FragmentMapBinding.inflate(inflater, container, false)
+
+        // Inicializa o Firebase Firestore
+        db = FirebaseFirestore.getInstance()
+
+        // Chama o método para carregar os dados do Firestore
+        loadStoryStatusFromFirestore()
+
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MapFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MapFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    private fun loadStoryStatusFromFirestore() {
+        val userId = "user_id_example" // Defina o ID do usuário aqui (pode ser do FirebaseAuth ou outra fonte)
+        db.collection("pessoas").document(userId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    val history1 = document.getBoolean("history1") ?: false
+                    val history2 = document.getBoolean("history2") ?: false
+                    val history3 = document.getBoolean("history3") ?: false
+                    val history4 = document.getBoolean("history4") ?: false
+
+                    // Atualiza a visibilidade dos botões com base no status das histórias
+                    updateButtonVisibility(history1, history2, history3, history4)
                 }
             }
+            .addOnFailureListener { exception ->
+                Log.w("MapFragment", "Error getting documents.", exception)
+            }
+    }
+
+    private fun updateButtonVisibility(history1: Boolean, history2: Boolean, history3: Boolean, history4: Boolean) {
+        // História 1 está sempre desbloqueada
+        binding.history1unlock.visibility = View.VISIBLE
+        binding.history2unlock.visibility = if (history2) View.VISIBLE else View.GONE
+        binding.history2locked.visibility = if (!history2) View.VISIBLE else View.GONE
+        binding.history3unlock.visibility = if (history3) View.VISIBLE else View.GONE
+        binding.history3locked.visibility = if (!history3) View.VISIBLE else View.GONE
+        binding.history4unlock.visibility = if (history4) View.VISIBLE else View.GONE
+        binding.history4locked.visibility = if (!history4) View.VISIBLE else View.GONE
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null // Libera a referência para evitar vazamento de memória
     }
 }

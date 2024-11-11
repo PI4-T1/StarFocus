@@ -36,24 +36,24 @@
         app:layout_constraintStart_toStartOf="@id/rectangle"
         app:layout_constraintTop_toTopOf="@id/rectangle" />
 
+    <!-- ViewPager2 para exibir o carrossel de roupas -->
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnselecionar"
         style="@style/buttonsend"
         android:layout_width="210dp"
         android:layout_height="48dp"
-        android:layout_marginTop="1dp"
+        android:layout_marginBottom="122dp"
         android:fontFamily="@font/poppins_bold"
-        android:layout_marginBottom="120dp"
         android:text="@string/buttonselecionar"
         android:textAlignment="center"
         android:textAllCaps="true"
         android:textColor="@color/off_white"
         android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- ViewPager2 para exibir o carrossel de roupas -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/clothesCarousel"
         android:layout_width="400dp"
@@ -68,10 +68,10 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:background="@drawable/baseline_arrow_forward_24_blue"
-        app:layout_constraintBottom_toBottomOf="@id/btnselecionar"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/btnselecionar"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginBottom="115dp"
         />
 
     <androidx.appcompat.widget.AppCompatImageButton
@@ -79,10 +79,10 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:background="@drawable/baseline_arrow_back_24"
-        app:layout_constraintBottom_toBottomOf="@id/btnselecionar"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btnselecionar"
         android:layout_marginEnd="10dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginBottom="115dp"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.google.firebase.auth.FirebaseAuth
@@ -96,9 +97,14 @@ class ClosetFragment : Fragment() {
     private fun updateButtonLabel() {
         // Verifica se o personagem atual está equipado e define o texto do botão
         if (currentClothesIndex == equippedClothesIndex) {
-            selectButton.text = "Equipado"
+            selectButton.text = "Selecionado"
+            // Quando estiver equipado, use o selector para definir o fundo
+            selectButton.setBackgroundResource(R.drawable.button_background_pressed)
         } else {
             selectButton.text = "Selecionar"
+            // Quando não estiver equipado, use o selector para definir o fundo
+            selectButton.setBackgroundResource(R.drawable.button_background_normal)
         }
     }
+
 }
