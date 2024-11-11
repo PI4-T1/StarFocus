@@ -1,19 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/off_white"
-    android:orientation="vertical"
-    android:layout_gravity="center"
-    tools:context=".MapFragment">
+<androidx.constraintlayout.widget.ConstraintLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@drawable/tela_de_mapa"
+android:orientation="vertical"
+android:layout_gravity="center"
+tools:context=".MapFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/menuMapa"
-        android:textSize="50sp"
-        android:textAlignment="center"
-        android:layout_gravity="center"
+<androidx.appcompat.widget.AppCompatImageView
+    android:id="@+id/rectangle"
+    style="@style/rectangledetails"
+    android:layout_width="370dp"
+    android:layout_height="85dp"
+    android:paddingTop="100dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    />
+
+<androidx.appcompat.widget.AppCompatTextView
+    android:id="@+id/menucloseet"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:fontFamily="@font/poppins_semibold"
+    android:text="@string/menuMapa"
+    android:textAlignment="center"
+    android:layout_marginTop="10dp"
+    android:textColor="@color/off_white"
+    android:textSize="23sp"
+    app:layout_constraintBottom_toBottomOf="@id/rectangle"
+    app:layout_constraintEnd_toEndOf="@id/rectangle"
+    app:layout_constraintStart_toStartOf="@id/rectangle"
+    app:layout_constraintTop_toTopOf="@id/rectangle" />
+
+    <!--botão desbloqueada-->
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/history1unlock"
+        android:layout_width="79dp"
+        android:layout_height="109dp"
+        android:layout_marginStart="72dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/historyonebutton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rectangle"
         />
-</FrameLayout>
+
+    <!--botão desbloqueada-->
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/history2unlock"
+        android:layout_width="79dp"
+        android:layout_height="109dp"
+        android:layout_marginStart="226dp"
+        android:layout_marginTop="167dp"
+        android:background="@drawable/history2unlocked"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rectangle"
+        android:visibility="gone"
+        />
+
+    <!--Botão bloqueado-->
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/history2locked"
+        android:layout_width="79dp"
+        android:layout_height="109dp"
+        android:layout_marginStart="227dp"
+        android:layout_marginTop="167dp"
+        android:background="@drawable/buttonhistory2locked"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rectangle"
+        android:visibility="gone"
+        />
+
+
+
+    <!--botão desbloqueada-->
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/history3unlock"
+        android:layout_width="79dp"
+        android:layout_height="109dp"
+        android:layout_marginStart="74dp"
+        android:layout_marginTop="357dp"
+        android:background="@drawable/hthreeunlockedbutton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rectangle"
+        android:visibility="gone"
+
+        />
+
+    <!--Botão bloqueado-->
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/history3locked"
+        android:layout_width="79dp"
+        android:layout_height="109dp"
+        android:layout_marginStart="74dp"
+        android:layout_marginTop="357dp"
+        android:background="@drawable/history3lockedbutton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rectangle"
+        android:visibility="gone"
+        />
+
+    <!--botão desbloqueada-->
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/history4unlock"
+        android:layout_width="79dp"
+        android:layout_height="109dp"
+        android:layout_marginStart="210dp"
+        android:layout_marginTop="516dp"
+        android:background="@drawable/historyfourunlockedbutton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rectangle"
+        android:visibility="gone"
+        />
+
+    <!--botão desbloqueada-->
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/history4locked"
+        android:layout_width="79dp"
+        android:layout_height="109dp"
+        android:layout_marginStart="211dp"
+        android:layout_marginTop="516dp"
+        android:background="@drawable/historyfourlockedbutton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rectangle"
+        android:visibility="gone"
+        />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

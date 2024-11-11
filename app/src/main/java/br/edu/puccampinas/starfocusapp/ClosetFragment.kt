@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.google.firebase.auth.FirebaseAuth
@@ -72,6 +73,10 @@ class ClosetFragment : Fragment() {
 
                 clothesCarousel.adapter = ClothesCarouselAdapter(unlockedClothes)
 
+                //Define uma notificação no botão de closet da navBar indicando ao usuário que ele tem roupas desbloqueadas
+
+                updateBadgeForCloset(unlockedClothes.size)
+
                 // Obter a roupa atualmente equipada e definir como o índice inicial
                 equippedClothesIndex = (document.getLong("roupa")?.toInt() ?: 1) - 1
                 currentClothesIndex = equippedClothesIndex
@@ -79,6 +84,11 @@ class ClosetFragment : Fragment() {
                 updateButtonLabel()
             }
         }
+    }
+
+    private fun updateBadgeForCloset(unlockedClothesCount: Int) {
+        // Aqui você comunica com a Activity para atualizar o badge
+        (activity as? BottomNav)?.updateBadgeForCloset(unlockedClothesCount)
     }
 
     private fun updateClothesSelection() {
@@ -96,9 +106,14 @@ class ClosetFragment : Fragment() {
     private fun updateButtonLabel() {
         // Verifica se o personagem atual está equipado e define o texto do botão
         if (currentClothesIndex == equippedClothesIndex) {
-            selectButton.text = "Equipado"
+            selectButton.text = "Selecionado"
+            // Quando estiver equipado, use o selector para definir o fundo
+            selectButton.setBackgroundResource(R.drawable.button_background_pressed)
         } else {
             selectButton.text = "Selecionar"
+            // Quando não estiver equipado, use o selector para definir o fundo
+            selectButton.setBackgroundResource(R.drawable.button_background_normal)
         }
     }
+
 }
