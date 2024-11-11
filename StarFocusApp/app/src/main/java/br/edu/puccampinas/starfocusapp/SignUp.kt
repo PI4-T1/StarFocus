@@ -246,7 +246,8 @@ class SignUp : AppCompatActivity() {
                     "history1" to true,
                     "history2" to false,
                     "history3" to false,
-                    "history4" to false
+                    "history4" to false,
+                    "isVerified" to (authResult.user?.isEmailVerified ?: false)
                 )
 
                 // Salvar o usuário no Firestore sem a senha
