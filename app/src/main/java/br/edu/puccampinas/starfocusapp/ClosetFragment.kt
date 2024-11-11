@@ -73,6 +73,10 @@ class ClosetFragment : Fragment() {
 
                 clothesCarousel.adapter = ClothesCarouselAdapter(unlockedClothes)
 
+                //Define uma notificação no botão de closet da navBar indicando ao usuário que ele tem roupas desbloqueadas
+
+                updateBadgeForCloset(unlockedClothes.size)
+
                 // Obter a roupa atualmente equipada e definir como o índice inicial
                 equippedClothesIndex = (document.getLong("roupa")?.toInt() ?: 1) - 1
                 currentClothesIndex = equippedClothesIndex
@@ -80,6 +84,11 @@ class ClosetFragment : Fragment() {
                 updateButtonLabel()
             }
         }
+    }
+
+    private fun updateBadgeForCloset(unlockedClothesCount: Int) {
+        // Aqui você comunica com a Activity para atualizar o badge
+        (activity as? BottomNav)?.updateBadgeForCloset(unlockedClothesCount)
     }
 
     private fun updateClothesSelection() {

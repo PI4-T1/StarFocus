@@ -2,15 +2,12 @@ package br.edu.puccampinas.starfocusapp
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import br.edu.puccampinas.starfocusapp.databinding.BottomNavBinding
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
-/**
- * Atividade principal que gerencia a navegação entre os fragments no BottomNavigationView.
- * A classe BottomNav é responsável por configurar a navegação entre os diferentes fragments
- * através de um BottomNavigationView. Também lida com a exibição do BottomSheetDialogFragment para adicionar tarefas.
- * @author Lais
- */
 class BottomNav : AppCompatActivity() {
 
     private lateinit var binding: BottomNavBinding  // Referência para o binding da activity
@@ -67,7 +64,31 @@ class BottomNav : AppCompatActivity() {
             // Exibe o BottomSheetFragment
             bottomSheetFragment.show(supportFragmentManager, "bottomSheetFragment2")
         }
+
     }
+
+    /**
+     * Atualiza o badge para o item do Closet quando há roupas desbloqueadas.
+     */
+    // Método para atualizar o badge no BottomNavigationView
+    fun updateBadgeForCloset(unlockedClothesCount: Int) {
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        val closetItem = bottomNav.menu.findItem(R.id.bottom_closet)
+
+        // Exibe o badge somente se houver roupas desbloqueadas
+        if (unlockedClothesCount > 0) {
+            val badge = bottomNav.getOrCreateBadge(R.id.bottom_closet)
+            badge.isVisible = true
+            badge.number = unlockedClothesCount
+
+            // Personaliza a cor de fundo e o texto do badge
+            badge.backgroundColor = ContextCompat.getColor(this, R.color.teal_dark)
+
+        } else {
+            bottomNav.removeBadge(R.id.bottom_closet)
+        }
+    }
+
 
     /**
      * Lógica para o botão de voltar.
