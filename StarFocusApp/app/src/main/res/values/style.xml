@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="inputstyle">
+        <item name="android:layout_width">676dp</item>
+        <item name="android:layout_height">166dp</item>
+        <item name="android:background">@drawable/inputstyle</item>
+        <item name="android:layout_marginLeft">80dp</item>
+        <item name="android:layout_marginRight">80dp</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="buttonsend">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/buttonsend</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="buttonsend3">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/buttonsend3</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:textColor">"@color/white"</item>
+    </style>
+
+    <style name="rectangledetails">
+        <item name="android:layout_width">339dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/rectanglegreen</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:textColor">"@color/off_white"</item>
+    </style>
+
+    <style name="sairapp">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/buttonout</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:textColor">"@color/off_white"</item>
+    </style>
+
+    <style name="error">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">10dp</item>
+        <item name="android:layout_marginEnd">10dp</item>
+        <item name="android:layout_marginTop">1dp</item>
+        <item name="android:layout_marginBottom">1dp</item>
+        <item name="android:text">""</item>
+        <item name="android:textColor">@color/input_invalid</item>
+    </style>
+
+    <style name="buttonCalendar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/buttonsend</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:textColor">"@color/white"</item>
+    </style>
+
+    <style name="sendProgress">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/buttonsend2</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:textColor">"@color/white"</item>
+    </style>
+
+    <style name="CalendarDays">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/rectangledays</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:textColor">"@color/black"</item>
+    </style>
+
+    <style name="AddTask">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@drawable/rectangleaddtask</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:textColor">"@color/black"</item>
+    </style>
+
+    <style name="rectangleProgress">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@drawable/rectangleprogress</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:textColor">"@color/off_white"</item>
+    </style>
+
+
+    <style name="CustomBottomNavStyle" >
+        <item name="android:fontFamily">@font/poppins_medium</item> <!-- Use a fonte que você adicionou -->
+        <item name="android:textColor">@color/purple</item> <!-- Cor do texto -->
+        <item name="android:textSize">14sp</item> <!-- Tamanho do texto -->
+        <item name="android:textColorHint">@color/off_white</item><!-- Cor quando não selecionado -->
+    </style>
+
+    <style name="buttondays">
+        <item name="android:layout_width">70dp</item>
+        <item name="android:layout_height">22dp</item>
+        <item name="android:background">@drawable/inputstyle</item>
+    </style>
+
+    <style name="Rectangleprofile">
+        <item name="android:layout_width">100dp</item>
+        <item name="android:layout_height">122dp</item>
+        <item name="android:background">@drawable/rectangleprofile</item>
+    </style>
+
+</resources>
