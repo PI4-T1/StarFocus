@@ -22,13 +22,11 @@ import androidx.lifecycle.lifecycleScope
 import br.edu.puccampinas.starfocusapp.databinding.FragmentHomeBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
+import java.io.DataInputStream
+import java.io.DataOutputStream
 import java.net.Socket
 import java.util.Calendar
 
@@ -69,7 +67,6 @@ class HomeFragment : Fragment(), ProgressListener {
     private lateinit var clienteAndroid: ClienteAndroid
     private lateinit var parceiro: Parceiro
     private var isClienteAndroidInitialized = false
-    private val clientInitializationDeferred = CompletableDeferred<Unit>()
     private var isInitializingClient = false
 
 
@@ -90,44 +87,11 @@ class HomeFragment : Fragment(), ProgressListener {
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
-        // Inicializa o clienteAndroid em uma Coroutine usando async e retorna sucesso/falha
-        val clientInitializationDeferred = viewLifecycleOwner.lifecycleScope.async(Dispatchers.IO) {
-            initializeClientAndroid()
-        }
-
-        lifecycleScope.launch(Dispatchers.Main) {
-            try {
-                Log.d("HomeFragment", "Iniciando a atualização do progresso...")
-
-                // Aguardar a inicialização do clienteAndroid
-                val initializedSuccessfully = clientInitializationDeferred.await()
-                if (initializedSuccessfully && isClienteAndroidInitialized) {
-                    Log.d("HomeFragment", "clienteAndroid inicializado, atualizando barra de progresso...")
-
-                    val userId = auth.currentUser?.uid
-                    val dataSelecionada = String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear)
-                    if (userId != null) {
-                        countTasks(userId, dataSelecionada) { totalTarefas, enviadas ->
-                            Log.d("HomeFragment", "Chamando sendProgress com totalTarefas=$totalTarefas e enviadas=$enviadas")
-                            clienteAndroid.sendProgress(totalTarefas, enviadas)
-                            Log.d("HomeFragment", "Progresso enviado com sucesso: totalTarefas=$totalTarefas, enviadas=$enviadas")
-                        }
-                    }
-                } else {
-                    Log.e("HomeFragment", "clienteAndroid não foi inicializado.")
-                }
-
-            } catch (e: Exception) {
-                Log.e("HomeFragment", "Falha na inicialização do clienteAndroid", e)
-            }
-        }
-
         // Configuração de interface e eventos
         setupUI()
         return binding.root
     }
 
-    // Método de inicialização do clienteAndroid
     private suspend fun initializeClientAndroid(): Boolean {
         if (isInitializingClient) {
             return false
@@ -137,21 +101,58 @@ class HomeFragment : Fragment(), ProgressListener {
         try {
             Log.d("HomeFragment", "Iniciando a conexão com o servidor...")
 
+            // Estabelecer a conexão com o servidor em uma thread de fundo
             val socket = withContext(Dispatchers.IO) {
-                Socket("10.0.2.2", 3000)
+                try {
+                    val newSocket = Socket("10.0.2.2", 3000)  // Para emulador (alterar para IP correto se estiver no dispositivo)
+                    Log.d("HomeFragment", "Socket conectado com sucesso.")
+                    newSocket
+                } catch (e: Exception) {
+                    Log.e("HomeFragment", "Falha ao conectar ao servidor", e)
+                    null
+                }
             }
-            Log.d("HomeFragment", "Conexão com o servidor estabelecida.")
 
-            val inputStream = withContext(Dispatchers.IO) {
-                ObjectInputStream(socket.getInputStream())
+            // Verificar se o socket foi criado corretamente
+            if (socket == null || !socket.isConnected) {
+                Log.e("HomeFragment", "Erro ao conectar ao servidor, socket nulo ou não conectado.")
+                return false
             }
-            Log.d("HomeFragment", "InputStream criado.")
+
+            Log.d("HomeFragment", "Tentando criar os streams...")
+
+            // Criar DataInputStream e DataOutputStream para comunicação com o servidor
+            val inputStream = withContext(Dispatchers.IO) {
+                try {
+                    val stream = DataInputStream(socket.getInputStream())
+                    Log.d("HomeFragment", "DataInputStream criado com sucesso.")
+                    stream
+                } catch (e: Exception) {
+                    Log.e("HomeFragment", "Erro ao criar DataInputStream", e)
+                    null
+                }
+            }
 
             val outputStream = withContext(Dispatchers.IO) {
-                ObjectOutputStream(socket.getOutputStream())
+                try {
+                    val stream = DataOutputStream(socket.getOutputStream())
+                    Log.d("HomeFragment", "DataOutputStream criado com sucesso.")
+                    stream
+                } catch (e: Exception) {
+                    Log.e("HomeFragment", "Erro ao criar DataOutputStream", e)
+                    null
+                }
             }
-            Log.d("HomeFragment", "OutputStream criado.")
 
+            // Verificar se os streams foram criados corretamente
+            if (inputStream == null || outputStream == null) {
+                Log.e("HomeFragment", "Falha ao criar DataInputStream ou DataOutputStream. Abortando a inicialização.")
+                return false
+            }
+
+            Log.d("HomeFragment", "Streams criados com sucesso, inicializando parceiro...")
+
+            // Inicializar o parceiro e o clienteAndroid com os streams criados
             parceiro = Parceiro(socket, inputStream, outputStream)
             Log.d("HomeFragment", "Parceiro criado com sucesso.")
 
@@ -159,13 +160,58 @@ class HomeFragment : Fragment(), ProgressListener {
             Log.d("HomeFragment", "clienteAndroid inicializado com sucesso.")
 
             isClienteAndroidInitialized = true
-            return true // Indica que a inicialização foi bem-sucedida
+            return true // Sucesso na inicialização
 
         } catch (e: Exception) {
             Log.e("HomeFragment", "Erro na inicialização do clienteAndroid", e)
+            e.printStackTrace()
             return false
         } finally {
             isInitializingClient = false
+        }
+    }
+
+    fun updateProgress() {
+        lifecycleScope.launch(Dispatchers.Main) {
+            try {
+                Log.d("HomeFragment", "Iniciando a atualização do progresso...")
+
+                // Inicializar o cliente Android de forma simplificada
+                val initializedSuccessfully = initializeClientAndroid()
+
+                if (initializedSuccessfully && isClienteAndroidInitialized) {
+                    Log.d(
+                        "HomeFragment",
+                        "clienteAndroid inicializado, atualizando barra de progresso..."
+                    )
+
+                    val userId = auth.currentUser?.uid
+                    val dataSelecionada = String.format(
+                        "%02d-%02d-%04d",
+                        selectedDay,
+                        selectedMonth + 1,
+                        selectedYear
+                    )
+                    if (userId != null) {
+                        countTasks(userId, dataSelecionada) { totalTarefas, enviadas ->
+                            Log.d(
+                                "HomeFragment",
+                                "Chamando sendProgress com totalTarefas=$totalTarefas e enviadas=$enviadas"
+                            )
+                            clienteAndroid.sendProgress(totalTarefas, enviadas)
+                            Log.d(
+                                "HomeFragment",
+                                "Progresso enviado com sucesso: totalTarefas=$totalTarefas, enviadas=$enviadas"
+                            )
+                        }
+                    }
+                } else {
+                    Log.e("HomeFragment", "clienteAndroid não foi inicializado corretamente.")
+                }
+
+            } catch (e: Exception) {
+                Log.e("HomeFragment", "Falha na inicialização do clienteAndroid", e)
+            }
         }
     }
 
@@ -676,6 +722,8 @@ class HomeFragment : Fragment(), ProgressListener {
             buttonProgressParent.removeView(binding.buttonProgress)
         }
         binding.TaskContainer.addView(binding.buttonProgress)
+
+        updateProgress()
     }
 
     /**
@@ -848,6 +896,7 @@ class HomeFragment : Fragment(), ProgressListener {
                     // Atualiza o status das tarefas concluídas para "Enviada"
                     if (tarefasIdsConcluidas.isNotEmpty()) {
                         updateTaskStatusEnviada(userId, dataSelecionada, tarefasIdsConcluidas)
+                        updateProgress()
                     }
 
                     // Desativa o botão e ajusta a transparência após o envio
