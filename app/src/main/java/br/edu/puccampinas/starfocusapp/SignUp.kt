@@ -244,9 +244,9 @@ class SignUp : AppCompatActivity() {
                     "monster4" to true,
                     "monster5" to true,
                     "history1" to true,
-                    "history2" to true,
-                    "history3" to true,
-                    "history4" to true
+                    "history2" to false,
+                    "history3" to false,
+                    "history4" to false
                 )
 
                 // Salvar o usuário no Firestore sem a senha
