@@ -17,7 +17,7 @@ import java.util.Calendar
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class ProgressReport : AppCompatActivity() {
+class ProgressReport : AppCompatActivity(), MetricsListener {
 
     private val binding by lazy { ReportProgressBinding.inflate(layoutInflater) }
 
@@ -33,93 +33,104 @@ class ProgressReport : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        // Chama a função suspend dentro de uma coroutine
         lifecycleScope.launch {
-            val stringNumeros = obterMetricas()
-            // Agora você pode usar stringNumeros como quiser
-            Log.d("Metricas", "Valores das métricas: $stringNumeros")
+            // Inicializa o cliente Android antes de tentar enviar as métricas
+            val isInitialized = initializeClientAndroid()
+            if (isInitialized) {
+                // Depois de inicializar, envia as métricas para o servidor
+                enviarMetricasParaServidor()
+            } else {
+                Log.e("ProgressReport", "Falha na inicialização do cliente Android.")
+            }
         }
 
     }
 
-//    private suspend fun initializeClientAndroid(): Boolean {
-//        if (isInitializingClient) {
-//            return false
-//        }
-//
-//        isInitializingClient = true
-//        try {
-//            Log.d("HomeFragment", "Iniciando a conexão com o servidor...")
-//
-//            // Estabelecer a conexão com o servidor em uma thread de fundo
-//            val socket = withContext(Dispatchers.IO) {
-//                try {
-//                    val newSocket = Socket("10.0.2.2", 3000)  // Para emulador (alterar para IP correto se estiver no dispositivo)
-//                    Log.d("HomeFragment", "Socket conectado com sucesso.")
-//                    newSocket
-//                } catch (e: Exception) {
-//                    Log.e("HomeFragment", "Falha ao conectar ao servidor", e)
-//                    null
-//                }
-//            }
-//
-//            // Verificar se o socket foi criado corretamente
-//            if (socket == null || !socket.isConnected) {
-//                Log.e("HomeFragment", "Erro ao conectar ao servidor, socket nulo ou não conectado.")
-//                return false
-//            }
-//
-//            Log.d("HomeFragment", "Tentando criar os streams...")
-//
-//            // Criar DataInputStream e DataOutputStream para comunicação com o servidor
-//            val inputStream = withContext(Dispatchers.IO) {
-//                try {
-//                    val stream = DataInputStream(socket.getInputStream())
-//                    Log.d("HomeFragment", "DataInputStream criado com sucesso.")
-//                    stream
-//                } catch (e: Exception) {
-//                    Log.e("HomeFragment", "Erro ao criar DataInputStream", e)
-//                    null
-//                }
-//            }
-//
-//            val outputStream = withContext(Dispatchers.IO) {
-//                try {
-//                    val stream = DataOutputStream(socket.getOutputStream())
-//                    Log.d("HomeFragment", "DataOutputStream criado com sucesso.")
-//                    stream
-//                } catch (e: Exception) {
-//                    Log.e("HomeFragment", "Erro ao criar DataOutputStream", e)
-//                    null
-//                }
-//            }
-//
-//            // Verificar se os streams foram criados corretamente
-//            if (inputStream == null || outputStream == null) {
-//                Log.e("HomeFragment", "Falha ao criar DataInputStream ou DataOutputStream. Abortando a inicialização.")
-//                return false
-//            }
-//
-//            Log.d("HomeFragment", "Streams criados com sucesso, inicializando parceiro...")
-//
-//            // Inicializar o parceiro e o clienteAndroid com os streams criados
-//            parceiro = Parceiro(socket, inputStream, outputStream)
-//            Log.d("HomeFragment", "Parceiro criado com sucesso.")
-//
-//            clienteAndroid = ClienteAndroid(this, parceiro)
-//            Log.d("HomeFragment", "clienteAndroid inicializado com sucesso.")
-//
-//            isClienteAndroidInitialized = true
-//            return true // Sucesso na inicialização
-//
-//        } catch (e: Exception) {
-//            Log.e("HomeFragment", "Erro na inicialização do clienteAndroid", e)
-//            e.printStackTrace()
-//            return false
-//        } finally {
-//            isInitializingClient = false
-//        }
-//    }
+    private suspend fun initializeClientAndroid(): Boolean {
+        if (isInitializingClient) {
+            return false
+        }
+
+        isInitializingClient = true
+        try {
+            Log.d("ProgressReport", "Iniciando a conexão com o servidor...")
+
+            // Estabelecer a conexão com o servidor
+            val socket = withContext(Dispatchers.IO) {
+                try {
+                    val newSocket = Socket("10.0.2.2", 3000) // Para emulador, altere para o IP do servidor em um dispositivo real
+                    Log.d("ProgressReport", "Socket conectado com sucesso.")
+                    newSocket
+                } catch (e: Exception) {
+                    Log.e("ProgressReport", "Falha ao conectar ao servidor", e)
+                    null
+                }
+            }
+
+            // Verifica se o socket foi criado corretamente
+            if (socket == null || !socket.isConnected) {
+                Log.e("ProgressReport", "Erro ao conectar ao servidor, socket nulo ou não conectado.")
+                return false
+            }
+
+            Log.d("ProgressReport", "Tentando criar os streams...")
+
+            // Criar DataInputStream e DataOutputStream para comunicação com o servidor
+            val inputStream = withContext(Dispatchers.IO) {
+                try {
+                    val stream = DataInputStream(socket.getInputStream())
+                    Log.d("ProgressReport", "DataInputStream criado com sucesso.")
+                    stream
+                } catch (e: Exception) {
+                    Log.e("ProgressReport", "Erro ao criar DataInputStream", e)
+                    null
+                }
+            }
+
+            val outputStream = withContext(Dispatchers.IO) {
+                try {
+                    val stream = DataOutputStream(socket.getOutputStream())
+                    Log.d("ProgressReport", "DataOutputStream criado com sucesso.")
+                    stream
+                } catch (e: Exception) {
+                    Log.e("ProgressReport", "Erro ao criar DataOutputStream", e)
+                    null
+                }
+            }
+
+            // Verifica se os streams foram criados corretamente
+            if (inputStream == null || outputStream == null) {
+                Log.e("ProgressReport", "Falha ao criar DataInputStream ou DataOutputStream.")
+                return false
+            }
+
+            Log.d("ProgressReport", "Streams criados com sucesso, inicializando parceiro...")
+
+            // Inicializa o parceiro sem o clienteAndroid
+            parceiro = Parceiro(socket, inputStream, outputStream)
+            Log.d("ProgressReport", "Parceiro criado com sucesso.")
+
+            clienteAndroid = ClienteAndroid(null, this, parceiro)
+
+            Log.d("HomeFragment", "clienteAndroid inicializado com sucesso.")
+
+            isClienteAndroidInitialized = true
+            return true // Sucesso na inicialização
+        } catch (e: Exception) {
+            Log.e("ProgressReport", "Erro na inicialização do clienteAndroid", e)
+            return false
+        } finally {
+            isInitializingClient = false
+        }
+    }
+
+    // Implementação do método da interface MetricsListener
+    override fun onMetricsUpdate(metrics: String) {
+        runOnUiThread {
+            binding.stringmetrics.text = metrics
+            Log.d("HomeFragment", "String de métrica: $metrics")
+        }
+    }
 
     private suspend fun obterMetricas(): String {
         val userId = auth.currentUser?.uid ?: return "000000000000" // Retorna string com zeros se não houver usuário logado
@@ -156,9 +167,9 @@ class ProgressReport : AppCompatActivity() {
                                 tarefasList.forEach { tarefa ->
                                     val status = tarefa["status"] as? String
                                     when (status) {
-                                        "pendente" -> pendenteCount++
-                                        "concluida" -> concluidaCount++
-                                        "enviada" -> enviadaCount++
+                                        "Pendente" -> pendenteCount++
+                                        "Concluída" -> concluidaCount++
+                                        "Enviada" -> enviadaCount++
                                     }
                                     totalCount++
                                 }
@@ -190,6 +201,20 @@ class ProgressReport : AppCompatActivity() {
                 }
         }
     }
+
+    private suspend fun enviarMetricasParaServidor() {
+        val stringNumeros = obterMetricas()  // Obtém as métricas como string
+        Log.d("Metricas", "Valores das métricas: $stringNumeros")
+
+        // Verifica se o clienteAndroid está inicializado antes de enviar os dados
+        if (isClienteAndroidInitialized) {
+            // Envia as métricas para o servidor
+            clienteAndroid.sendMetrics(stringNumeros)
+        } else {
+            Log.e("ProgressReport", "ClienteAndroid não está inicializado")
+        }
+    }
+
 
 }
 

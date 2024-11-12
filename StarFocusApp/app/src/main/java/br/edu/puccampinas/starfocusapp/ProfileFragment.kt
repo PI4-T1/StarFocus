@@ -44,11 +44,11 @@ class ProfileFragment : Fragment() {
             activity?.finish() // Finaliza a atividade atual
         }
 
-//        // Ao clicar no botão "Saiba Mais", redireciona para a nova Activity
-//        btnSaibaMais.setOnClickListener {
-//            val intent = Intent(activity, RelatorioProgresso::class.java)
-//            startActivity(intent)
-//        }
+        // Ao clicar no botão "Saiba Mais", redireciona para a nova Activity
+        btnSaibaMais.setOnClickListener {
+            val intent = Intent(activity, ProgressReport::class.java)
+            startActivity(intent)
+        }
 
         return view
     }
