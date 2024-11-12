@@ -692,9 +692,15 @@ class HomeFragment : Fragment(), ProgressListener {
                     setImageResource(R.drawable.baseline_delete_24)
                     setPadding(20, 0, 20, 0)
                     setOnClickListener {
-                        deleteTask(userId, selectedDate, tarefaId)
+                        // Verifica se a tarefa não está com status "Enviada"
+                        if (!enviada) {
+                            deleteTask(userId, selectedDate, tarefaId)
+                        } else {
+                            Toast.makeText(context, "Não é possível deletar uma tarefa enviada", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
+
                 tarefaLayout.addView(tarefaView, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
                 tarefaLayout.addView(deleteIcon)
 
