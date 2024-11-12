@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.NumberPicker
 import android.widget.RadioButton
@@ -106,6 +107,7 @@ class HomeFragment : Fragment(), ProgressListener {
             // Estabelecer a conexão com o servidor em uma thread de fundo
             val socket = withContext(Dispatchers.IO) {
                 try {
+                    //celular 192.168.15.58
                     val newSocket = Socket("10.0.2.2", 3000)  // Para emulador (alterar para IP correto se estiver no dispositivo)
                     Log.d("HomeFragment", "Socket conectado com sucesso.")
                     newSocket
@@ -557,6 +559,8 @@ class HomeFragment : Fragment(), ProgressListener {
             .addOnFailureListener { e ->
                 Log.e("Firestore", "Erro ao carregar tarefas", e) // Loga qualquer erro ao tentar carregar tarefas
             }
+
+        updateProgress()
     }
 
     /**
@@ -600,9 +604,22 @@ class HomeFragment : Fragment(), ProgressListener {
                 val concluido = status == "Concluída"
                 val enviada = status == "Enviada"  // Verifica se a tarefa está com status "Enviada"
 
-                // layout horizontal para o RadioButton e o ícone de deletar
+                // Cria um FrameLayout para conter o RadioButton e o ícone de deletar sobrepostos
+                val tarefaContainer = FrameLayout(requireContext()).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                }
+
                 val tarefaLayout = LinearLayout(requireContext()).apply {
                     orientation = LinearLayout.HORIZONTAL
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, // Garante que ocupe toda a largura disponível
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        setMargins(16, 0, 16, 0) // Define margens similares ao InputTask
+                    }
                 }
 
                 // componente de visualização da tarefa
@@ -689,30 +706,44 @@ class HomeFragment : Fragment(), ProgressListener {
                     }
                 }
 
+                // Cria o ícone de deletar
                 val deleteIcon = ImageView(requireContext()).apply {
-                    setImageResource(R.drawable.baseline_delete_24)
+                    setImageResource(R.drawable.delete_icon)
                     setPadding(20, 0, 20, 0)
+                    // Oculta o ícone se a tarefa foi enviada
+                    visibility = if (enviada) View.GONE else View.VISIBLE
+
                     setOnClickListener {
-                        // Verifica se a tarefa não está com status "Enviada"
-                        if (!enviada) {
-                            deleteTask(userId, selectedDate, tarefaId)
-                        } else {
-                            Toast.makeText(context, "Não é possível deletar uma tarefa enviada", Toast.LENGTH_SHORT).show()
-                        }
+                        deleteTask(userId, selectedDate, tarefaId)
+                    }
+
+                    // Define o posicionamento do ícone dentro do FrameLayout (à direita)
+                    layoutParams = FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.WRAP_CONTENT,
+                        FrameLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        gravity = Gravity.END or Gravity.CENTER_VERTICAL
+                        marginEnd = 50
                     }
                 }
 
-                tarefaLayout.addView(tarefaView, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-                tarefaLayout.addView(deleteIcon)
+                // Adiciona o RadioButton e o ícone de deletar ao FrameLayout
+                tarefaContainer.addView(tarefaView)
+                tarefaContainer.addView(deleteIcon)
+
+                // Finalmente, adiciona o tarefaContainer ao layout principal
+                tarefaLayout.addView(tarefaContainer)
 
                 // Configura o layout da tarefa dentro do contêiner de tarefas, ajustando as margens
-                val layoutParams = LinearLayout.LayoutParams(
+                val containerLayoutParams = LinearLayout.LayoutParams(
                     binding.InputTask.width,
                     binding.InputTask.height
                 ).apply {
                     setMargins(16, 0, 16, 0) // Define as margens esquerda e direita
                 }
-                tarefaLayout.layoutParams = layoutParams
+                tarefaContainer.layoutParams = containerLayoutParams
+
+                // Adiciona o tarefaLayout ao contêiner principal de tarefas
                 binding.TaskContainer.addView(tarefaLayout)
 
                 // Se a tarefa já estava concluída, marca que há uma tarefa concluída na lista
@@ -773,7 +804,6 @@ class HomeFragment : Fragment(), ProgressListener {
                                         } ?: emptyList(),
                                         date
                                     )
-                                    Log.d("Firestore", "Tarefa deletada com sucesso")
                                 }
                                 .addOnFailureListener {
                                     Log.e("Firestore", "Erro ao deletar tarefa: ${it.message}")
@@ -785,6 +815,7 @@ class HomeFragment : Fragment(), ProgressListener {
             .addOnFailureListener {
                 Log.e("Firestore", "Erro ao acessar o documento do Firestore: ${it.message}")
             }
+        updateProgress()
     }
 
     /**
