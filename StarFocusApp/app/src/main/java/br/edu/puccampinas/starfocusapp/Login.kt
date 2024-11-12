@@ -121,16 +121,20 @@ class Login : AppCompatActivity() {
         // autenticação
         auth.signInWithEmailAndPassword(email, password)
             .addOnSuccessListener { authResult ->
-                val userId = authResult.user?.uid ?: return@addOnSuccessListener
-                checkMonsterNameAndNavigate(userId)
+                val user = authResult.user
+                if (user != null && user.isEmailVerified) {
+                    // E-mail verificado, continuar com o login
+                    val userId = user.uid
+                    checkMonsterNameAndNavigate(userId)
+                } else {
+                    // E-mail não verificado
+                    showToast("Verifique seu e-mail antes de fazer login.")
+                }
             }
             .addOnFailureListener { exception ->
-                // Trata falhas durante o processo de login
                 if (exception.message.toString() == "The email address is badly formatted.") {
-                    // Verifica se o formato do email está incorreto
                     updateInputState(binding.idEmail, binding.textErrorEmail, "Endereço de email inválido!", true)
                 } else {
-                    // Se a falha não for relacionada ao formato do email, exibe mensagem de erro genérica
                     showToast("Email ou senha incorretos, por favor digite novamente!")
                 }
             }

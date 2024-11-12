@@ -29,6 +29,8 @@ import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.net.Socket
 import java.util.Calendar
+import android.widget.ImageView
+import android.widget.Toast
 
 /**
  * Fragmento que exibe a tela inicial com o calendário,
@@ -598,7 +600,12 @@ class HomeFragment : Fragment(), ProgressListener {
                 val concluido = status == "Concluída"
                 val enviada = status == "Enviada"  // Verifica se a tarefa está com status "Enviada"
 
-                // Cria o componente de visualização da tarefa
+                // layout horizontal para o RadioButton e o ícone de deletar
+                val tarefaLayout = LinearLayout(requireContext()).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                }
+
+                // componente de visualização da tarefa
                 val tarefaView = RadioButton(requireContext()).apply {
                     text = tarefaTexto
                     textSize = 20f
@@ -682,6 +689,22 @@ class HomeFragment : Fragment(), ProgressListener {
                     }
                 }
 
+                val deleteIcon = ImageView(requireContext()).apply {
+                    setImageResource(R.drawable.baseline_delete_24)
+                    setPadding(20, 0, 20, 0)
+                    setOnClickListener {
+                        // Verifica se a tarefa não está com status "Enviada"
+                        if (!enviada) {
+                            deleteTask(userId, selectedDate, tarefaId)
+                        } else {
+                            Toast.makeText(context, "Não é possível deletar uma tarefa enviada", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+
+                tarefaLayout.addView(tarefaView, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+                tarefaLayout.addView(deleteIcon)
+
                 // Configura o layout da tarefa dentro do contêiner de tarefas, ajustando as margens
                 val layoutParams = LinearLayout.LayoutParams(
                     binding.InputTask.width,
@@ -689,10 +712,8 @@ class HomeFragment : Fragment(), ProgressListener {
                 ).apply {
                     setMargins(16, 0, 16, 0) // Define as margens esquerda e direita
                 }
-                // Aplica o layout à view da tarefa
-                tarefaView.layoutParams = layoutParams
-                // Adiciona a tarefa ao contêiner de tarefas na tela
-                binding.TaskContainer.addView(tarefaView)
+                tarefaLayout.layoutParams = layoutParams
+                binding.TaskContainer.addView(tarefaLayout)
 
                 // Se a tarefa já estava concluída, marca que há uma tarefa concluída na lista
                 if (concluido) {
@@ -725,6 +746,45 @@ class HomeFragment : Fragment(), ProgressListener {
         binding.TaskContainer.addView(binding.buttonProgress)
 
         updateProgress()
+    }
+
+    private fun deleteTask(userId: String, date: String, taskId: String) {
+        db.collection("Tarefas").document(userId).get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableList<Map<String, Any>>> ?: mutableMapOf()
+                    val tarefasDoDia = dataTarefas[date]
+                    tarefasDoDia?.let {
+                        val tarefaRemovida = it.removeIf { tarefa -> tarefa["id"] == taskId }
+
+                        if (tarefaRemovida) {
+                            db.collection("Tarefas").document(userId).update("tarefas", dataTarefas)
+                                .addOnSuccessListener {
+                                    Toast.makeText(context, "Tarefa excluída com sucesso", Toast.LENGTH_SHORT).show()
+
+                                    // garantir que o terceiro valor no Triple é um String não nulo
+                                    displayTasks(
+                                        dataTarefas[date]?.map { tarefa ->
+                                            Triple(
+                                                tarefa["id"] as? String,
+                                                tarefa["texto"] as? String,
+                                                tarefa["status"] as? String ?: "Pendente"
+                                            )
+                                        } ?: emptyList(),
+                                        date
+                                    )
+                                    Log.d("Firestore", "Tarefa deletada com sucesso")
+                                }
+                                .addOnFailureListener {
+                                    Log.e("Firestore", "Erro ao deletar tarefa: ${it.message}")
+                                }
+                        }
+                    }
+                }
+            }
+            .addOnFailureListener {
+                Log.e("Firestore", "Erro ao acessar o documento do Firestore: ${it.message}")
+            }
     }
 
     /**
