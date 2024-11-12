@@ -11,6 +11,16 @@
         android:layout_height="480dp"
         android:scaleType="centerCrop"
         android:padding="50dp"
-
          />
+
+    <ImageView
+        android:id="@+id/newSeloRoupa"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/novocharacter"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="120dp"
+        android:visibility="gone"
+         />
+
 </FrameLayout>

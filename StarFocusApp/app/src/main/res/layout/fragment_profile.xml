@@ -40,7 +40,7 @@
         android:id="@+id/MudarNomeCardView"
         android:layout_width="330dp"
         android:layout_height="168dp"
-        android:layout_marginTop="160dp"
+        android:layout_marginTop="70dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/rectangle"
@@ -172,7 +172,7 @@
             android:id="@+id/btnLogout"
             style="@style/sairapp"
             android:layout_width="250dp"
-            android:layout_height="40dp"
+            android:layout_height="48dp"
             android:layout_marginTop="150dp"
             android:fontFamily="@font/poppins_bold"
             android:paddingTop="6dp"
@@ -188,6 +188,82 @@
     </androidx.cardview.widget.CardView>
 
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/papais"
+        android:layout_width="127dp"
+        android:layout_height="25dp"
+        android:fontFamily="@font/poppins_medium"
+        android:text="@string/papais"
+        android:textColor="@color/off_white"
+        android:layout_marginTop="20dp"
+        android:elevation="5.2dp"
+        android:textSize="13sp"
+        android:paddingTop="2dp"
+        android:textAlignment="center"
+        android:layout_marginStart="60dp"
+        style="@style/bckPapaisRectangle"
+        app:layout_constraintTop_toBottomOf="@id/CardViewSair"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/CardViewRelatorioProgresso"
+        android:layout_width="330dp"
+        android:layout_height="168dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/CardViewSair"
+        app:cardElevation="5dp"
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="@color/grey">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/relatoriodeprogresso"
+            android:layout_width="180dp"
+            android:layout_height="80dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/relatorioprogresso"
+            android:textColor="@color/black"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="2dp"
+            android:textSize="28sp"
+            android:layout_marginStart="19dp"
+            app:layout_constraintBottom_toBottomOf="@id/MudarNome"
+            app:layout_constraintEnd_toEndOf="@id/MudarNome"
+            app:layout_constraintStart_toStartOf="@id/MudarNome"
+            app:layout_constraintTop_toTopOf="@id/MudarNome"
+            />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnsaibamais"
+            style="@style/buttonsend"
+            android:layout_width="150dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="120dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/vermais"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textColor="@color/off_white"
+            android:textSize="18sp"
+            android:paddingTop="2dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="30dp"/>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imageprogresso"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/progressomonster"
+            app:layout_constraintBottom_toBottomOf="@id/MudarNome"
+            app:layout_constraintStart_toStartOf="@id/MudarNome"
+            app:layout_constraintTop_toTopOf="@id/MudarNome"
+            android:layout_marginStart="200dp"
+            android:layout_marginEnd="200dp"
+            android:layout_marginTop="30dp" />
+
+    </androidx.cardview.widget.CardView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
