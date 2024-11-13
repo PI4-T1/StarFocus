@@ -1161,6 +1161,7 @@ class HomeFragment : Fragment(), ProgressListener {
                         tarefasRef.update(updates).addOnSuccessListener {
                             checkAndSetCompletion(userId)
                             setProgressBarToFullAndDisable()
+                            showDialog()
                         }.addOnFailureListener { e ->
                             Log.e("FirestoreError", "Erro ao atualizar recompensa", e)
                         }
@@ -1182,5 +1183,12 @@ class HomeFragment : Fragment(), ProgressListener {
         binding.InputTask.isEnabled = false
         binding.InputTask.alpha = 0.5f
     }
+
+    private fun showDialog() {
+        // Cria uma instância de DialogClothesHistory e exibe o diálogo
+        val customDialog = DialogClothesHistory(requireContext())
+        customDialog.showDialog()
+    }
+
 
 }

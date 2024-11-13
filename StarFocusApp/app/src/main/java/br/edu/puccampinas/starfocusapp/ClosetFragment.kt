@@ -79,11 +79,6 @@ class ClosetFragment : Fragment() {
                 val monster4 = document.getBoolean("monster4") == true
                 val monster5 = document.getBoolean("monster5") == true
 
-                // Se algum monstro estiver desbloqueado, exibe o diálogo
-                if (monster2 || monster3 || monster4 || monster5) {
-                    showDialog()  // Chama a função para exibir o diálogo
-                }
-
                 // Define uma notificação no botão de closet da navBar indicando ao usuário que ele tem roupas desbloqueadas
                 updateBadgeForCloset(unlockedClothes.size)
 
@@ -96,12 +91,6 @@ class ClosetFragment : Fragment() {
                 updateButtonLabel()
             }
         }
-    }
-
-    private fun showDialog() {
-        // Cria uma instância de DialogClothesHistory e exibe o diálogo
-        val customDialog = DialogClothesHistory(requireContext())
-        customDialog.showDialog()
     }
 
     private fun updateBadgeForCloset(unlockedClothesCount: Int) {
