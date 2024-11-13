@@ -104,8 +104,11 @@ class BottomsSheetAddTaskFragment(private val onTaskAdded: () -> Unit) : BottomS
                 val tarefasRef = db.collection("Tarefas").document(userId)
 
                 tarefasRef.get().addOnSuccessListener { document ->
-                    val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableList<Map<String, Any>>> ?: mutableMapOf()
-                    val tarefasDoDia = dataTarefas[dataSelecionada] ?: mutableListOf()  // Obtém ou cria a lista de tarefas para o dia
+                    val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableMap<String, Any>> ?: mutableMapOf()
+
+                    // Verifica se a data selecionada já possui um mapa de dados, caso contrário, cria um
+                    val tarefasDoDia = dataTarefas[dataSelecionada]?.get("lista") as? MutableList<Map<String, Any>> ?: mutableListOf()
+                    val recompensaDoDia = dataTarefas[dataSelecionada]?.get("recompensa") as? Boolean ?: false
 
                     // Cria um ID único para a nova tarefa
                     val tarefaId = db.collection("Tarefas").document().id
@@ -117,7 +120,12 @@ class BottomsSheetAddTaskFragment(private val onTaskAdded: () -> Unit) : BottomS
                         "status" to "Pendente"  // Status inicial da tarefa
                     )
                     tarefasDoDia.add(novaTarefa)  // Adiciona a tarefa na lista de tarefas do dia
-                    dataTarefas[dataSelecionada] = tarefasDoDia  // Atualiza o mapa de tarefas para o dia selecionado
+
+                    // Atualiza o mapa de tarefas para o dia selecionado
+                    dataTarefas[dataSelecionada] = mutableMapOf(
+                        "lista" to tarefasDoDia,
+                        "recompensa" to recompensaDoDia // Garante que o campo recompensa esteja presente, com valor inicial false se não existir
+                    )
 
                     // Atualiza o Firestore com as tarefas modificadas
                     tarefasRef.set(hashMapOf("tarefas" to dataTarefas), SetOptions.merge())

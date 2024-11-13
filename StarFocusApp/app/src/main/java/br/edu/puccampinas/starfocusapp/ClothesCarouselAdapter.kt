@@ -6,11 +6,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 
-
-class ClothesCarouselAdapter(private val images: List<Int>) : RecyclerView.Adapter<ClothesCarouselAdapter.ViewHolder>() {
+class ClothesCarouselAdapter(private val clothes: List<Pair<Int, Boolean>>) : RecyclerView.Adapter<ClothesCarouselAdapter.ViewHolder>() {
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.findViewById(R.id.imageCarouselItem)
+        val newSeloImageView: ImageView = view.findViewById(R.id.newSeloRoupa)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -19,10 +19,14 @@ class ClothesCarouselAdapter(private val images: List<Int>) : RecyclerView.Adapt
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.imageView.setImageResource(images[position])
+        val (imageRes, isNew) = clothes[position]
+        holder.imageView.setImageResource(imageRes)
+
+        // Exibe o selo "new" apenas se a roupa for nova
+        holder.newSeloImageView.visibility = if (isNew) View.VISIBLE else View.GONE
     }
 
     override fun getItemCount(): Int {
-        return images.size
+        return clothes.size
     }
 }

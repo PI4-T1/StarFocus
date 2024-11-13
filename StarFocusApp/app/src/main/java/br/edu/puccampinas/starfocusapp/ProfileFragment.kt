@@ -27,6 +27,9 @@ class ProfileFragment : Fragment() {
         // Referência à TextView onde o nome de usuário será exibido
         usernameTextView = view.findViewById(R.id.username)
 
+        // Referência ao botão "Saiba Mais"
+        val btnSaibaMais = view.findViewById<Button>(R.id.btnsaibamais)
+
         // Referência ao botão de logout
         val btnLogout = view.findViewById<Button>(R.id.btnLogout)
 
@@ -39,6 +42,12 @@ class ProfileFragment : Fragment() {
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             activity?.finish() // Finaliza a atividade atual
+        }
+
+        // Ao clicar no botão "Saiba Mais", redireciona para a nova Activity
+        btnSaibaMais.setOnClickListener {
+            val intent = Intent(activity, ProgressReport::class.java)
+            startActivity(intent)
         }
 
         return view

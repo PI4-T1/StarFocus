@@ -52,16 +52,39 @@ public class Servidor {
             DataInputStream inputStream = new DataInputStream(clienteSocket.getInputStream());
             DataOutputStream outputStream = new DataOutputStream(clienteSocket.getOutputStream())
         ) {
-            // Receber os inteiros enviados pelo cliente
-            int totalTarefas = inputStream.readInt();
-            int tarefasConcluidas = inputStream.readInt();
+            // Ler o "comando" enviado pelo cliente para determinar o tipo de solicitação
+            int comando = inputStream.readInt();
 
-            // Calcular a porcentagem
-            double porcentagem = (double) tarefasConcluidas / totalTarefas * 100;
+            if (comando == 1) {  // 1 = Progresso
+                // Ler inteiros do cliente (progresso)
+                int totalTarefas = inputStream.readInt();
+                int tarefasConcluidas = inputStream.readInt();
 
-            // Enviar a porcentagem de volta para o cliente
-            outputStream.writeInt((int) porcentagem);
+                // Criar instância de BarraDeProgresso para calcular a porcentagem
+                BarraDeProgresso barraDeProgresso = new BarraDeProgresso(totalTarefas, tarefasConcluidas);
 
+                // Obter a porcentagem calculada pela BarraDeProgresso
+                double porcentagem = barraDeProgresso.getPorcentagemConcluida();
+
+                // Enviar a porcentagem de volta para o cliente
+                outputStream.writeInt((int) porcentagem);  // Enviar como inteiro (porcentagem)
+                
+            } else if (comando == 2) {  // 2 = Métricas
+                // Ler string de métricas
+                String metricaString = inputStream.readUTF();
+
+                // Criar instância de RelatorioProgresso para processar as métricas
+                RelatorioProgresso relatorioProgresso = new RelatorioProgresso();
+
+                // Calcular ou processar as métricas utilizando o método calcularMetricas
+                String resultadoMetrica = relatorioProgresso.calcularMetricas(metricaString);
+
+                // Enviar o resultado das métricas de volta para o cliente
+                outputStream.writeUTF(resultadoMetrica);
+                
+            } else {
+                System.out.println("Comando desconhecido recebido.");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -72,7 +95,6 @@ public class Servidor {
             }
         }
     }
-
 
     // Método para parar o servidor com segurança
     private static void pararServidor() {
