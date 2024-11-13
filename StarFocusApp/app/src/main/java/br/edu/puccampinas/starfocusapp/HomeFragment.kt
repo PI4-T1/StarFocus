@@ -529,22 +529,27 @@ class HomeFragment : Fragment(), ProgressListener {
         db.collection("Tarefas").document(userId).get()
             .addOnSuccessListener { document ->
                 if (document != null && document.exists()) {
-                    // Obtém as tarefas organizadas por data no formato esperado
-                    val dataTarefas = document.get("tarefas") as? Map<String, List<Map<String, Any>>>
+                    // Obtém o mapa de tarefas organizadas por data, agora com "lista" e "recompensa"
+                    val dataTarefas = document.get("tarefas") as? Map<String, Map<String, Any>>
 
-                    // Se houver tarefas no dia selecionado, processa e exibe
+                    // Verifica se há dados para o dia selecionado
                     if (dataTarefas != null) {
-                        // Seleciona as tarefas do dia específico
-                        val tarefasDoDia = dataTarefas[selectedDate]?.mapNotNull { tarefa ->
+                        // Acessa os dados do dia específico
+                        val diaData = dataTarefas[selectedDate]
+                        val tarefasDoDia = diaData?.get("lista") as? List<Map<String, Any>> ?: emptyList()
+                        val recompensaDoDia = diaData?.get("recompensa") as? Boolean ?: false
+
+                        // Mapeia as tarefas do dia para uma lista de Triple com ID, texto e status
+                        val tarefasList = tarefasDoDia.mapNotNull { tarefa ->
                             val id = tarefa["id"] as? String // ID da tarefa
                             val texto = tarefa["texto"] as? String // Texto da tarefa
-                            val status = tarefa["status"] as? String ?: "Pendente" // Status da tarefa (default é "Pendente")
+                            val status = tarefa["status"] as? String ?: "Pendente" // Status da tarefa
                             Triple(id, texto, status) // Retorna um objeto com ID, texto e status da tarefa
-                        } ?: emptyList()
+                        }
 
                         // Exibe as tarefas carregadas
-                        Log.d("Firestore", "Tarefas para $selectedDate: $tarefasDoDia")
-                        displayTasks(tarefasDoDia, selectedDate) // Chama displayTasks para exibir as tarefas na interface
+                        Log.d("Firestore", "Tarefas para $selectedDate: $tarefasList, Recompensa: $recompensaDoDia")
+                        displayTasks(tarefasList, selectedDate) // Chama displayTasks para exibir as tarefas na interface
 
                         // Atualiza o calendário e os botões da interface
                         updateCalendarButtonText()
@@ -783,39 +788,51 @@ class HomeFragment : Fragment(), ProgressListener {
         db.collection("Tarefas").document(userId).get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableList<Map<String, Any>>> ?: mutableMapOf()
-                    val tarefasDoDia = dataTarefas[date]
+                    // Obtém as tarefas organizadas por data no formato esperado com "lista" e "recompensa"
+                    val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableMap<String, Any>> ?: mutableMapOf()
+
+                    // Acessa o mapa do dia selecionado
+                    val diaData = dataTarefas[date]
+                    val tarefasDoDia = diaData?.get("lista") as? MutableList<Map<String, Any>>
+
                     tarefasDoDia?.let {
+                        // Remove a tarefa específica pelo ID
                         val tarefaRemovida = it.removeIf { tarefa -> tarefa["id"] == taskId }
 
                         if (tarefaRemovida) {
+                            // Atualiza o mapa para refletir as alterações no Firestore
+                            dataTarefas[date] = mutableMapOf(
+                                "lista" to tarefasDoDia,
+                                "recompensa" to (diaData["recompensa"] as? Boolean ?: false) // Preserva o valor atual de "recompensa"
+                            )
+
                             db.collection("Tarefas").document(userId).update("tarefas", dataTarefas)
                                 .addOnSuccessListener {
-                                    Toast.makeText(context, "Tarefa excluída com sucesso", Toast.LENGTH_SHORT).show()
 
-                                    // garantir que o terceiro valor no Triple é um String não nulo
+                                    // Atualiza a interface exibindo a lista de tarefas do dia após a exclusão
                                     displayTasks(
-                                        dataTarefas[date]?.map { tarefa ->
+                                        tarefasDoDia.map { tarefa ->
                                             Triple(
                                                 tarefa["id"] as? String,
                                                 tarefa["texto"] as? String,
                                                 tarefa["status"] as? String ?: "Pendente"
                                             )
-                                        } ?: emptyList(),
+                                        },
                                         date
                                     )
                                 }
-                                .addOnFailureListener {
-                                    Log.e("Firestore", "Erro ao deletar tarefa: ${it.message}")
+                                .addOnFailureListener { e ->
+                                    Log.e("Firestore", "Erro ao deletar tarefa: ${e.message}")
                                 }
                         }
                     }
                 }
             }
-            .addOnFailureListener {
-                Log.e("Firestore", "Erro ao acessar o documento do Firestore: ${it.message}")
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "Erro ao acessar o documento do Firestore: ${e.message}")
             }
-        updateProgress()
+
+    updateProgress()
     }
 
     /**
@@ -833,28 +850,36 @@ class HomeFragment : Fragment(), ProgressListener {
 
         tarefasRef.get().addOnSuccessListener { document ->
             // Obtém as tarefas do documento, ou inicializa um mapa vazio caso não exista
-            val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableList<MutableMap<String, Any>>> ?: mutableMapOf()
-            // Recupera as tarefas do dia específico ou inicializa uma lista vazia caso não existam tarefas para a data
-            val tarefasDoDia = dataTarefas[dataSelecionada] ?: mutableListOf()
+            val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableMap<String, Any>> ?: mutableMapOf()
 
-            // Percorre as tarefas do dia para encontrar a tarefa pelo ID e atualizar o seu status para "Concluída"
-            for (tarefa in tarefasDoDia) {
-                if (tarefa["id"] == tarefaId) {
-                    tarefa["status"] = "Concluída" // Atualiza o status da tarefa para "Concluída"
-                    break // Interrompe o loop após encontrar e atualizar a tarefa
+            // Acessa o mapa do dia selecionado
+            val diaData = dataTarefas[dataSelecionada]
+            val tarefasDoDia = diaData?.get("lista") as? MutableList<MutableMap<String, Any>>
+
+            // Verifica se existem tarefas no dia e procura pela tarefa a ser atualizada
+            tarefasDoDia?.let {
+                for (tarefa in it) {
+                    if (tarefa["id"] == tarefaId) {
+                        tarefa["status"] = "Concluída" // Atualiza o status da tarefa para "Concluída"
+                        break // Interrompe o loop após encontrar e atualizar a tarefa
+                    }
                 }
-            }
 
-            // Atualiza as tarefas no Firestore com a modificação do status da tarefa
-            dataTarefas[dataSelecionada] = tarefasDoDia
-            tarefasRef.update("tarefas", dataTarefas).addOnSuccessListener {
-                // Sucesso ao atualizar o status da tarefa
-                Log.d("Firestore", "Tarefa marcada como concluída com sucesso.")
-                // Recarrega as tarefas para o dia selecionado após a atualização
-                loadTasksForSelectedDay(dataSelecionada)
-            }.addOnFailureListener { e ->
-                // Erro ao tentar atualizar o status da tarefa
-                Log.w("Firestore", "Erro ao marcar tarefa como concluída", e)
+                // Atualiza o Firestore com a nova lista de tarefas e preserva o valor de "recompensa"
+                dataTarefas[dataSelecionada] = mutableMapOf(
+                    "lista" to tarefasDoDia,
+                    "recompensa" to (diaData?.get("recompensa") as? Boolean ?: false) // Preserva o valor atual de "recompensa"
+                )
+
+                tarefasRef.update("tarefas", dataTarefas).addOnSuccessListener {
+                    // Sucesso ao atualizar o status da tarefa
+                    Log.d("Firestore", "Tarefa marcada como concluída com sucesso.")
+                    // Recarrega as tarefas para o dia selecionado após a atualização
+                    loadTasksForSelectedDay(dataSelecionada)
+                }.addOnFailureListener { e ->
+                    // Erro ao tentar atualizar o status da tarefa
+                    Log.w("Firestore", "Erro ao marcar tarefa como concluída", e)
+                }
             }
         }.addOnFailureListener { e ->
             // Erro ao tentar obter o documento de tarefas do Firestore
@@ -879,28 +904,36 @@ class HomeFragment : Fragment(), ProgressListener {
         // Recupera o documento de tarefas do usuário
         tarefasRef.get().addOnSuccessListener { document ->
             // Obtém as tarefas do documento ou inicializa um mapa vazio caso não existam tarefas
-            val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableList<MutableMap<String, Any>>> ?: mutableMapOf()
-            // Recupera as tarefas do dia específico ou inicializa uma lista vazia caso não existam tarefas para a data
-            val tarefasDoDia = dataTarefas[dataSelecionada] ?: mutableListOf()
+            val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableMap<String, Any>> ?: mutableMapOf()
 
-            // Percorre as tarefas do dia para encontrar a tarefa pelo ID e atualiza o seu status para "Pendente"
-            for (tarefa in tarefasDoDia) {
-                if (tarefa["id"] == tarefaId) {
-                    tarefa["status"] = "Pendente" // Atualiza o status da tarefa para "Pendente"
-                    break // Interrompe o loop após encontrar e atualizar a tarefa
+            // Acessa o mapa do dia selecionado
+            val diaData = dataTarefas[dataSelecionada]
+            val tarefasDoDia = diaData?.get("lista") as? MutableList<MutableMap<String, Any>>
+
+            // Verifica se existem tarefas no dia e procura pela tarefa a ser atualizada
+            tarefasDoDia?.let {
+                for (tarefa in it) {
+                    if (tarefa["id"] == tarefaId) {
+                        tarefa["status"] = "Pendente" // Atualiza o status da tarefa para "Pendente"
+                        break // Interrompe o loop após encontrar e atualizar a tarefa
+                    }
                 }
-            }
 
-            // Atualiza o campo "tarefas" no Firestore com a modificação
-            dataTarefas[dataSelecionada] = tarefasDoDia
-            tarefasRef.update("tarefas", dataTarefas).addOnSuccessListener {
-                // Sucesso ao atualizar o status da tarefa
-                Log.d("Firestore", "Tarefa marcada como pendente com sucesso.")
-                // Recarrega as tarefas para o dia selecionado após a atualização
-                loadTasksForSelectedDay(dataSelecionada)
-            }.addOnFailureListener { e ->
-                // Em caso de erro ao tentar atualizar o status da tarefa
-                Log.w("Firestore", "Erro ao marcar tarefa como pendente", e)
+                // Atualiza o Firestore com a nova lista de tarefas e preserva o valor de "recompensa"
+                dataTarefas[dataSelecionada] = mutableMapOf(
+                    "lista" to tarefasDoDia,
+                    "recompensa" to (diaData?.get("recompensa") as? Boolean ?: false) // Preserva o valor atual de "recompensa"
+                )
+
+                tarefasRef.update("tarefas", dataTarefas).addOnSuccessListener {
+                    // Sucesso ao atualizar o status da tarefa
+                    Log.d("Firestore", "Tarefa marcada como pendente com sucesso.")
+                    // Recarrega as tarefas para o dia selecionado após a atualização
+                    loadTasksForSelectedDay(dataSelecionada)
+                }.addOnFailureListener { e ->
+                    // Em caso de erro ao tentar atualizar o status da tarefa
+                    Log.w("Firestore", "Erro ao marcar tarefa como pendente", e)
+                }
             }
         }.addOnFailureListener { e ->
             // Em caso de falha ao tentar obter as tarefas do Firestore
@@ -925,19 +958,19 @@ class HomeFragment : Fragment(), ProgressListener {
 
         tarefasRef.get().addOnSuccessListener { document ->
             // Obtém as tarefas do documento ou inicializa um mapa vazio caso não existam tarefas
-            val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableList<MutableMap<String, Any>>> ?: mutableMapOf()
+            val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableMap<String, Any>> ?: mutableMapOf()
             // Recupera as tarefas do dia específico ou inicializa uma lista vazia caso não existam tarefas para a data
-            val tarefasDoDia = dataTarefas[dataSelecionada] ?: mutableListOf()
+            val tarefasDoDia = dataTarefas[dataSelecionada]?.get("lista") as? MutableList<MutableMap<String, Any>> ?: mutableListOf()
 
-            // Atualiza o status de todas as tarefas concluídas para "Enviada"
-            for (tarefa in tarefasDoDia) {
+            // Atualiza o status de todas as tarefas que possuem o ID na lista tarefasIds para "Enviada"
+            tarefasDoDia.forEach { tarefa ->
                 if (tarefasIds.contains(tarefa["id"])) {
                     tarefa["status"] = "Enviada"
                 }
             }
 
             // Atualiza o campo "tarefas" no Firestore com todas as modificações em uma única operação
-            dataTarefas[dataSelecionada] = tarefasDoDia
+            dataTarefas[dataSelecionada]?.put("lista", tarefasDoDia)
             tarefasRef.update("tarefas", dataTarefas).addOnSuccessListener {
                 // Sucesso ao atualizar o status das tarefas
                 Log.d("Firestore", "Tarefas marcadas como enviadas com sucesso.")
@@ -971,11 +1004,14 @@ class HomeFragment : Fragment(), ProgressListener {
                 // Verifica se o documento existe
                 if (document != null && document.exists()) {
                     // Recupera as tarefas do documento ou inicializa um mapa vazio
-                    val dataTarefas = document.get("tarefas") as? Map<String, List<Map<String, Any>>>
+                    val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableMap<String, Any>> ?: mutableMapOf()
                     val tarefasIdsConcluidas = mutableListOf<String>()
 
                     // Coleta todos os IDs de tarefas concluídas para a data selecionada
-                    dataTarefas?.get(dataSelecionada)?.forEach { tarefa ->
+                    val tarefasDoDia = dataTarefas[dataSelecionada]?.get("lista") as? List<Map<String, Any>> ?: emptyList()
+
+                    // Itera pelas tarefas do dia selecionado
+                    tarefasDoDia.forEach { tarefa ->
                         val tarefaId = tarefa["id"] as? String
                         val status = tarefa["status"] as? String
 
@@ -1017,29 +1053,33 @@ class HomeFragment : Fragment(), ProgressListener {
      **/
     private fun countTasks(userId: String, dataSelecionada: String, onResult: (totalTarefas: Int, enviadas: Int) -> Unit) {
         Log.d("HomeFragment", "Contando tarefas para userId: $userId, data: $dataSelecionada")
+
         // Referência ao documento de tarefas do usuário no Firestore
         val tarefasRef = db.collection("Tarefas").document(userId)
 
         tarefasRef.get().addOnSuccessListener { document ->
             if (document.exists()) {
                 // Obtém o mapa de tarefas por data
-                val dataTarefas = document.get("tarefas") as? Map<String, List<Map<String, Any>>> ?: emptyMap()
-                // Recupera as tarefas do dia selecionado
-                val tarefasDoDia = dataTarefas[dataSelecionada] ?: emptyList()
+                val dataTarefas = document.get("tarefas") as? Map<String, Map<String, Any>> ?: emptyMap()
+
+                // Verifica se a data selecionada existe e obtém os dados
+                val tarefasDoDia = dataTarefas[dataSelecionada]?.get("lista") as? List<Map<String, Any>> ?: emptyList()
 
                 // Conta o total de tarefas do dia
                 val totalTarefas = tarefasDoDia.size
+
                 // Conta quantas têm o status "Enviada"
                 val enviadas = tarefasDoDia.count { tarefa -> tarefa["status"] == "Enviada" }
 
                 // Retorna os resultados
                 onResult(totalTarefas, enviadas)
             } else {
-                // Caso o documento não exista, retorna 0 para ambas as contagens
+                // Caso o documento não exista, retorna 0 para todas as contagens
+                Log.d("FirestoreError", "Documento não encontrado para o usuário $userId.")
                 onResult(0, 0)
             }
         }.addOnFailureListener { exception ->
-            // Em caso de erro, você pode exibir uma mensagem ou logar o erro
+            // Em caso de erro ao acessar o Firestore
             Log.e("FirestoreError", "Erro ao contar as tarefas", exception)
             onResult(0, 0) // Retorna 0 em caso de falha
         }

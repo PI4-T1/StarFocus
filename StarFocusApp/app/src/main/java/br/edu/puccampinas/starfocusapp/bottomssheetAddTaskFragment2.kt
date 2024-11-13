@@ -131,8 +131,12 @@ class BottomsSheetAddTaskFragment2(
 
                 tarefasRef.get().addOnSuccessListener { document ->
                     // Obtém as tarefas armazenadas ou cria um novo mapa vazio
-                    val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableList<Map<String, Any>>> ?: mutableMapOf()
-                    val tarefasDoDia = dataTarefas[selectedDate] ?: mutableListOf()  // Obtém ou cria uma lista de tarefas para o dia selecionado
+                    val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableMap<String, Any>> ?: mutableMapOf()
+
+                    // Verifica se existe um mapa para o dia selecionado, cria um se não existir
+                    val diaData = dataTarefas[selectedDate] ?: mutableMapOf()
+                    val tarefasDoDia = diaData["lista"] as? MutableList<Map<String, Any>> ?: mutableListOf()
+                    val recompensaDoDia = diaData["recompensa"] as? Boolean ?: false  // Define "recompensa" como false se ainda não existir
 
                     // Cria um ID único para a nova tarefa
                     val tarefaId = db.collection("Tarefas").document().id
@@ -145,7 +149,11 @@ class BottomsSheetAddTaskFragment2(
                     )
 
                     tarefasDoDia.add(novaTarefa)  // Adiciona a nova tarefa à lista
-                    dataTarefas[selectedDate] = tarefasDoDia  // Atualiza as tarefas para o dia selecionado
+                    diaData["lista"] = tarefasDoDia  // Atualiza a lista de tarefas para o dia
+                    diaData["recompensa"] = recompensaDoDia  // Garante que o campo "recompensa" esteja presente
+
+                    // Atualiza as tarefas para o dia selecionado no mapa geral
+                    dataTarefas[selectedDate] = diaData
 
                     // Atualiza o Firestore com as tarefas modificadas
                     tarefasRef.set(hashMapOf("tarefas" to dataTarefas), SetOptions.merge())
