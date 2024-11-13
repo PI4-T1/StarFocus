@@ -1,10 +1,27 @@
 package br.edu.puccampinas.starfocusapp
 
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Rect
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
 import br.edu.puccampinas.starfocusapp.databinding.ReportProgressBinding
+import com.github.mikephil.charting.animation.ChartAnimator
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.components.Legend
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.renderer.PieChartRenderer
+import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
@@ -28,11 +45,22 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
     private lateinit var parceiro: Parceiro
     private var isClienteAndroidInitialized = false
     private var isInitializingClient = false
+    private lateinit var pieChart: PieChart
 
+    private var pendenteCount = 5   // Exemplo de valor; substitua pela lógica de cálculo real
+    private var concluidaCount = 10  // Exemplo de valor; substitua pela lógica de cálculo real
+    private var enviadaCount = 3     // Exemplo de valor; substitua pela lógica de cálculo real
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        binding.voltaperfil.setOnClickListener {
+            val fragmentTransaction = supportFragmentManager.beginTransaction()
+            // Substitua o conteúdo do container de fragments (por exemplo, R.id.fragment_container) com o ProfileFragment
+            fragmentTransaction.replace(R.id.profilefragmentid, ProfileFragment())
+            fragmentTransaction.addToBackStack(null) // Permite que o usuário volte
+            fragmentTransaction.commit()
+        }
         lifecycleScope.launch {
             // Inicializa o cliente Android antes de tentar enviar as métricas
             val isInitialized = initializeClientAndroid()
@@ -44,7 +72,122 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
             }
         }
 
+        pieChart = binding.pieChartTasks
+        setupPieChart()
+        loadPieChartData()
+        setupPieChartRecompensas()
+
     }
+
+    private fun setupPieChart() {
+        pieChart.isDrawHoleEnabled = true
+        pieChart.holeRadius = 40f // Tamanho do buraco no centro (ajuste conforme necessár
+        pieChart.description.isEnabled = false  // Desativa a descrição
+        pieChart.setDrawCenterText(false) // Desativa o texto no centro
+        pieChart.setDrawEntryLabels(false)
+        pieChart.setEntryLabelColor(Color.WHITE)
+        // Desativa a legenda
+        pieChart.legend.isEnabled = false
+        // Desativa a exibição dos valores no gráfico
+        pieChart.setDrawSliceText(false)
+        pieChart.setHoleColor(ContextCompat.getColor(this, R.color.off_white))
+
+
+    }
+
+    private fun loadPieChartData() {
+        // Calcula a porcentagem de cada categoria
+        val totalTarefas = pendenteCount + concluidaCount + enviadaCount
+        val concluidaPercent = (concluidaCount.toFloat() / totalTarefas) * 100
+        val pendentePercent = (pendenteCount.toFloat() / totalTarefas) * 100
+        val enviadaPercent = (enviadaCount.toFloat() / totalTarefas) * 100
+
+        // Atualiza as legendas de porcentagem no layout
+        binding.percentageTextConcluidas.text = "${"%.1f".format(concluidaPercent)}%"
+        binding.percentageTextenviadas.text = "${"%.1f".format(enviadaPercent)}%"
+        binding.percentageTextpendentes.text = "${"%.1f".format(pendentePercent)}%"
+
+        // Adiciona as entradas de dados para o gráfico
+        val entries = listOf(
+            PieEntry(concluidaPercent, "Concluídas"),
+            PieEntry(enviadaPercent, "Enviadas"),
+            PieEntry(pendentePercent, "Pendentes")
+        )
+
+        // Cria o PieDataSet com as entradas
+        val dataSet = PieDataSet(entries, "Status das Tarefas")
+
+        // Define as cores do gráfico
+        dataSet.colors = listOf(
+            Color.parseColor("#6A4AC4"), // Concluídas
+            Color.parseColor("#9FA8DA"), // Enviadas
+            Color.parseColor("#C5CAE9")  // Pendentes
+        )
+
+        // Desativa os valores nas fatias
+        dataSet.setDrawValues(false)
+
+        // Cria o PieData com o PieDataSet
+        val data = PieData(dataSet)
+
+
+        // Atualiza os dados no gráfico
+        pieChart.data = data
+
+        // Atualiza o gráfico
+        pieChart.invalidate()
+    }
+
+    private fun setupPieChartRecompensas() {
+        val pieChartRecompensas = findViewById<PieChart>(R.id.pieChartRecompensas)
+
+        // Desativa a descrição e a legenda
+        pieChartRecompensas.description.isEnabled = false
+        pieChartRecompensas.legend.isEnabled = false
+        pieChartRecompensas.holeRadius = 40f
+        pieChartRecompensas.setHoleColor(ContextCompat.getColor(this, R.color.off_white))
+
+        // Cria as entradas para o gráfico
+        val totalRecompensas = 100f  // Exemplo de total
+        val recompensatotal = 70f  // Exemplo de recompensas totais
+        val recompensaobtida = 30f  // Exemplo de recompensas obtidas
+
+        val entries = listOf(
+            PieEntry(recompensatotal, "Total"),
+            PieEntry(recompensaobtida, "Obtidas")
+        )
+
+        // Cria o DataSet para o gráfico
+        val dataSet = PieDataSet(entries, "Recompensas")
+        // Desativa os textos nas fatias
+        dataSet.setDrawValues(false)
+
+        // Desativa as labels nas fatias (texto nas fatias)
+        pieChartRecompensas.setDrawSliceText(false)
+
+
+        // Define as cores para cada categoria usando ContextCompat
+        dataSet.colors = listOf(
+            ContextCompat.getColor(this, R.color.recompensatotal), // Cor para "Total"
+            ContextCompat.getColor(this, R.color.recompensaobtida) // Cor para "Obtidas"
+        )
+
+
+        // Cria o PieData e atribui ao gráfico
+        val data = PieData(dataSet)
+        pieChartRecompensas.data = data
+
+        // Adiciona o texto no centro do gráfico
+        val totalPercent = (recompensaobtida / totalRecompensas) * 100
+        pieChartRecompensas.centerText = "${"%.1f".format(totalPercent)}%\nRecompensas"
+        pieChartRecompensas.setCenterTextSize(12f)
+        dataSet.valueTextColor = ContextCompat.getColor(this, R.color.dark_grey) // Cor do texto
+        val typeface = ResourcesCompat.getFont(this, R.font.poppins_medium)
+        pieChartRecompensas.setCenterTextTypeface(typeface)
+        // Atualiza o gráfico
+        pieChartRecompensas.invalidate()
+    }
+
 
     private suspend fun initializeClientAndroid(): Boolean {
         if (isInitializingClient) {
@@ -217,4 +360,3 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
 
 
 }
-

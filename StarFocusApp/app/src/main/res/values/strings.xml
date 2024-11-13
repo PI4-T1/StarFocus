@@ -94,5 +94,17 @@
     <string name="textbodyperdeu">Você perdeu, mas não tem problema, tente novamente!</string>
     <string name="jogardenovo">Jogar de novo</string>
 
+    <string name="relatorioscreenprogresso">Relatório de progresso</string>
+    <string name="relatoriotitle">Relatório</string>
+    <string name="mes">Em dezembro</string>
+    <string name="qtdtarefas">10</string>
+    <string name="tarefascriadas">Tarefas criadas</string>
+
+    <string name="Tarefasconcluidas">Tarefas concluídas</string>
+    <string name="tarefasenviadas">Tarefas enviadas</string>
+    <string name="tarefaspendentes">Tarefas Pendentes</string>
+    <string name="recompensastitle">Recompensas</string>
+    <string name="recompensastitleh2">7 recompensas obtidas de 9 disponíveis.</string>
+    <string name="porcentagem">0%</string>
 
 </resources>
