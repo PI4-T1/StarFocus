@@ -40,7 +40,7 @@
             app:layout_constraintTop_toTopOf="@id/dialogimage"
             android:layout_marginStart="100dp"
             android:layout_marginEnd="200dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="50dp"
 
             />
 
@@ -54,7 +54,7 @@
             android:textAlignment="center"
             android:textColor="@color/purple"
             android:layout_marginStart="60dp"
-            android:layout_marginTop="140dp"
+            android:layout_marginTop="170dp"
             android:fontFamily="@font/poppins_medium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -70,41 +70,41 @@
             android:textAlignment="center"
             android:textColor="@color/black"
             android:layout_marginStart="40dp"
-            android:layout_marginTop="160dp"
+            android:layout_marginTop="190dp"
             android:fontFamily="@font/poppins"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnclothes"
-            style="@style/buttonclothes"
-            android:layout_width="130dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="230dp"
-            android:fontFamily="@font/poppins_medium"
-            android:text="@string/clothesbuttondialog"
-            android:textAlignment="center"
-            android:textAllCaps="false"
-            android:textColor="@color/off_white"
-            android:textSize="16sp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="30dp"/>
+<!--        <androidx.appcompat.widget.AppCompatButton-->
+<!--            android:id="@+id/btnclothes"-->
+<!--            style="@style/buttonclothes"-->
+<!--            android:layout_width="130dp"-->
+<!--            android:layout_height="40dp"-->
+<!--            android:layout_marginTop="230dp"-->
+<!--            android:fontFamily="@font/poppins_medium"-->
+<!--            android:text="@string/clothesbuttondialog"-->
+<!--            android:textAlignment="center"-->
+<!--            android:textAllCaps="false"-->
+<!--            android:textColor="@color/off_white"-->
+<!--            android:textSize="16sp"-->
+<!--            android:layout_marginStart="20dp"-->
+<!--            android:layout_marginEnd="30dp"/>-->
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnstory"
-            style="@style/buttonclothes"
-            android:layout_width="130dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="230dp"
-            android:fontFamily="@font/poppins_medium"
-            android:text="@string/historiasver"
-            android:textAlignment="center"
-            android:textAllCaps="false"
-            android:textColor="@color/off_white"
-            android:textSize="16sp"
-            android:layout_marginStart="165dp"
-            android:layout_marginEnd="30dp"/>
+<!--        <androidx.appcompat.widget.AppCompatButton-->
+<!--            android:id="@+id/btnstory"-->
+<!--            style="@style/buttonclothes"-->
+<!--            android:layout_width="130dp"-->
+<!--            android:layout_height="40dp"-->
+<!--            android:layout_marginTop="230dp"-->
+<!--            android:fontFamily="@font/poppins_medium"-->
+<!--            android:text="@string/historiasver"-->
+<!--            android:textAlignment="center"-->
+<!--            android:textAllCaps="false"-->
+<!--            android:textColor="@color/off_white"-->
+<!--            android:textSize="16sp"-->
+<!--            android:layout_marginStart="165dp"-->
+<!--            android:layout_marginEnd="30dp"/>-->
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/fechardialog1"

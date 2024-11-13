@@ -26,8 +26,8 @@ class DialogClothesHistory(private val context: Context) {
 
         // Referências dos elementos no layout
         val closeButton: AppCompatButton = dialogView.findViewById(R.id.fechardialog1)
-        val clothesButton: AppCompatButton = dialogView.findViewById(R.id.btnclothes)
-        val storyButton: AppCompatButton = dialogView.findViewById(R.id.btnstory)
+        //val clothesButton: AppCompatButton = dialogView.findViewById(R.id.btnclothes)
+        //val storyButton: AppCompatButton = dialogView.findViewById(R.id.btnstory)
         val dialogImage: ImageView = dialogView.findViewById(R.id.dialogimage)
         val dialogTitle: TextView = dialogView.findViewById(R.id.dialogTitle)
         val dialogTextBody: TextView = dialogView.findViewById(R.id.dialogtextbody)
@@ -37,25 +37,25 @@ class DialogClothesHistory(private val context: Context) {
             dialog.dismiss() // Fechar o diálogo
         }
 
-        clothesButton.setOnClickListener {
-
-             val fragmentTransaction = (context as AppCompatActivity).supportFragmentManager.beginTransaction()
-             fragmentTransaction.replace(R.id.btnclothes, ClosetFragment())
-             fragmentTransaction.addToBackStack(null)
-             fragmentTransaction.commit()
-
-            dialog.dismiss() // Fechar o diálogo após abrir a tela de roupas
-        }
-
-        storyButton.setOnClickListener {
-
-            val fragmentTransaction = (context as AppCompatActivity).supportFragmentManager.beginTransaction()
-            fragmentTransaction.replace(R.id.btnstory, MapFragment())
-            fragmentTransaction.addToBackStack(null)
-            fragmentTransaction.commit()
-
-            dialog.dismiss() // Fechar o diálogo após abrir a tela de roupas
-        }
+//        clothesButton.setOnClickListener {
+//
+//             val fragmentTransaction = (context as AppCompatActivity).supportFragmentManager.beginTransaction()
+//             fragmentTransaction.replace(R.id.btnclothes, ClosetFragment())
+//             fragmentTransaction.addToBackStack(null)
+//             fragmentTransaction.commit()
+//
+//            dialog.dismiss() // Fechar o diálogo após abrir a tela de roupas
+//        }
+//
+//        storyButton.setOnClickListener {
+//
+//            val fragmentTransaction = (context as AppCompatActivity).supportFragmentManager.beginTransaction()
+//            fragmentTransaction.replace(R.id.btnstory, MapFragment())
+//            fragmentTransaction.addToBackStack(null)
+//            fragmentTransaction.commit()
+//
+//            dialog.dismiss() // Fechar o diálogo após abrir a tela de roupas
+//        }
 
         // Exibir o diálogo
         dialog.show()
