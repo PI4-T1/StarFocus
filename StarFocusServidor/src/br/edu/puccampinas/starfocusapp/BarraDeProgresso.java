@@ -8,7 +8,7 @@ public class BarraDeProgresso extends Comunicado implements Serializable {
     private final double porcentagemConcluida;
 
     public BarraDeProgresso(int totalTarefas, int tarefasConcluidas) {
-        if (totalTarefas <= 0)
+        if (totalTarefas < 0)
             throw new IllegalArgumentException("O número total de tarefas deve ser maior que zero.");
         if (tarefasConcluidas < 0 || tarefasConcluidas > totalTarefas)
             throw new IllegalArgumentException("Número de tarefas concluídas inválido.");
