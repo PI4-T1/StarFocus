@@ -1,12 +1,8 @@
 package br.edu.puccampinas.starfocusapp
 
+import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Rect
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -14,14 +10,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
 import br.edu.puccampinas.starfocusapp.databinding.ReportProgressBinding
-import com.github.mikephil.charting.animation.ChartAnimator
 import com.github.mikephil.charting.charts.PieChart
-import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
-import com.github.mikephil.charting.renderer.PieChartRenderer
-import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +25,7 @@ import java.net.Socket
 import java.util.Calendar
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import java.util.*
 
 class ProgressReport : AppCompatActivity(), MetricsListener {
 
@@ -41,25 +34,25 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
     // FirebaseAuth
     private val auth by lazy { FirebaseAuth.getInstance() }
 
+    // Variável para armazenar o valor de metrics
+    private var metrics: String? = null
+
     private lateinit var clienteAndroid: ClienteAndroid
     private lateinit var parceiro: Parceiro
     private var isClienteAndroidInitialized = false
     private var isInitializingClient = false
     private lateinit var pieChart: PieChart
+    private val db = FirebaseFirestore.getInstance()
 
-    private var pendenteCount = 5   // Exemplo de valor; substitua pela lógica de cálculo real
-    private var concluidaCount = 10  // Exemplo de valor; substitua pela lógica de cálculo real
-    private var enviadaCount = 3     // Exemplo de valor; substitua pela lógica de cálculo real
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
         binding.voltaperfil.setOnClickListener {
-            val fragmentTransaction = supportFragmentManager.beginTransaction()
-            // Substitua o conteúdo do container de fragments (por exemplo, R.id.fragment_container) com o ProfileFragment
-            fragmentTransaction.replace(R.id.profilefragmentid, ProfileFragment())
-            fragmentTransaction.addToBackStack(null) // Permite que o usuário volte
-            fragmentTransaction.commit()
+            val intent = Intent(this, BottomNav::class.java)
+            intent.putExtra("open_profile_fragment", true) // Passa o parâmetro extra
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
         }
         lifecycleScope.launch {
             // Inicializa o cliente Android antes de tentar enviar as métricas
@@ -96,22 +89,28 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
     }
 
     private fun loadPieChartData() {
-        // Calcula a porcentagem de cada categoria
-        val totalTarefas = pendenteCount + concluidaCount + enviadaCount
-        val concluidaPercent = (concluidaCount.toFloat() / totalTarefas) * 100
-        val pendentePercent = (pendenteCount.toFloat() / totalTarefas) * 100
-        val enviadaPercent = (enviadaCount.toFloat() / totalTarefas) * 100
+        val userId = auth.currentUser?.uid
+        if (userId != null) {
+            contarTarefasNoMesAtual(userId) { totalTarefasNoMes ->
+                binding.qtdtarefascriadas.text = totalTarefasNoMes.toString()
+            }
+        }
 
-        // Atualiza as legendas de porcentagem no layout
-        binding.percentageTextConcluidas.text = "${"%.1f".format(concluidaPercent)}%"
-        binding.percentageTextenviadas.text = "${"%.1f".format(enviadaPercent)}%"
-        binding.percentageTextpendentes.text = "${"%.1f".format(pendentePercent)}%"
+        // Separação das porcentagens da string 'metrics'
+        val porcentagemPendentes = metrics?.substring(0, 3)?.toIntOrNull() ?: 0
+        val porcentagemConcluidas = metrics?.substring(3, 6)?.toIntOrNull() ?: 0
+        val porcentagemEnviadas = metrics?.substring(6, 9)?.toIntOrNull() ?: 0
+
+        binding.percentageTextConcluidas.text = "${(porcentagemConcluidas)}%"
+        binding.percentageTextenviadas.text = "${(porcentagemEnviadas)}%"
+        binding.percentageTextpendentes.text = "${(porcentagemPendentes)}%"
 
         // Adiciona as entradas de dados para o gráfico
+        // Certifique-se de que cada entrada tenha um valor do tipo Float e uma descrição do tipo String
         val entries = listOf(
-            PieEntry(concluidaPercent, "Concluídas"),
-            PieEntry(enviadaPercent, "Enviadas"),
-            PieEntry(pendentePercent, "Pendentes")
+            PieEntry(porcentagemConcluidas.toFloat(), "Concluídas"),
+            PieEntry(porcentagemEnviadas.toFloat(), "Enviadas"),
+            PieEntry(porcentagemPendentes.toFloat(), "Pendentes")
         )
 
         // Cria o PieDataSet com as entradas
@@ -130,7 +129,6 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
         // Cria o PieData com o PieDataSet
         val data = PieData(dataSet)
 
-
         // Atualiza os dados no gráfico
         pieChart.data = data
 
@@ -147,45 +145,57 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
         pieChartRecompensas.holeRadius = 40f
         pieChartRecompensas.setHoleColor(ContextCompat.getColor(this, R.color.off_white))
 
-        // Cria as entradas para o gráfico
-        val totalRecompensas = 100f  // Exemplo de total
-        val recompensatotal = 70f  // Exemplo de recompensas totais
-        val recompensaobtida = 30f  // Exemplo de recompensas obtidas
+        val userId = auth.currentUser?.uid
+        if (userId != null) {
+            contarDiasComTarefasERecompensa(userId) { diasComTarefas, diasComRecompensa ->
 
-        val entries = listOf(
-            PieEntry(recompensatotal, "Total"),
-            PieEntry(recompensaobtida, "Obtidas")
-        )
+                val totalRecompensas = diasComTarefas.toFloat() // Total de dias com tarefas
+                val recompensatotal = diasComTarefas.toFloat() // Ou outro cálculo conforme necessário
+                val recompensaobtida = diasComRecompensa.toFloat() // Dias com recompensa
 
-        // Cria o DataSet para o gráfico
-        val dataSet = PieDataSet(entries, "Recompensas")
-        // Desativa os textos nas fatias
-        dataSet.setDrawValues(false)
+                binding.textsobrerecompensas.text = "${recompensaobtida.toInt()} " +
+                        "recompensas obtidas de ${recompensatotal.toInt()} disponíveis"
 
-        // Desativa as labels nas fatias (texto nas fatias)
-        pieChartRecompensas.setDrawSliceText(false)
+                // Cria as entradas para o gráfico
+                val entries = listOf(
+                    PieEntry(recompensatotal, "Total"),
+                    PieEntry(recompensaobtida, "Obtidas")
+                )
 
+                // Cria o DataSet para o gráfico
+                val dataSet = PieDataSet(entries, "Recompensas")
+                // Desativa os textos nas fatias
+                dataSet.setDrawValues(false)
 
-        // Define as cores para cada categoria usando ContextCompat
-        dataSet.colors = listOf(
-            ContextCompat.getColor(this, R.color.recompensatotal), // Cor para "Total"
-            ContextCompat.getColor(this, R.color.recompensaobtida) // Cor para "Obtidas"
-        )
+                // Desativa as labels nas fatias (texto nas fatias)
+                pieChartRecompensas.setDrawSliceText(false)
 
+                // Define as cores para cada categoria usando ContextCompat
+                dataSet.colors = listOf(
+                    ContextCompat.getColor(this, R.color.recompensatotal), // Cor para "Total"
+                    ContextCompat.getColor(this, R.color.recompensaobtida) // Cor para "Obtidas"
+                )
 
-        // Cria o PieData e atribui ao gráfico
-        val data = PieData(dataSet)
-        pieChartRecompensas.data = data
+                // Cria o PieData e atribui ao gráfico
+                val data = PieData(dataSet)
+                pieChartRecompensas.data = data
 
-        // Adiciona o texto no centro do gráfico
-        val totalPercent = (recompensaobtida / totalRecompensas) * 100
-        pieChartRecompensas.centerText = "${"%.1f".format(totalPercent)}%\nRecompensas"
-        pieChartRecompensas.setCenterTextSize(12f)
-        dataSet.valueTextColor = ContextCompat.getColor(this, R.color.dark_grey) // Cor do texto
-        val typeface = ResourcesCompat.getFont(this, R.font.poppins_medium)
-        pieChartRecompensas.setCenterTextTypeface(typeface)
-        // Atualiza o gráfico
-        pieChartRecompensas.invalidate()
+                // Adiciona o texto no centro do gráfico
+                val totalPercent = if (totalRecompensas > 0) {
+                    (recompensaobtida / totalRecompensas) * 100
+                } else {
+                    0f
+                }
+                pieChartRecompensas.centerText = "${"%.1f".format(totalPercent)}%"
+                pieChartRecompensas.setCenterTextSize(12f)
+                dataSet.valueTextColor = ContextCompat.getColor(this, R.color.dark_grey) // Cor do texto
+                val typeface = ResourcesCompat.getFont(this, R.font.poppins_medium)
+                pieChartRecompensas.setCenterTextTypeface(typeface)
+
+                // Atualiza o gráfico
+                pieChartRecompensas.invalidate()
+            }
+        }
     }
 
 
@@ -201,7 +211,7 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
             // Estabelecer a conexão com o servidor
             val socket = withContext(Dispatchers.IO) {
                 try {
-                    val newSocket = Socket("10.0.2.2", 3000) // Para emulador, altere para o IP do servidor em um dispositivo real
+                    val newSocket = Socket("192.168.15.58", 3000) // Para emulador, altere para o IP do servidor em um dispositivo real
                     Log.d("ProgressReport", "Socket conectado com sucesso.")
                     newSocket
                 } catch (e: Exception) {
@@ -270,8 +280,11 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
     // Implementação do método da interface MetricsListener
     override fun onMetricsUpdate(metrics: String) {
         runOnUiThread {
-            binding.stringmetrics.text = metrics
-            Log.d("HomeFragment", "String de métrica: $metrics")
+            // Armazena o valor recebido na variável global
+            this.metrics = metrics
+
+            Log.d("ProgressReport", "String de métrica: $metrics")
+            loadPieChartData()
         }
     }
 
@@ -302,10 +315,11 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
                 .addOnSuccessListener { document ->
                     if (document != null && document.exists()) {
                         // Obtém as tarefas organizadas por data no formato esperado
-                        val dataTarefas = document.get("tarefas") as? Map<String, List<Map<String, Any>>> ?: return@addOnSuccessListener
+                        val dataTarefas = document.get("tarefas") as? Map<String, MutableMap<String, Any>> ?: return@addOnSuccessListener
 
                         // Filtra e conta as tarefas para o mês/ano atual com base no status
-                        dataTarefas.forEach { (data, tarefasList) ->
+                        dataTarefas.forEach { (data, diaData) ->
+                            val tarefasList = diaData["lista"] as? List<Map<String, Any>> ?: return@forEach
                             if (data.substring(3, 10) == mesAno) { // Verifica se a data pertence ao mês/ano atual (formato dd-MM-yyyy)
                                 tarefasList.forEach { tarefa ->
                                     val status = tarefa["status"] as? String
@@ -358,5 +372,89 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
         }
     }
 
+    private fun contarDiasComTarefasERecompensa(userId: String, onResult: (diasComTarefas: Int, diasComRecompensa: Int) -> Unit) {
+        // Referência ao documento de tarefas do usuário no Firestore
+        val tarefasRef = db.collection("Tarefas").document(userId)
+
+        tarefasRef.get().addOnSuccessListener { document ->
+            if (document.exists()) {
+                // Acessa o mapa de tarefas
+                val tarefas = document.get("tarefas") as? Map<String, Map<String, Any>> ?: emptyMap()
+
+                var diasComTarefas = 0
+                var diasComRecompensa = 0
+
+                // Percorre todos os dias no mapa de tarefas
+                for ((dataSelecionada, tarefaData) in tarefas) {
+                    // Verifica se há ao menos uma tarefa no dia
+                    val tarefasDoDia = tarefaData["lista"] as? List<Map<String, Any>> ?: emptyList()
+                    if (tarefasDoDia.isNotEmpty()) {
+                        diasComTarefas++
+
+                        // Verifica se o campo 'recompensa' é true
+                        val recompensa = tarefaData["recompensa"] as? Boolean ?: false
+                        if (recompensa) {
+                            diasComRecompensa++
+                        }
+                    }
+                }
+
+                // Retorna o resultado para o callback
+                onResult(diasComTarefas, diasComRecompensa)
+
+            } else {
+                Log.w("Firestore", "Documento não encontrado para o usuário $userId.")
+                onResult(0, 0) // Retorna 0 se o documento não for encontrado
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("Firestore", "Erro ao acessar o documento de tarefas", exception)
+            onResult(0, 0) // Retorna 0 em caso de falha
+        }
+    }
+
+    private fun contarTarefasNoMesAtual(userId: String, onResult: (totalTarefasNoMes: Int) -> Unit) {
+        // Obtém o mês e o ano atuais
+        val calendar = Calendar.getInstance()
+        val anoAtual = calendar.get(Calendar.YEAR)
+        val mesAtual = calendar.get(Calendar.MONTH) + 1 // Janeiro é 0, então somamos 1 para ficar no intervalo correto
+
+        // Referência ao documento de tarefas do usuário no Firestore
+        val tarefasRef = db.collection("Tarefas").document(userId)
+
+        tarefasRef.get().addOnSuccessListener { document ->
+            if (document.exists()) {
+                // Acessa o mapa de tarefas
+                val tarefas = document.get("tarefas") as? Map<String, Map<String, Any>> ?: emptyMap()
+
+                var totalTarefasNoMes = 0
+
+                // Percorre todas as datas no mapa de tarefas
+                for ((dataSelecionada, tarefaData) in tarefas) {
+                    // Converte a data no formato dd-MM-yyyy para acessar mês e ano
+                    val partesData = dataSelecionada.split("-")
+                    val dia = partesData.getOrNull(0)?.toIntOrNull() ?: 0
+                    val mes = partesData.getOrNull(1)?.toIntOrNull() ?: 0
+                    val ano = partesData.getOrNull(2)?.toIntOrNull() ?: 0
+
+                    // Verifica se a tarefa pertence ao mês e ano atual
+                    if (mes == mesAtual && ano == anoAtual) {
+                        // Conta quantas tarefas existem no dia
+                        val listaDeTarefas = tarefaData["lista"] as? List<Map<String, Any>> ?: emptyList()
+                        totalTarefasNoMes += listaDeTarefas.size
+                    }
+                }
+
+                // Retorna o resultado para o callback
+                onResult(totalTarefasNoMes)
+
+            } else {
+                Log.w("Firestore", "Documento não encontrado para o usuário $userId.")
+                onResult(0) // Retorna 0 se o documento não for encontrado
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("Firestore", "Erro ao acessar o documento de tarefas", exception)
+            onResult(0) // Retorna 0 em caso de falha
+        }
+    }
 
 }

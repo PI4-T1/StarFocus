@@ -30,6 +30,13 @@ class BottomNav : AppCompatActivity() {
                     .commit()
                     binding.bottomNavigation.selectedItemId = R.id.map
             }
+        } else if (intent.getBooleanExtra("open_profile_fragment", false)){
+            if (savedInstanceState == null) {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.container, ProfileFragment())
+                    .commit()
+                binding.bottomNavigation.selectedItemId = R.id.profile
+            }
         } else {
             // Caso contrário, carrega o fragmento padrão (HomeFragment, por exemplo)
             if (savedInstanceState == null) {
