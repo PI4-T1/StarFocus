@@ -58,7 +58,7 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
             // Estabelecer a conexão com o servidor
             val socket = withContext(Dispatchers.IO) {
                 try {
-                    val newSocket = Socket("192.168.15.58", 3000) // Para emulador, altere para o IP do servidor em um dispositivo real
+                    val newSocket = Socket("10.0.2.2", 3000) // Para emulador, altere para o IP do servidor em um dispositivo real
                     Log.d("ProgressReport", "Socket conectado com sucesso.")
                     newSocket
                 } catch (e: Exception) {
@@ -159,12 +159,12 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
                 .addOnSuccessListener { document ->
                     if (document != null && document.exists()) {
                         // Obtém as tarefas organizadas por data no formato esperado
-                        val dataTarefas = document.get("tarefas") as? Map<String, MutableMap<String, Any>> ?: return@addOnSuccessListener
+                        val dataTarefas = document.get("tarefas") as? Map<String, List<Map<String, Any>>> ?: return@addOnSuccessListener
 
                         // Filtra e conta as tarefas para o mês/ano atual com base no status
-                        dataTarefas.forEach { (data, diaData) ->
-                            val tarefasList = diaData["lista"] as? List<Map<String, Any>> ?: return@forEach
-                            if (data.substring(3, 10) == mesAno) { // Verifica se a data pertence ao mês/ano atual (formato dd-MM-yyyy)
+                        dataTarefas.forEach { (data, tarefasList) ->
+
+                        if (data.substring(3, 10) == mesAno) { // Verifica se a data pertence ao mês/ano atual (formato dd-MM-yyyy)
                                 tarefasList.forEach { tarefa ->
                                     val status = tarefa["status"] as? String
                                     when (status) {
@@ -218,4 +218,3 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
 
 
 }
-
