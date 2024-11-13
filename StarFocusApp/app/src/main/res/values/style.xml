@@ -122,4 +122,34 @@
         <item name="android:background">@drawable/rectangleprofile</item>
     </style>
 
+    <style name="bckPapaisRectangle">
+        <item name="android:layout_width">157dp</item>
+        <item name="android:layout_height">17dp</item>
+        <item name="android:background">@drawable/buttonsend</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:textColor">@color/white</item>
+
+    </style>
+
+
+        <style name="DialogStyle">
+            <item name="android:padding">16dp</item>
+            <item name="android:layout_gravity">center</item>
+            <item name="android:orientation">vertical</item>
+            <item name="android:background">@drawable/rectangleprofile</item>
+
+        </style>
+
+    <style name="buttonclothes">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/buttonrectangle</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+
+
 </resources>

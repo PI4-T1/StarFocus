@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.google.firebase.auth.FirebaseAuth
@@ -20,7 +19,7 @@ class ClosetFragment : Fragment() {
     private lateinit var selectButton: TextView // Usando TextView para permitir mudança de texto
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
-    private var unlockedClothes = mutableListOf<Int>()
+    private var unlockedClothes = mutableListOf<Pair<Int, Boolean>>() // Pair de (imagem, é novo?)
     private var currentClothesIndex = 0
     private var equippedClothesIndex = -1 // Índice do personagem atualmente equipado
 
@@ -65,17 +64,25 @@ class ClosetFragment : Fragment() {
         db.collection("Pessoas").document(userId).get().addOnSuccessListener { document ->
             if (document != null) {
                 unlockedClothes.clear()
-                if (document.getBoolean("monster1") == true) unlockedClothes.add(R.drawable.monsterprincipal)
-                if (document.getBoolean("monster2") == true) unlockedClothes.add(R.drawable.monster2)
-                if (document.getBoolean("monster3") == true) unlockedClothes.add(R.drawable.monster3)
-                if (document.getBoolean("monster4") == true) unlockedClothes.add(R.drawable.monster4)
-                if (document.getBoolean("monster5") == true) unlockedClothes.add(R.drawable.monster5)
+                // Adiciona cada roupa à lista com o valor true se for nova
+                if (document.getBoolean("monster1") == true) unlockedClothes.add(Pair(R.drawable.monsterprincipal, false))
+                if (document.getBoolean("monster2") == true) unlockedClothes.add(Pair(R.drawable.monster2, true))
+                if (document.getBoolean("monster3") == true) unlockedClothes.add(Pair(R.drawable.monster3, true))
+                if (document.getBoolean("monster4") == true) unlockedClothes.add(Pair(R.drawable.monster4, true))
+                if (document.getBoolean("monster5") == true) unlockedClothes.add(Pair(R.drawable.monster5, true))
 
                 clothesCarousel.adapter = ClothesCarouselAdapter(unlockedClothes)
 
-                //Define uma notificação no botão de closet da navBar indicando ao usuário que ele tem roupas desbloqueadas
+                // Verifica se algum dos monstros foi desbloqueado
+                val monster2 = document.getBoolean("monster2") == true
+                val monster3 = document.getBoolean("monster3") == true
+                val monster4 = document.getBoolean("monster4") == true
+                val monster5 = document.getBoolean("monster5") == true
 
+                // Define uma notificação no botão de closet da navBar indicando ao usuário que ele tem roupas desbloqueadas
                 updateBadgeForCloset(unlockedClothes.size)
+
+
 
                 // Obter a roupa atualmente equipada e definir como o índice inicial
                 equippedClothesIndex = (document.getLong("roupa")?.toInt() ?: 1) - 1
@@ -104,16 +111,18 @@ class ClosetFragment : Fragment() {
     }
 
     private fun updateButtonLabel() {
-        // Verifica se o personagem atual está equipado e define o texto do botão
         if (currentClothesIndex == equippedClothesIndex) {
             selectButton.text = "Selecionado"
-            // Quando estiver equipado, use o selector para definir o fundo
             selectButton.setBackgroundResource(R.drawable.button_background_pressed)
+
+            // Remove o selo "Novo" quando a roupa for selecionada
+            unlockedClothes[currentClothesIndex] = unlockedClothes[currentClothesIndex].copy(second = false)
+
+            // Notifica o adapter para atualizar a visualização da roupa selecionada
+            clothesCarousel.adapter?.notifyItemChanged(currentClothesIndex)
         } else {
             selectButton.text = "Selecionar"
-            // Quando não estiver equipado, use o selector para definir o fundo
             selectButton.setBackgroundResource(R.drawable.button_background_normal)
         }
     }
-
 }

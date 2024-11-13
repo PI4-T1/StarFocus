@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    tools:context=".DialogClothesHistory">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/dialogclotheshistory"
+        android:layout_width="310dp"
+        android:layout_height="302dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:cardElevation="5dp"
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="@color/off_white">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/dialogimage"
+            style="@style/Rectangleprofile"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingEnd="20dp"
+            android:paddingStart="30dp"
+            android:scaleType="centerCrop"
+            />
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/happyclotheshistoryunlocked"
+            app:layout_constraintBottom_toBottomOf="@id/dialogimage"
+            app:layout_constraintEnd_toEndOf="@id/dialogimage"
+            app:layout_constraintStart_toStartOf="@id/dialogimage"
+            app:layout_constraintTop_toTopOf="@id/dialogimage"
+            android:layout_marginStart="100dp"
+            android:layout_marginEnd="200dp"
+            android:layout_marginTop="20dp"
+
+            />
+
+        <TextView
+            android:id="@+id/dialogTitle"
+            android:layout_width="190dp"
+            android:layout_height="20dp"
+            android:text="@string/parabens"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:textColor="@color/purple"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="140dp"
+            android:fontFamily="@font/poppins_medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:id="@+id/dialogtextbody"
+            android:layout_width="230dp"
+            android:layout_height="70dp"
+            android:text="@string/dialogtextbody"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="160dp"
+            android:fontFamily="@font/poppins"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnclothes"
+            style="@style/buttonclothes"
+            android:layout_width="130dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="230dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/clothesbuttondialog"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textColor="@color/off_white"
+            android:textSize="16sp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="30dp"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnstory"
+            style="@style/buttonclothes"
+            android:layout_width="130dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="230dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/historiasver"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textColor="@color/off_white"
+            android:textSize="16sp"
+            android:layout_marginStart="165dp"
+            android:layout_marginEnd="30dp"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/fechardialog1"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:drawableStart="@drawable/baseline_close_24"
+            android:background="@android:color/transparent"
+            android:layout_marginStart="255dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="30dp"
+            />
+
+
+    </androidx.cardview.widget.CardView>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
