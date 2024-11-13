@@ -58,7 +58,7 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
             // Estabelecer a conexão com o servidor
             val socket = withContext(Dispatchers.IO) {
                 try {
-                    val newSocket = Socket("10.0.2.2", 3000) // Para emulador, altere para o IP do servidor em um dispositivo real
+                    val newSocket = Socket("192.168.15.58", 3000) // Para emulador, altere para o IP do servidor em um dispositivo real
                     Log.d("ProgressReport", "Socket conectado com sucesso.")
                     newSocket
                 } catch (e: Exception) {

@@ -108,7 +108,7 @@ class HomeFragment : Fragment(), ProgressListener {
             val socket = withContext(Dispatchers.IO) {
                 try {
                     //celular 192.168.15.58
-                    val newSocket = Socket("10.0.2.2", 3000)  // Para emulador (alterar para IP correto se estiver no dispositivo)
+                    val newSocket = Socket("192.168.15.58", 3000)  // Para emulador (alterar para IP correto se estiver no dispositivo)
                     Log.d("HomeFragment", "Socket conectado com sucesso.")
                     newSocket
                 } catch (e: Exception) {
@@ -223,8 +223,19 @@ class HomeFragment : Fragment(), ProgressListener {
     // Implementação do método da interface ProgressListener
     override fun onProgressUpdate(progresso: Int) {
         activity?.runOnUiThread {
+            // Atualiza o progresso na barra de progresso
             binding.progressBar.progress = progresso
             Log.d("HomeFragment", "Progresso atualizado: $progresso%")
+
+            // Verifica se o progresso atingiu 100%
+            if (progresso == 100) {
+                val userId = auth.currentUser?.uid
+                val dataSelecionada = String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear)
+
+                if (userId != null) {
+                    verifyRewardStatus(userId, dataSelecionada)
+                }
+            }
         }
     }
 
@@ -1083,6 +1094,93 @@ class HomeFragment : Fragment(), ProgressListener {
             Log.e("FirestoreError", "Erro ao contar as tarefas", exception)
             onResult(0, 0) // Retorna 0 em caso de falha
         }
+    }
+
+    private fun checkAndSetCompletion(userId: String) {
+        val pessoasRef = db.collection("Pessoas").document(userId)
+
+        pessoasRef.get().addOnSuccessListener { document ->
+            if (document.exists()) {
+                // Acessa os campos
+                val history2 = document.getBoolean("history2") ?: false
+                val monster2 = document.getBoolean("monster2") ?: false
+                val history3 = document.getBoolean("history3") ?: false
+                val monster3 = document.getBoolean("monster3") ?: false
+                val history4 = document.getBoolean("history4") ?: false
+                val monster4 = document.getBoolean("monster4") ?: false
+                val monster5 = document.getBoolean("monster5") ?: false
+
+                // Define os updates com base nas condições
+                val updates = when {
+                    !history2 && !monster2 -> mapOf("history2" to true, "monster2" to true)
+                    !history3 && !monster3 -> mapOf("history3" to true, "monster3" to true)
+                    !history4 && !monster4 -> mapOf("history4" to true, "monster4" to true)
+                    !monster5 -> mapOf("monster5" to true)
+                    else -> {
+                        Log.d("PessoasUpdate", "Todas as condições já foram atendidas.")
+                        Toast.makeText(requireContext(), "No momento, só possuímos 4 recompensas (MVP)!", Toast.LENGTH_LONG).show()
+                        return@addOnSuccessListener
+                    }
+                }
+
+                // Aplica os updates, se houver
+                pessoasRef.update(updates).addOnSuccessListener {
+                    Log.d("PessoasUpdate", "Campos atualizados com sucesso: $updates")
+                }.addOnFailureListener { e ->
+                    Log.e("PessoasUpdate", "Erro ao atualizar campos", e)
+                }
+            } else {
+                Log.d("PessoasUpdate", "Documento para o usuário não encontrado.")
+            }
+        }.addOnFailureListener { e ->
+            Log.e("PessoasUpdate", "Erro ao acessar documento", e)
+        }
+    }
+
+    private fun verifyRewardStatus(userId: String, dataSelecionada: String) {
+        // Referência ao documento de tarefas do usuário no Firestore
+        val tarefasRef = db.collection("Tarefas").document(userId)
+
+        tarefasRef.get().addOnSuccessListener { document ->
+            if (document.exists()) {
+                // Acessa o mapa de tarefas por data
+                val dataTarefas = document.get("tarefas") as? Map<*, *>
+                val tarefaData = dataTarefas?.get(dataSelecionada) as? Map<*, *>
+
+                // Verifica o campo 'recompensa' para a data selecionada
+                val recompensa = tarefaData?.get("recompensa") as? Boolean ?: false
+
+                // Verifica se a barra de progresso está em 100%
+                if (binding.progressBar.progress == 100) {
+                    if (recompensa) {
+                        // Se 'recompensa' é true e progresso é 100%, fixa a barra de progresso e desabilita interações
+                        setProgressBarToFullAndDisable()
+                    } else {
+                        // Se 'recompensa' é false e progresso é 100%, atualiza 'recompensa' para true, chama checkAndSetCompletion e desabilita interações
+                        val updates = mapOf("tarefas.$dataSelecionada.recompensa" to true)
+                        tarefasRef.update(updates).addOnSuccessListener {
+                            checkAndSetCompletion(userId)
+                            setProgressBarToFullAndDisable()
+                        }.addOnFailureListener { e ->
+                            Log.e("FirestoreError", "Erro ao atualizar recompensa", e)
+                        }
+                    }
+                }
+            } else {
+                Log.w("Firestore", "Documento não encontrado para o usuário $userId.")
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("Firestore", "Erro ao acessar o documento de tarefas", exception)
+        }
+    }
+
+    // Função para fixar a barra de progresso em 100% e desabilitar interações
+    private fun setProgressBarToFullAndDisable() {
+        binding.progressBar.progress = 100
+        binding.progressBar.isEnabled = false // Desabilita interações com a barra de progresso
+        binding.sendProgress.isEnabled = false // Desabilita o botão de enviar progresso, se necessário
+        binding.InputTask.isEnabled = false
+        binding.InputTask.alpha = 0.5f
     }
 
 }
