@@ -22,4 +22,9 @@
     <color name="ssssair">#B61342</color>
     <color name="orange">#C86F2D</color>
 
+    <color name="purpleconcluidas">#6A4AC4</color>
+    <color name="purpleenviadas">#9FA8DA</color>
+    <color name="purplependentes">#C5CAE9</color>
+    <color name="recompensatotal">#1496A4</color>
+    <color name="recompensaobtida">#76C8BB</color>
 </resources>

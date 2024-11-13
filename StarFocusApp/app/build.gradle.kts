@@ -81,6 +81,6 @@ dependencies {
     implementation (libs.material.v1100)
     implementation (libs.play.services.auth)
     implementation(libs.kotlinx.coroutines.android)
-
+    implementation (libs.mpandroidchart)
 
 }

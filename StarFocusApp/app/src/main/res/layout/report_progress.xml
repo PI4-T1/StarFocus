@@ -5,20 +5,269 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/report_progress"
     android:background="@color/off_white"
     android:orientation="vertical"
     tools:context=".ProgressReport">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/rectanglereport"
+        style="@style/rectangledetails"
+        android:layout_width="370dp"
+        android:layout_height="85dp"
+        android:paddingTop="100dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/voltaperfil"
+        android:layout_width="50dp"
+        android:layout_height="49dp"
+        android:textAlignment="textStart"
+        android:drawableStart="@drawable/baseline_arrow_back_purple"
+        android:background="@android:color/transparent"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintBottom_toBottomOf="@id/rectanglereport"
+        app:layout_constraintStart_toStartOf="@id/rectanglereport"
+        app:layout_constraintTop_toTopOf="@id/rectanglereport"
+        android:contentDescription="@string/relatorioscreenprogresso"
+        />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/stringmetrics"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_semibold"
+        android:text="@string/relatorioscreenprogresso"
+        android:textAlignment="center"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/off_white"
+        android:textSize="23sp"
+        android:layout_marginStart="20dp"
+        app:layout_constraintBottom_toBottomOf="@id/rectanglereport"
+        app:layout_constraintEnd_toEndOf="@id/rectanglereport"
+        app:layout_constraintStart_toStartOf="@id/rectanglereport"
+        app:layout_constraintTop_toTopOf="@id/rectanglereport" />
+
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/relatorio"
+        android:layout_width="210dp"
+        android:layout_height="29dp"
         android:fontFamily="@font/poppins_medium"
-        android:textColor="@color/black"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/relatoriotitle"
+        android:textColor="@color/off_white"
+        android:layout_marginTop="85dp"
+        android:elevation="5.8dp"
+        android:textSize="20sp"
+        android:textAlignment="center"
+        style="@style/bckPapaisRectangle"
+        android:paddingBottom="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/stringmetrics"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/CardViewdograficoRelatorioProgresso"
+        android:layout_width="350dp"
+        android:layout_height="598dp"
+        android:layout_marginBottom="110dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:cardElevation="5dp"
+        android:textAlignment="center"
+        android:foregroundGravity="center"
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="@color/grey">
+
+        <!--recebe do back-->
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/mes"
+            android:layout_width="150dp"
+            android:layout_height="20dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/mes"
+            android:textAlignment="center"
+            android:textColor="@color/dark_grey"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="290dp"
+            android:textSize="16sp"
+            android:layout_gravity="center"
+
+
+            />
+        <!--recebe do back-->
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/qtdtarefascriadas"
+            android:layout_width="150dp"
+            android:layout_height="30dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/qtdtarefas"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="260dp"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="26sp"
+
+            />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tarefascriadastext"
+            android:layout_width="240dp"
+            android:layout_height="50dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/tarefascriadas"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="220dp"
+            android:layout_gravity="center"
+            android:textSize="26sp"
+            />
+
+        <!-- Gráfico (usando biblioteca de gráficos) -->
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/pieChartTasks"
+            android:layout_width="230dp"
+            android:layout_height="180dp"
+            android:layout_gravity="center"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="80dp"
+            />
+
+        <!-- Container para as legendas -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="226dp"
+            android:orientation="vertical"
+            android:layout_marginStart="220dp"
+            android:layout_marginTop="130dp">
+
+            <!-- Legenda 1 -->
+            <TextView
+                android:id="@+id/legend_completed"
+                android:layout_width="110dp"
+                android:layout_height="36dp"
+                android:text="@string/Tarefasconcluidas"
+                android:textColor="@color/dark_grey"
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/poppins"
+                android:textSize="12sp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                app:drawableStartCompat="@drawable/concluidas" />
+
+            <TextView
+                android:id="@+id/percentageTextConcluidas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/porcentagem"
+                android:textSize="14sp"
+                android:textColor="@color/black"
+                android:layout_marginStart="20dp"
+                android:fontFamily="@font/poppins_medium"
+                />
+
+            <!-- Legenda 2 -->
+            <TextView
+                android:id="@+id/legend_sent"
+                android:layout_width="90dp"
+                android:textSize="12sp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_height="40dp"
+                android:text="@string/tarefasenviadas"
+                android:textColor="@color/dark_grey"
+                android:layout_marginBottom="2dp"
+                app:drawableStartCompat="@drawable/enviadas"
+                android:fontFamily="@font/poppins"/>
+
+            <TextView
+                android:id="@+id/percentageTextenviadas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/porcentagem"
+                android:textSize="14sp"
+                android:textColor="@color/black"
+                android:layout_marginStart="20dp"
+                android:fontFamily="@font/poppins_medium"
+                />
+
+            <!-- Legenda 3 -->
+            <TextView
+                android:id="@+id/legend_pending"
+                android:layout_width="100dp"
+                android:layout_height="36dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textSize="12sp"
+                android:text="@string/tarefaspendentes"
+                android:textColor="@color/dark_grey"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="@font/poppins"
+                app:drawableStartCompat="@drawable/pendentes"/>
+
+            <TextView
+                android:id="@+id/percentageTextpendentes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/porcentagem"
+                android:textSize="14sp"
+                android:textColor="@color/black"
+                android:layout_marginStart="20dp"
+                android:fontFamily="@font/poppins_medium"
+                />
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/recompensastext"
+            android:layout_width="180dp"
+            android:layout_height="35dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/recompensastitle"
+            android:textAlignment="textStart"
+            android:textColor="@color/black"
+            android:layout_marginTop="317dp"
+            android:layout_marginBottom="2dp"
+            android:textSize="26sp"
+            android:layout_marginStart="30dp"
+            />
+
+        <!--recebe do back-->
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/textsobrerecompensas"
+            android:layout_width="200dp"
+            android:layout_height="60dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/recompensastitleh2"
+            android:textAlignment="textStart"
+            android:textColor="@color/black"
+            android:layout_marginTop="347dp"
+            android:layout_marginBottom="2dp"
+            android:textSize="16sp"
+            android:layout_marginStart="30dp"
+            />
+
+        <!-- Gráfico (usando biblioteca de gráficos) -->
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/pieChartRecompensas"
+            android:layout_width="260dp"
+            android:layout_height="190dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="178dp"
+            />
+
+
+
+    </androidx.cardview.widget.CardView>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

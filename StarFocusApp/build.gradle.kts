@@ -8,6 +8,7 @@ plugins {
 }
 
 buildscript {
+
     dependencies {
         // Adicione classpath fora do bloco plugins
         classpath("com.android.tools.build:gradle:8.7.2")

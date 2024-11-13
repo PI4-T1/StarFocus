@@ -1,5 +1,6 @@
 [versions]
 agp = "8.7.2"
+mpandroidchart = "v3.1.0"
 play-services-auth = "20.0.0"
 constraintlayoutVersion = "2.0.4"
 coreSplashscreenVersion = "1.0.0-beta02"
@@ -46,6 +47,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 material-v1100 = { module = "com.google.android.material:material", version.ref = "googleMaterial" }
+mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mpandroidchart" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "play-services-auth" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx_coroutines" }
