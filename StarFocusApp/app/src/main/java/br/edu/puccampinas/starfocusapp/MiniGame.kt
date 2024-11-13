@@ -1,5 +1,6 @@
 package br.edu.puccampinas.starfocusapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
@@ -18,6 +19,10 @@ class MiniGame : AppCompatActivity() {
     private lateinit var successMessage: TextView
     private lateinit var closeButton: Button
     private lateinit var startGameButton: Button
+    private lateinit var errorCounterTextView: TextView // Exibe os erros
+
+    private var parametro: Int = 0
+    private var errorCount = 0 // Contador de erros
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,16 +32,25 @@ class MiniGame : AppCompatActivity() {
         successMessage = findViewById(R.id.successMessage)
         closeButton = findViewById(R.id.closeButton)
         startGameButton = findViewById(R.id.startGameButton)
+        errorCounterTextView = findViewById(R.id.errorCounterTextView)
+
+        parametro = intent.getIntExtra("parametro", 0)
+        updateErrorCounter() // Atualiza o contador no início
 
         setupGame()
 
         startGameButton.setOnClickListener {
             revealAllCards()
-            startGameButton.visibility = View.GONE // Esconde o botão após o início do jogo
+            startGameButton.visibility = View.GONE
         }
 
         closeButton.setOnClickListener {
-            finish() // Fecha a atividade quando o botão é clicado
+            when (parametro) {
+                1 -> startActivity(Intent(this, HistoryProgressTwoWin::class.java))
+                2 -> startActivity(Intent(this, HistoryProgressFourWin::class.java))
+                3 -> startActivity(Intent(this, HistoryProgressSixWin::class.java))
+                else -> finish()
+            }
         }
     }
 
@@ -58,21 +72,18 @@ class MiniGame : AppCompatActivity() {
         recyclerView.adapter = memoryBoardAdapter
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = GridLayoutManager(this, 3)
-        recyclerView.addItemDecoration(SpaceItemDecoration(16)) // ajuste conforme necessário
+        recyclerView.addItemDecoration(SpaceItemDecoration(16))
 
-        // Oculta a mensagem de sucesso e o botão no início
         successMessage.visibility = View.GONE
         closeButton.visibility = View.GONE
     }
 
     private fun revealAllCards() {
-        // Vira todas as cartas para cima
         for (card in memoryCards) {
             card.isFaceUp = true
         }
         memoryBoardAdapter.notifyDataSetChanged()
 
-        // Espera 5 segundos e vira todas as cartas para baixo
         Handler().postDelayed({
             for (card in memoryCards) {
                 card.isFaceUp = false
@@ -84,26 +95,28 @@ class MiniGame : AppCompatActivity() {
     private fun updateGameWithFlip(position: Int) {
         val card = memoryCards[position]
 
-        // Ignore se a carta já foi combinada ou está virada para cima
         if (card.isFaceUp || card.isMatched) {
             return
         }
 
-        // 0 ou 2 cartas selecionadas anteriormente
         if (indexOfSingleSelectedCard == null) {
-            // Vira a primeira carta
             restoreCards()
             indexOfSingleSelectedCard = position
         } else {
-            // Verifica se as cartas combinam
-            checkForMatch(indexOfSingleSelectedCard!!, position)
+            if (!checkForMatch(indexOfSingleSelectedCard!!, position)) {
+                errorCount++ // Incrementa o contador de erros em caso de erro
+                updateErrorCounter()
+                if (errorCount >= 5) {
+                    redirectToMapFragment()
+                    return
+                }
+            }
             indexOfSingleSelectedCard = null
         }
 
         card.isFaceUp = !card.isFaceUp
         memoryBoardAdapter.notifyDataSetChanged()
 
-        // Verifica se todas as cartas foram combinadas
         if (memoryCards.all { it.isMatched }) {
             showSuccessMessage()
         }
@@ -117,10 +130,13 @@ class MiniGame : AppCompatActivity() {
         }
     }
 
-    private fun checkForMatch(position1: Int, position2: Int) {
-        if (memoryCards[position1].identifier == memoryCards[position2].identifier) {
+    private fun checkForMatch(position1: Int, position2: Int): Boolean {
+        return if (memoryCards[position1].identifier == memoryCards[position2].identifier) {
             memoryCards[position1].isMatched = true
             memoryCards[position2].isMatched = true
+            true
+        } else {
+            false
         }
     }
 
@@ -128,4 +144,14 @@ class MiniGame : AppCompatActivity() {
         successMessage.visibility = View.VISIBLE
         closeButton.visibility = View.VISIBLE
     }
+
+    private fun updateErrorCounter() {
+        errorCounterTextView.text = "Erros: $errorCount"
+    }
+
+    private fun redirectToMapFragment() {
+        val dialog = GameOverDialogFragment()
+        dialog.show(supportFragmentManager, "GameOverDialogFragment")
+    }
+
 }
