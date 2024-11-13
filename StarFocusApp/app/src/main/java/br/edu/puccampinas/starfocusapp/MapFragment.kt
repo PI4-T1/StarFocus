@@ -1,5 +1,6 @@
 package br.edu.puccampinas.starfocusapp
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -67,7 +68,10 @@ class MapFragment : Fragment() {
         binding.history3locked.visibility = if (!history3) View.VISIBLE else View.GONE
         binding.history4unlock.visibility = if (history4) View.VISIBLE else View.GONE
         binding.history4locked.visibility = if (!history4) View.VISIBLE else View.GONE
-
+        // Se estatus = true, mostra o imageview
+        binding.history2novoStatus.visibility = if (history2) View.VISIBLE else View.GONE
+        binding.history3novoStatus.visibility = if (history3) View.VISIBLE else View.GONE
+        binding.history4novoStatus.visibility = if (history4) View.VISIBLE else View.GONE
         // Redireciona para a história correspondente ao ser desbloqueada
         binding.history1unlock.setOnClickListener {
             if (history1) {
@@ -78,18 +82,24 @@ class MapFragment : Fragment() {
         binding.history2unlock.setOnClickListener {
             if (history2) {
                 navigateToStoryActivity(HistoryProgressOneVillain::class.java)
+                saveButtonVisibilityState()
+                binding.history2novoStatus.visibility = View.GONE
             }
         }
 
         binding.history3unlock.setOnClickListener {
             if (history3) {
                 navigateToStoryActivity(HistoryProgressThreeVillain::class.java)
+                saveButtonVisibilityState()
+                binding.history3novoStatus.visibility = View.GONE
             }
         }
 
         binding.history4unlock.setOnClickListener {
             if (history4) {
                 navigateToStoryActivity(HistoryProgressFiveVillain::class.java)
+                saveButtonVisibilityState()
+                binding.history4novoStatus.visibility = View.GONE
             }
         }
 
@@ -116,4 +126,30 @@ class MapFragment : Fragment() {
             it.startActivity(intent)
         }
     }
+
+    private fun saveButtonVisibilityState() {
+        val sharedPreferences = requireContext().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        // Salvar a visibilidade dos selos "Novo"
+        editor.putBoolean("history2Novo", false)  // History 2 já foi desbloqueada
+        editor.putBoolean("history3Novo", false)  // History 3 já foi desbloqueada
+        editor.putBoolean("history4Novo", false)  // History 4 já foi desbloqueada
+        editor.apply()  // Salva as mudanças
+    }
+    private fun loadButtonVisibilityState() {
+        val sharedPreferences = requireContext().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+
+        // Recuperando os valores salvos para os selos "Novo"
+        val history2Novo = sharedPreferences.getBoolean("history2Novo", true)  // default é true
+        val history3Novo = sharedPreferences.getBoolean("history3Novo", true)  // default é true
+        val history4Novo = sharedPreferences.getBoolean("history4Novo", true)  // default é true
+
+        // Atualiza a visibilidade de acordo com o estado
+        binding.history2novoStatus.visibility = if (history2Novo) View.VISIBLE else View.GONE
+        binding.history3novoStatus.visibility = if (history3Novo) View.VISIBLE else View.GONE
+        binding.history4novoStatus.visibility = if (history4Novo) View.VISIBLE else View.GONE
+    }
+
+
+
 }

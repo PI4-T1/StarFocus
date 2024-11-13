@@ -129,6 +129,43 @@ tools:context=".MapFragment">
         android:visibility="gone"
         />
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/history2novoStatus"
+        android:layout_width="150dp"
+        android:layout_height="160dp"
+        android:src="@drawable/novohistory"
+        android:layout_marginStart="147dp"
+        android:layout_marginTop="100dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rectangle"
+        android:visibility="gone"
+        />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/history3novoStatus"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@drawable/novohistory"
+        android:layout_marginStart="7dp"
+        android:layout_marginTop="287dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rectangle"
+        android:visibility="gone"
+        />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/history4novoStatus"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@drawable/novohistory"
+        android:layout_marginStart="150dp"
+        android:layout_marginTop="446dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rectangle"
+        android:visibility="gone"
+        />
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
