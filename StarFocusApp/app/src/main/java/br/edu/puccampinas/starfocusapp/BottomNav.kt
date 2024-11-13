@@ -18,53 +18,55 @@ class BottomNav : AppCompatActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = BottomNavBinding.inflate(layoutInflater)  // Infla o layout da atividade
-        setContentView(binding.root)  // Define o conteúdo da activity
+        binding = BottomNavBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        // Carrega o fragmento inicial (HomeFragment) se não houver estado salvo
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.container, HomeFragment())  // Substitui o fragmento do contêiner pelo HomeFragment
-                .commit()  // Realiza a transação
+        // Verifica se a Intent contém o extra para abrir o MapFragment diretamente
+        if (intent.getBooleanExtra("open_map_fragment", false)) {
+            // Abre diretamente o MapFragment se o extra for true
+            if (savedInstanceState == null) {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.container, MapFragment()) // Substitui pelo MapFragment diretamente
+                    .commit()
+                    binding.bottomNavigation.selectedItemId = R.id.map
+            }
+        } else {
+            // Caso contrário, carrega o fragmento padrão (HomeFragment, por exemplo)
+            if (savedInstanceState == null) {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.container, HomeFragment()) // Substitui pelo HomeFragment inicialmente
+                    .commit()
+            }
         }
 
-        // Configura o listener para o BottomNavigationView, responsável por trocar os fragments
+        // Configura a navegação do BottomNavigationView
         binding.bottomNavigation.setOnNavigationItemSelectedListener { item ->
             val fragment: Fragment = when (item.itemId) {
-                R.id.bottom_home -> HomeFragment()  // Carrega o fragmento Home
-                R.id.bottom_closet -> ClosetFragment()  // Carrega o fragmento Closet
-                R.id.map -> MapFragment()  // Carrega o fragmento Map
-                R.id.profile -> ProfileFragment()  // Carrega o fragmento Profile
-                else -> HomeFragment()  // Caso padrão, carrega o HomeFragment
+                R.id.bottom_home -> HomeFragment()
+                R.id.bottom_closet -> ClosetFragment()
+                R.id.map -> MapFragment()
+                R.id.profile -> ProfileFragment()
+                else -> HomeFragment()
             }
 
-            // Realiza a transação de troca de fragmento com animações
             supportFragmentManager.beginTransaction()
-                .setCustomAnimations(  // Define animações para a transição
-                    R.anim.slide_in_right,  // Animação de entrada do fragmento
-                    R.anim.slide_out_left  // Animação de saída do fragmento atual
+                .setCustomAnimations(
+                    R.anim.slide_in_right, R.anim.slide_out_left
                 )
-                .replace(R.id.container, fragment)  // Substitui o fragmento exibido
-                .commit()  // Realiza a transação
+                .replace(R.id.container, fragment)
+                .commit()
 
-            true  // Indica que o item foi tratado
+            true
         }
 
-        // Configura o listener para o clique no FAB (Floating Action Button)
-        // O clique exibe um BottomSheetDialogFragment para adicionar tarefas
         binding.Fab.setOnClickListener {
-            // Cria o fragmento BottomsSheetAddTaskFragment2 e define a ação a ser executada ao adicionar uma tarefa
             val bottomSheetFragment = BottomsSheetAddTaskFragment2 { selectedDate ->
-
-                // Recupera o fragmento HomeFragment atual e carrega as tarefas para a data selecionada
                 val homeFragment = supportFragmentManager.findFragmentById(R.id.container) as? HomeFragment
                 homeFragment?.loadTasksForSelectedDay(selectedDate)
             }
 
-            // Exibe o BottomSheetFragment
             bottomSheetFragment.show(supportFragmentManager, "bottomSheetFragment2")
         }
-
     }
 
     /**
