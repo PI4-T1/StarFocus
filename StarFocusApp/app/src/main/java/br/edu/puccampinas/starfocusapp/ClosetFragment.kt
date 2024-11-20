@@ -4,125 +4,115 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.viewpager2.widget.ViewPager2
+import androidx.lifecycle.lifecycleScope
+import br.edu.puccampinas.starfocusapp.databinding.FragmentClosetBinding
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class ClosetFragment : Fragment() {
+    private var _binding: FragmentClosetBinding? = null
+    private val binding get() = _binding!!
+    private val storage by lazy { FirebaseStorage.getInstance() }
+    private val auth by lazy { FirebaseAuth.getInstance() }
+    private val firestore by lazy { FirebaseFirestore.getInstance() }
 
-    private lateinit var clothesCarousel: ViewPager2
-    private lateinit var rightButton: ImageButton
-    private lateinit var leftButton: ImageButton
-    private lateinit var selectButton: TextView // Usando TextView para permitir mudança de texto
-    private val db = FirebaseFirestore.getInstance()
-    private val auth = FirebaseAuth.getInstance()
-    private var unlockedClothes = mutableListOf<Pair<Int, Boolean>>() // Pair de (imagem, é novo?)
-    private var currentClothesIndex = 0
-    private var equippedClothesIndex = -1 // Índice do personagem atualmente equipado
+    private val imageUrls: MutableList<String> = mutableListOf()
+    private var currentIndex: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_closet, container, false)
+    ): View {
+        _binding = FragmentClosetBinding.inflate(inflater, container, false)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            loadImages()
+            updateImageView()
+        }
+
+        with(binding) {
+            btnEsquerda.setOnClickListener {
+                if (currentIndex > 0) {
+                    currentIndex--
+                } else {
+                    currentIndex = imageUrls.size - 1
+                }
+                updateImageView()
+            }
+
+            btnDireita.setOnClickListener {
+                if (currentIndex < imageUrls.size - 1) {
+                    currentIndex++
+                } else {
+                    currentIndex = 0
+                }
+                updateImageView()
+            }
+
+            btnselecionar.setOnClickListener {
+                viewLifecycleOwner.lifecycleScope.launch { select() }
+            }
+        }
+        return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    private suspend fun select() {
+        withContext(Dispatchers.IO) {
+            val userId = auth.currentUser?.uid ?: return@withContext
+            val userDoc = firestore.collection("Pessoas").document(userId)
 
-        clothesCarousel = view.findViewById(R.id.clothesCarousel)
-        rightButton = view.findViewById(R.id.rightbutton)
-        leftButton = view.findViewById(R.id.leftbutton)
-        selectButton = view.findViewById(R.id.btnselecionar)
+            val listResult = storage.reference.child("Clothes").listAll().await()
 
-        fetchUserData()
-
-        rightButton.setOnClickListener {
-            val nextItem = (clothesCarousel.currentItem + 1) % unlockedClothes.size
-            clothesCarousel.currentItem = nextItem
-            currentClothesIndex = nextItem
-            updateButtonLabel()
+            val sortedPrefixes = listResult.prefixes.sortedBy { it.name }
+            sortedPrefixes.forEachIndexed { index, folderRef ->
+                if (index == currentIndex){
+                    userDoc.update("outfit", folderRef.name).await()
+                }
+            }
         }
-
-        leftButton.setOnClickListener {
-            val prevItem = if (clothesCarousel.currentItem - 1 < 0) unlockedClothes.size - 1 else clothesCarousel.currentItem - 1
-            clothesCarousel.currentItem = prevItem
-            currentClothesIndex = prevItem
-            updateButtonLabel()
-        }
-
-        selectButton.setOnClickListener {
-            updateClothesSelection()
+        withContext(Dispatchers.Main){
+            Toast.makeText(requireContext(), "Nova roupa selecionada!", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun fetchUserData() {
-        val userId = auth.currentUser?.uid ?: return
-        db.collection("Pessoas").document(userId).get().addOnSuccessListener { document ->
-            if (document != null) {
-                unlockedClothes.clear()
-                // Adiciona cada roupa à lista com o valor true se for nova
-                if (document.getBoolean("monster1") == true) unlockedClothes.add(Pair(R.drawable.monsterprincipal, false))
-                if (document.getBoolean("monster2") == true) unlockedClothes.add(Pair(R.drawable.monster2, true))
-                if (document.getBoolean("monster3") == true) unlockedClothes.add(Pair(R.drawable.monster3, true))
-                if (document.getBoolean("monster4") == true) unlockedClothes.add(Pair(R.drawable.monster4, true))
-                if (document.getBoolean("monster5") == true) unlockedClothes.add(Pair(R.drawable.monster5, true))
+    private suspend fun loadImages() {
+        withContext(Dispatchers.IO) {
+            val userId = auth.currentUser?.uid ?: return@withContext
+            val userDoc = firestore.collection("Pessoas").document(userId).get().await()
 
-                clothesCarousel.adapter = ClothesCarouselAdapter(unlockedClothes)
+            val outfit = userDoc.getString("outfit") ?: ""
+            val roupas = userDoc.get("roupas") as List<*>
+            val listResult = storage.reference.child("Clothes").listAll().await()
 
-                // Verifica se algum dos monstros foi desbloqueado
-                val monster2 = document.getBoolean("monster2") == true
-                val monster3 = document.getBoolean("monster3") == true
-                val monster4 = document.getBoolean("monster4") == true
-                val monster5 = document.getBoolean("monster5") == true
-
-                // Define uma notificação no botão de closet da navBar indicando ao usuário que ele tem roupas desbloqueadas
-                updateBadgeForCloset(unlockedClothes.size)
-
-
-
-                // Obter a roupa atualmente equipada e definir como o índice inicial
-                equippedClothesIndex = (document.getLong("roupa")?.toInt() ?: 1) - 1
-                currentClothesIndex = equippedClothesIndex
-                clothesCarousel.currentItem = equippedClothesIndex
-                updateButtonLabel()
+            val sortedPrefixes = listResult.prefixes.sortedBy { it.name }
+            sortedPrefixes.forEachIndexed { index, folderRef ->
+                if (folderRef.name in roupas){
+                    val url = folderRef.child("closet.png").downloadUrl.await().toString()
+                    imageUrls.add(url)
+                    if (folderRef.name == outfit) {
+                        currentIndex = index
+                    }
+                }
             }
         }
     }
 
-    private fun updateBadgeForCloset(unlockedClothesCount: Int) {
-        // Aqui você comunica com a Activity para atualizar o badge
-        (activity as? BottomNav)?.updateBadgeForCloset(unlockedClothesCount)
-    }
-
-    private fun updateClothesSelection() {
-        val userId = auth.currentUser?.uid ?: return
-        db.collection("Pessoas").document(userId).update("roupa", currentClothesIndex + 1)
-            .addOnSuccessListener {
-                equippedClothesIndex = currentClothesIndex
-                updateButtonLabel()
-            }
-            .addOnFailureListener {
-                // Exibir um erro caso a atualização falhe
-            }
-    }
-
-    private fun updateButtonLabel() {
-        if (currentClothesIndex == equippedClothesIndex) {
-            selectButton.text = "Selecionado"
-            selectButton.setBackgroundResource(R.drawable.button_background_pressed)
-
-            // Remove o selo "Novo" quando a roupa for selecionada
-            unlockedClothes[currentClothesIndex] = unlockedClothes[currentClothesIndex].copy(second = false)
-
-            // Notifica o adapter para atualizar a visualização da roupa selecionada
-            clothesCarousel.adapter?.notifyItemChanged(currentClothesIndex)
-        } else {
-            selectButton.text = "Selecionar"
-            selectButton.setBackgroundResource(R.drawable.button_background_normal)
+    private fun updateImageView() {
+        if (imageUrls.isNotEmpty() && currentIndex in imageUrls.indices) {
+            Glide.with(this).load(imageUrls[currentIndex]).into(binding.monsterImageView)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

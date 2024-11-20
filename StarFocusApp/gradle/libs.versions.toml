@@ -1,5 +1,8 @@
 [versions]
 agp = "8.7.2"
+compiler = "4.15.1"
+firebaseStorage = "21.0.1"
+material = "1.12.0"
 mpandroidchart = "v3.1.0"
 play-services-auth = "20.0.0"
 constraintlayoutVersion = "2.0.4"
@@ -27,8 +30,10 @@ androidx-constraintlayout-v204 = { module = "androidx.constraintlayout:constrain
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen-v100beta02 = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreenVersion" }
 androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
+compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compiler" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-storage = { module = "com.google.firebase:firebase-storage", version.ref = "firebaseStorage" }
 glide-v4160 = { module = "com.github.bumptech.glide:glide", version.ref = "glideVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -47,6 +52,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 material-v1100 = { module = "com.google.android.material:material", version.ref = "googleMaterial" }
+material-v1120 = { module = "com.google.android.material:material", version.ref = "material" }
 mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mpandroidchart" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "play-services-auth" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
