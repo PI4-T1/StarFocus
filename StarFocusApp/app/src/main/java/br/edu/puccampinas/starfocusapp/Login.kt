@@ -26,12 +26,6 @@ class Login : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        if (auth.currentUser != null){
-            // E-mail verificado, continuar com o login
-            val userId = auth.currentUser?.uid.toString()
-            checkMonsterNameAndNavigate(userId)
-
-        }
         with(binding) {
             btnLogin.setOnClickListener {
                 userAuthentication(idEmail.text.toString(), idSenha.text.toString())

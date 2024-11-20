@@ -11,7 +11,6 @@ android {
     defaultConfig {
         applicationId = "br.edu.puccampinas.starfocusapp"
         minSdk = 27
-        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -65,12 +64,8 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
-    implementation(libs.firebase.storage)
-    implementation(libs.material.v1120)
     implementation(libs.androidx.activity)
     testImplementation(libs.junit)
-    implementation(libs.glide.v4160)
-    annotationProcessor(libs.compiler)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
