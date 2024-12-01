@@ -3,10 +3,12 @@ package br.edu.puccampinas.starfocusapp
 import android.app.AlertDialog
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -32,6 +34,8 @@ import java.net.Socket
 import java.util.Calendar
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 
 /**
  * Fragmento que exibe a tela inicial com o calendário,
@@ -414,7 +418,17 @@ class HomeFragment : Fragment(), ProgressListener {
 
         // Cria o builder para o AlertDialog
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Selecionar Mês e Ano")
+
+        // Infla um TextView para o título personalizado
+        val titleTextView = TextView(requireContext()).apply {
+            text = "Selecionar Mês e Ano"
+            setTextColor(Color.WHITE)  // Define a cor do título para branco
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)  // Tamanho da fonte, ajuste conforme necessário
+            setPadding(16, 16, 16, 16)  // Padding do título
+        }
+
+        // Define o título do AlertDialog como o TextView personalizado
+        builder.setCustomTitle(titleTextView)
 
         // Infla o layout do diálogo
         val dialogView = layoutInflater.inflate(R.layout.dialog_month_year_picker, null)
@@ -435,7 +449,7 @@ class HomeFragment : Fragment(), ProgressListener {
         yearPicker.value = currentYear
 
         // Configura a ação do botão OK do diálogo
-        builder.setPositiveButton("OK") { _, _ ->
+        builder.setPositiveButton("Salvar") { _, _ ->
             // Atualiza o calendário com o mês e ano selecionados
             selectedMonth = monthSpinner.selectedItemPosition
             selectedYear = yearPicker.value
@@ -450,7 +464,33 @@ class HomeFragment : Fragment(), ProgressListener {
         }
 
         // Exibe o diálogo
-        builder.show()
+        val dialog = builder.create()
+
+        // Personalizar o fundo do AlertDialog
+        dialog.window?.setBackgroundDrawableResource(R.drawable.custom_dialog_background)
+
+        // Carregar a fonte personalizada
+        var typeface = ResourcesCompat.getFont(requireContext(), R.font.poppins)
+
+        // Personalizar a fonte do título
+        dialog.findViewById<TextView>(android.R.id.title)?.typeface = typeface
+
+        // Personalizar a fonte da mensagem
+        dialog.findViewById<TextView>(android.R.id.message)?.typeface = typeface
+
+        // Personalizar a fonte dos botões
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.typeface = typeface
+
+        // Exibe o AlertDialog
+        dialog.show()
+
+        // Personalizar o botão OK após o diálogo ser exibido
+        val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+        positiveButton?.apply {
+            textSize = 16f  // Aumenta o tamanho da fonte do botão
+            setTextColor(ContextCompat.getColor(requireContext(), R.color.yellow))  // Cor do texto para a cor personalizada
+            typeface = Typeface.create(typeface, Typeface.BOLD)  // Define o texto em negrito
+        }
     }
 
     /**
