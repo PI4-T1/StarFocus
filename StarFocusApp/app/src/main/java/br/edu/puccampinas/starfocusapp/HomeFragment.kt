@@ -75,6 +75,7 @@ class HomeFragment : Fragment(), ProgressListener {
     private lateinit var parceiro: Parceiro
     private var isClienteAndroidInitialized = false
     private var isInitializingClient = false
+    private var isDialogShown = false // Variável para rastrear o estado do diálogo
 
 
     /**
@@ -223,6 +224,7 @@ class HomeFragment : Fragment(), ProgressListener {
                     }
                 } else {
                     Log.e("HomeFragment", "clienteAndroid não foi inicializado corretamente.")
+                    noServerDialog()
                 }
 
             } catch (e: Exception) {
@@ -1250,5 +1252,12 @@ class HomeFragment : Fragment(), ProgressListener {
         customDialog.showDialog()
     }
 
+    private fun noServerDialog() {
+        if (!isDialogShown) { // Verifica se o diálogo já foi exibido
+            val dialog = DialogNoServerFragment() // Cria o fragmento
+            dialog.show(parentFragmentManager, "DialogNoServer") // Exibe o fragmento
+            isDialogShown = true // Atualiza o estado para indicar que o diálogo foi exibido
+        }
+    }
 
 }
