@@ -34,8 +34,8 @@ public class RelatorioProgresso {
     public String calcularMetricas(String metricaString) {
     	
         // Verifica se a string tem pelo menos 12 caracteres
-        if (metricaString == null || metricaString.length() < 12) {
-            throw new IllegalArgumentException("A string de métricas deve ter pelo menos 12 caracteres.");
+        if (metricaString == null || metricaString.length() != 12) {
+            throw new IllegalArgumentException("A string de métricas deve ter 12 caracteres.");
         }
 
         try {
