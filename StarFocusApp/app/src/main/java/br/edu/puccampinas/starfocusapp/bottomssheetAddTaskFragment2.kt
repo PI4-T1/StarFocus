@@ -57,7 +57,7 @@ class BottomsSheetAddTaskFragment2(
         // Limite de caracteres para o campo de texto
         val maxLength = 50
 
-        // Inicializa o botão como desativado e opaco
+        // Inicializa o botão como desativado e opcao tem sua transparencis definida para 50%
         binding.buttonSaveTask.isEnabled = false
         binding.buttonSaveTask.alpha = 0.5f
 
@@ -76,6 +76,7 @@ class BottomsSheetAddTaskFragment2(
                     binding.buttonSaveTask.isEnabled = false  // Desativa o botão
                     binding.buttonSaveTask.alpha = 0.5f  // Torna o botão opaco
                 } else {
+                    // Se o texto está dentro do limite, ativa o botão e restaura as cores
                     binding.charCountTextView2.setTextColor(resources.getColor(R.color.black, null))  // Restaura cor preta
                     binding.inputtarefa2.setTextColor(resources.getColor(R.color.black, null))  // Restaura cor preta
                     binding.buttonSaveTask.isEnabled = true  // Habilita o botão
@@ -88,8 +89,8 @@ class BottomsSheetAddTaskFragment2(
 
         // Configura o botão para usar a data de hoje
         binding.buttonToday2.setOnClickListener {
-            val currentDate = LocalDate.now()  // Obtém a data atual
-            selectedDate = currentDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))  // Formata a data
+            val currentDate = LocalDate.now()  // Obtém a data atual do sistema no formato de (aaaa/mm/dd)
+            selectedDate = currentDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))  // Formata a data para o padrão
             binding.textDaySelected.text = "A tarefa será adicionada em: $selectedDate"  // Exibe a data selecionada
             Log.d("BottomSheetAddTask", "Data selecionada: $selectedDate")  // Log para depuração
         }
@@ -125,12 +126,12 @@ class BottomsSheetAddTaskFragment2(
                 return@setOnClickListener
             }
 
-            // Verifica se o texto da tarefa e a data foram preenchidos
+            // Verifica se o texto da tarefa e a data não estão vazios
             if (tarefaTexto.isNotEmpty() && selectedDate.isNotEmpty()) {
                 val tarefasRef = db.collection("Tarefas").document(userId)  // Referência ao documento de tarefas do usuário
 
                 tarefasRef.get().addOnSuccessListener { document ->
-                    // Obtém as tarefas armazenadas ou cria um novo mapa vazio
+                    // Obtém as tarefas armazenadas no mapa ou cria um novo mapa vazio
                     val dataTarefas = document.get("tarefas") as? MutableMap<String, MutableMap<String, Any>> ?: mutableMapOf()
 
                     // Verifica se existe um mapa para o dia selecionado, cria um se não existir
@@ -155,7 +156,7 @@ class BottomsSheetAddTaskFragment2(
                     // Atualiza as tarefas para o dia selecionado no mapa geral
                     dataTarefas[selectedDate] = diaData
 
-                    // Atualiza o Firestore com as tarefas modificadas
+                    // Atualiza o Firestore com as tarefas modificadas,utilizando SetOptions.merge() para preservar outras informações existentes.
                     tarefasRef.set(hashMapOf("tarefas" to dataTarefas), SetOptions.merge())
                         .addOnSuccessListener {
                             binding.inputtarefa2.text?.clear()  // Limpa o campo de texto

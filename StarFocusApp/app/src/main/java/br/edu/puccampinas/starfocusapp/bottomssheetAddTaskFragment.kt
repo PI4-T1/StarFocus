@@ -43,6 +43,7 @@ class BottomsSheetAddTaskFragment(private val onTaskAdded: () -> Unit) : BottomS
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        // Infla o layout e inicializa Firebase
         _binding = BottomsheetAddtaskBinding.inflate(inflater, container, false)  // Inflar o layout
         db = FirebaseFirestore.getInstance()  // Inicializa a instância do Firestore
         auth = FirebaseAuth.getInstance()  // Inicializa a instância do FirebaseAuth
@@ -50,7 +51,7 @@ class BottomsSheetAddTaskFragment(private val onTaskAdded: () -> Unit) : BottomS
         // Limite de caracteres para o campo de tarefa
         val maxLength = 50
 
-        // Inicializa o botão como desativado e opaco
+        // Inicializa o botão como desativado e opcao tem sua transparencis definida para 50%
         binding.buttonSaveTask.isEnabled = false
         binding.buttonSaveTask.alpha = 0.5f
 
@@ -89,7 +90,7 @@ class BottomsSheetAddTaskFragment(private val onTaskAdded: () -> Unit) : BottomS
         val dataSelecionada = String.format("%02d-%02d-%04d", diaSelecionado, mesSelecionado, anoSelecionado)
         Log.d("BottomSheetAddTask", "Data formatada selecionada: $dataSelecionada")  // Log para depuração
 
-        // Ação ao clicar no botão de salvar tarefa
+        // Ação ao clicar no botão de salvar tarefa, salva os dados no FireStore
         binding.buttonSaveTask.setOnClickListener {
             val tarefaTexto = binding.inputtarefa.text.toString()  // Obtém o texto inserido pelo usuário
             val userId = auth.currentUser?.uid  // Obtém o ID do usuário autenticado

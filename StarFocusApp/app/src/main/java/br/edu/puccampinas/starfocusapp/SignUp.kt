@@ -18,6 +18,11 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import androidx.core.content.ContextCompat
 import java.time.temporal.ChronoUnit
+/**
+ * Classe responsavel por realizar cadastro do usuario, no Firestore.
+ *
+ * @author Alex
+ */
 
 @RequiresApi(Build.VERSION_CODES.O)
 class SignUp : AppCompatActivity() {

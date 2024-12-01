@@ -16,31 +16,43 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.google.firebase.firestore.FirebaseFirestore
 
-// Tela de Login
+/**
+ * A classe trata da autenticação do usuário utilizando Firebase e navegação entre telas.
+ * @author Alex
+ */
 class Login : AppCompatActivity() {
     // ViewBinding
     private val binding by lazy { LoginBinding.inflate(layoutInflater) }
     // FirebaseAuth
     private val auth by lazy { FirebaseAuth.getInstance() }
 
+    // Metodo chamado quando a Activity é criada
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(binding.root)
+        setContentView(binding.root)// Configura a view da Activity
+
+        // Configura o clique do botão de login
         with(binding) {
             btnLogin.setOnClickListener {
+                // Realiza a autenticação com os dados inseridos
                 userAuthentication(idEmail.text.toString(), idSenha.text.toString())
             }
             remember.setOnClickListener {
+                // Caso o usuário clique em "Esqueci a senha", navega para a tela de reset de senha
                 startActivity(Intent(this@Login, ResetPassword::class.java))
             }
             signUp.setOnClickListener {
+                // Caso o usuário clique em "Cadastrar", navega para a tela de cadastro
                 startActivity(Intent(this@Login, SignUp::class.java))
                 finish()
             }
         }
+        // Configura o cursor do campo de email para iniciar no começo do texto
         setCursor(binding.idEmail)
+
         // Define inicialmente o campo de senha como oculto
         binding.idSenha.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+
         // Configura o botão de alternar visibilidade da senha
         setupPasswordToggle(
             binding.togglePasswordVisibility,
@@ -51,8 +63,7 @@ class Login : AppCompatActivity() {
         )
 
     }
-
-    // voltar o cursor no início do input
+    // Metodo para garantir que o cursor vá para o início do input quando perde o foco
     private fun setCursor(editText: EditText) {
         editText.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
@@ -61,13 +72,14 @@ class Login : AppCompatActivity() {
         }
     }
 
+    // Metodo para exibir mensagens de toast na tela
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
     /**
      * Função que altera a visibilidade da senha ao alternar o toggle
-     * @authors: Isabella.
+     * @authors: Ana Carolina.
      */
     private fun setupPasswordToggle(
         toggleButton: ToggleButton,
@@ -100,6 +112,7 @@ class Login : AppCompatActivity() {
         }
     }
 
+    // Função que realiza a autenticação do usuário com email e senha
     private fun userAuthentication(email: String, password: String) {
         var isValid = true
         // Validações antes de tentar o login
@@ -118,12 +131,13 @@ class Login : AppCompatActivity() {
         if (!isValid) {
             return // Interrompe o login caso algum campo seja inválido
         }
-        // autenticação
+
+        // Realiza a autenticação com o Firebase
         auth.signInWithEmailAndPassword(email, password)
             .addOnSuccessListener { authResult ->
                 val user = authResult.user
                 if (user != null && user.isEmailVerified) {
-                    // E-mail verificado, continuar com o login
+                    // Se E-mail verificado, continuar com o login
                     val userId = user.uid
                     checkMonsterNameAndNavigate(userId)
                 } else {
@@ -132,6 +146,7 @@ class Login : AppCompatActivity() {
                 }
             }
             .addOnFailureListener { exception ->
+                //  Caso a autenticação falhe, exibe uma mensagem
                 if (exception.message.toString() == "The email address is badly formatted.") {
                     updateInputState(binding.idEmail, binding.textErrorEmail, "Endereço de email inválido!", true)
                 } else {
@@ -140,6 +155,9 @@ class Login : AppCompatActivity() {
             }
     }
 
+    /** Função para atualizar o estado do input (campo de texto e mensagem de erro)
+        @author Laís
+     */
     private fun updateInputState(
         editText: EditText,
         textView: TextView,
@@ -166,7 +184,7 @@ class Login : AppCompatActivity() {
             null
         )
     }
-
+    // Função que verifica o nome do monstro do usuário no Firestore e navega conforme o caso
     private fun checkMonsterNameAndNavigate(userId: String) {
         val db = FirebaseFirestore.getInstance()
         val userRef = db.collection("Pessoas").document(userId)

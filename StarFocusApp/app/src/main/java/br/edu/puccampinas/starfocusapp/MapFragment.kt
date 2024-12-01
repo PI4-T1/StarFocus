@@ -13,6 +13,10 @@ import br.edu.puccampinas.starfocusapp.databinding.FragmentMapBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+/**
+ * A classe que exibe os botoes de historias bloqueadas e desbloqueadas e m uma mapa.
+ * @author Ana Carolina
+ */
 class MapFragment : Fragment() {
 
     private lateinit var binding: FragmentMapBinding // Declare o binding
@@ -32,9 +36,11 @@ class MapFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Retorna o status da historia
         fetchStoryStatus()
     }
 
+    // Metodo para buscar o status das histórias do usuário no Firebase Firestore. Usa o uid do usuário autenticado.
     private fun fetchStoryStatus() {
         val userId = auth.currentUser?.uid ?: return
         // Recuperando os documentos da coleção "Pessoas" do Firebase
@@ -60,6 +66,7 @@ class MapFragment : Fragment() {
     }
 
     private fun updateButtonVisibility(history1: Boolean, history2: Boolean, history3: Boolean, history4: Boolean) {
+        // Atualiza a visibilidade dos botões de histórias com base nos seus status. Se a história estiver desbloqueada, o botão correspondente será visível.
         // História 1 está sempre desbloqueada
         binding.history1unlock.visibility = View.VISIBLE
         binding.history2unlock.visibility = if (history2) View.VISIBLE else View.GONE
@@ -73,6 +80,8 @@ class MapFragment : Fragment() {
         binding.history3novoStatus.visibility = if (history3) View.VISIBLE else View.GONE
         binding.history4novoStatus.visibility = if (history4) View.VISIBLE else View.GONE
         // Redireciona para a história correspondente ao ser desbloqueada
+
+        //Define o comportamento de clique para o botão de desbloqueio das histórias 1,2,3 e 4
         binding.history1unlock.setOnClickListener {
             if (history1) {
                 navigateToStoryActivity(HistoryOne::class.java)
@@ -115,7 +124,7 @@ class MapFragment : Fragment() {
             showErrorMessage(message)
         }
     }
-
+    // Define a função que trata os cliques nos botões bloqueados e exibe uma mensagem de erro.
     private fun showErrorMessage(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
@@ -126,7 +135,7 @@ class MapFragment : Fragment() {
             it.startActivity(intent)
         }
     }
-
+    //Navega para a atividade da história correspondente quando um botão de história desbloqueada é clicado.
     private fun saveButtonVisibilityState() {
         val sharedPreferences = requireContext().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
@@ -136,6 +145,8 @@ class MapFragment : Fragment() {
         editor.putBoolean("history4Novo", false)  // History 4 já foi desbloqueada
         editor.apply()  // Salva as mudanças
     }
+
+    //Salva o estado de visibilidade dos selos "Novo" em SharedPreferences após o desbloqueio das histórias.
     private fun loadButtonVisibilityState() {
         val sharedPreferences = requireContext().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
 

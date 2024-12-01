@@ -78,7 +78,7 @@ class HomeFragment : Fragment(), ProgressListener {
 
 
     /**
-     * Método chamado quando a view do fragmento é criada. Aqui são configurados os elementos da UI e as ações dos botões.
+     * Metodo chamado quando a view do fragmento é criada. Aqui são configurados os elementos da UI e as ações dos botões.
      *
      * @param inflater O LayoutInflater utilizado para inflar a view.
      * @param container O container que vai hospedar a view do fragmento.
@@ -99,6 +99,7 @@ class HomeFragment : Fragment(), ProgressListener {
         return binding.root
     }
 
+    // Inicializa a conexão com o servidor, cria os streams de comunicação e configura o ClienteAndroid.
     private suspend fun initializeClientAndroid(): Boolean {
         if (isInitializingClient) {
             return false
@@ -180,34 +181,40 @@ class HomeFragment : Fragment(), ProgressListener {
         }
     }
 
+// Atualiza o progresso do usuário, inicializando o cliente Android e enviando o progresso das tarefas ao servidor.
     private fun updateProgress() {
-        lifecycleScope.launch(Dispatchers.Main) {
+        lifecycleScope.launch(Dispatchers.Main) {// Inicia uma nova coroutine no contexto da thread principal
             try {
                 Log.d("HomeFragment", "Iniciando a atualização do progresso...")
 
                 // Inicializar o cliente Android de forma simplificada
                 val initializedSuccessfully = initializeClientAndroid()
 
+                // Verifica se o cliente foi inicializado corretamente
                 if (initializedSuccessfully && isClienteAndroidInitialized) {
                     Log.d(
                         "HomeFragment",
                         "clienteAndroid inicializado, atualizando barra de progresso..."
                     )
-
+                    // Obtém o ID do usuário atual autenticado
                     val userId = auth.currentUser?.uid
+
+                    // Formata a data selecionada no formato dd-MM-yyyy
                     val dataSelecionada = String.format(
                         "%02d-%02d-%04d",
                         selectedDay,
-                        selectedMonth + 1,
+                        selectedMonth + 1,  // Adiciona 1 ao mês, pois o índice do mês é 0-based
                         selectedYear
                     )
+                    // Verifica se o ID do usuário não é nulo
                     if (userId != null) {
+                        // Chama a função para contar as tarefas do usuário no dia selecionado
                         countTasks(userId, dataSelecionada) { totalTarefas, enviadas ->
                             Log.d(
                                 "HomeFragment",
                                 "Chamando sendProgress com totalTarefas=$totalTarefas e enviadas=$enviadas"
                             )
-                            clienteAndroid.sendProgress(totalTarefas, enviadas)
+                            clienteAndroid.sendProgress(totalTarefas, enviadas)  // Envia o progresso das tarefas ao servidor através do clienteAndroid
                             Log.d(
                                 "HomeFragment",
                                 "Progresso enviado com sucesso: totalTarefas=$totalTarefas, enviadas=$enviadas"
@@ -224,7 +231,7 @@ class HomeFragment : Fragment(), ProgressListener {
         }
     }
 
-    // Implementação do método da interface ProgressListener
+    // Implementação do metodo da interface ProgressListener
     override fun onProgressUpdate(progresso: Int) {
         activity?.runOnUiThread {
             // Atualiza o progresso na barra de progresso
@@ -243,6 +250,7 @@ class HomeFragment : Fragment(), ProgressListener {
         }
     }
 
+    // Função para configurar a interface do usuário (UI)
     private fun setupUI() {
         // Inicialmente, o botão 'sendProgress' estará desabilitado e com opacidade reduzida
         binding.sendProgress.isEnabled = false
@@ -253,6 +261,7 @@ class HomeFragment : Fragment(), ProgressListener {
         binding.ButtonCalendar.setOnClickListener { showMonthYearPickerDialog() }
         addDaysToView(calendar)
 
+        // Ajusta o scroll da barra de dias após o layout ser carregado
         binding.BarDaysScroll.post {
             if (!isScrollAdjusted && currentDayPosition != -1) {
                 val targetPosition = (currentDayPosition - 2).coerceAtLeast(1) - 1
@@ -261,11 +270,15 @@ class HomeFragment : Fragment(), ProgressListener {
                 isScrollAdjusted = true
             }
         }
-
+        // Carrega a data selecionada a partir dos argumentos passados para o fragmento
         arguments?.let { selectedDate = it.getString("selected_date") }
+
+        // Define o clique para o campo de entrada de tarefas
         binding.InputTask.setOnClickListener { openAddTaskBottomSheet() }
 
+        // Verifica se o usuário está autenticado
         if (auth.currentUser != null) {
+            // Se o usuário estiver autenticado, carrega as tarefas para o dia selecionado
             loadTasksForSelectedDay(String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear))
         }
 
@@ -273,10 +286,11 @@ class HomeFragment : Fragment(), ProgressListener {
         binding.sendProgress.setOnClickListener {
             val userId = auth.currentUser?.uid
             val dataSelecionada = String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear)
-            if (userId != null) sendProgress(userId, dataSelecionada)
+            if (userId != null) sendProgress(userId, dataSelecionada) // Envia o progresso se o usuário estiver autenticado
         }
     }
 
+    // Função para abrir o Bottom Sheet de adicionar tarefa
     private fun openAddTaskBottomSheet() {
         val bottomSheetFragment = BottomsSheetAddTaskFragment {
             loadTasksForSelectedDay(String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear))
@@ -463,7 +477,7 @@ class HomeFragment : Fragment(), ProgressListener {
             updateCalendarButtonText()
         }
 
-        // Exibe o diálogo
+        // Exibe o dialog
         val dialog = builder.create()
 
         // Personalizar o fundo do AlertDialog
@@ -537,7 +551,7 @@ class HomeFragment : Fragment(), ProgressListener {
      * O layout é recriado com os dias do mês e o scroll é reposicionado para o dia específico.
      *
      * @param selectedDate A data selecionada no formato "dd-MM-yyyy".
-     * @author Lais
+     * @author Lais e Luíz
      */
     fun loadTasksForSelectedDay(selectedDate: String) {
 
@@ -646,6 +660,7 @@ class HomeFragment : Fragment(), ProgressListener {
 
         // Verifica se a data selecionada já passou
         val isPastDate = selectedDateCalendar.before(today)
+        // Se a data for passada, desabilita a inserção de novas tarefas e diminui a opacidade do botão
         if (isPastDate) {
             binding.InputTask.isEnabled = false // Desabilita a inserção de novas tarefas para datas passadas
             binding.InputTask.alpha = 0.5f // Diminui a opacidade do botão
@@ -668,6 +683,7 @@ class HomeFragment : Fragment(), ProgressListener {
                     )
                 }
 
+                // Cria um LinearLayout para a tarefa
                 val tarefaLayout = LinearLayout(requireContext()).apply {
                     orientation = LinearLayout.HORIZONTAL
                     layoutParams = LinearLayout.LayoutParams(
@@ -835,6 +851,10 @@ class HomeFragment : Fragment(), ProgressListener {
         updateProgress()
     }
 
+    /**
+     * metodo que deleta uma tarefa.
+     * @author Alex e Laís
+     */
     private fun deleteTask(userId: String, date: String, taskId: String) {
         db.collection("Tarefas").document(userId).get()
             .addOnSuccessListener { document ->

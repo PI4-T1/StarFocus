@@ -77,7 +77,7 @@ public class ClienteAndroid {
                     parceiro.getDataOutputStream().writeInt(totalTarefas);
                     parceiro.getDataOutputStream().writeInt(tarefasConcluidas);
 
-                    // Receber a resposta com a porcentagem
+                    //  Recebe a porcentagem de progresso do servidor.
                     return parceiro.getDataInputStream().readInt();
                 } else {
                     Log.e("ClienteAndroid", "Parceiro está nulo");

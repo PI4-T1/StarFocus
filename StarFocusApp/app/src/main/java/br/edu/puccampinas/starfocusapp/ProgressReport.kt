@@ -28,6 +28,14 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import java.util.*
 
+
+/**
+ * Classe responsável pela atividade principal que gerencia a navegação por meio de um BottomNavigationView.
+ * Contém a lógica de inicialização e transição entre fragmentos, além de gerenciar funcionalidades adicionais,
+ * como badges para itens específicos do menu.
+ *
+ * @author Laís e Ana Carolina
+ */
 class ProgressReport : AppCompatActivity(), MetricsListener {
 
     private val binding by lazy { ReportProgressBinding.inflate(layoutInflater) }
@@ -49,12 +57,14 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        // Ação do botão de voltar para o perfil, navegando para a tela de perfil
         binding.voltaperfil.setOnClickListener {
             val intent = Intent(this, BottomNav::class.java)
             intent.putExtra("open_profile_fragment", true) // Passa o parâmetro extra
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }
+        // Inicia a execução de coroutines para enviar métricas ao servidor após a inicialização
         lifecycleScope.launch {
             // Inicializa o cliente Android antes de tentar enviar as métricas
             val isInitialized = initializeClientAndroid()
@@ -66,13 +76,17 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
             }
         }
 
+        // Inicializa e configura o gráfico de pizza
         pieChart = binding.pieChartTasks
         setupPieChart()
-        loadPieChartData()
-        setupPieChartRecompensas()
+        loadPieChartData() // Carrega os dados para o gráfico de tarefas
+        setupPieChartRecompensas() // Configura o gráfico de recompensas
 
     }
 
+    /**
+     * Configura o gráfico de pizza para mostrar os status das tarefas
+     */
     private fun setupPieChart() {
         pieChart.isDrawHoleEnabled = true
         pieChart.holeRadius = 40f // Tamanho do buraco no centro (ajuste conforme necessár
@@ -88,7 +102,9 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
 
 
     }
-
+    /**
+     * Carrega os dados para o gráfico de pizza, como as porcentagens de tarefas
+     */
     private fun loadPieChartData() {
         val userId = auth.currentUser?.uid
         if (userId != null) {
@@ -107,7 +123,6 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
         binding.percentageTextpendentes.text = "${(porcentagemPendentes)}%"
 
         // Adiciona as entradas de dados para o gráfico
-        // Certifique-se de que cada entrada tenha um valor do tipo Float e uma descrição do tipo String
         val entries = listOf(
             PieEntry(porcentagemConcluidas.toFloat(), "Concluídas"),
             PieEntry(porcentagemEnviadas.toFloat(), "Enviadas"),
@@ -137,7 +152,11 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
         pieChart.invalidate()
     }
 
+    /**
+     * Configura o gráfico de pizza de recompensas
+     */
     private fun setupPieChartRecompensas() {
+        // Obtém a referência do gráfico de pizza usando o ID do componente no layout
         val pieChartRecompensas = findViewById<PieChart>(R.id.pieChartRecompensas)
 
         // Desativa a descrição e a legenda
@@ -146,21 +165,28 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
         pieChartRecompensas.holeRadius = 40f
         pieChartRecompensas.setHoleColor(ContextCompat.getColor(this, R.color.off_white))
 
+        // Obtém o ID do usuário atual autenticado no Firebase
         val userId = auth.currentUser?.uid
         if (userId != null) {
+            // Chama a função que calcula o total de dias com tarefas e dias com recompensas
             contarDiasComTarefasERecompensa(userId) { diasComTarefas, diasComRecompensa ->
 
+                // Converte os dias com tarefas e dias com recompensas para valores float
                 val totalRecompensas = diasComTarefas.toFloat() // Total de dias com tarefas
                 val recompensatotal = diasComTarefas.toFloat() // Ou outro cálculo conforme necessário
                 val recompensaobtida = diasComRecompensa.toFloat() // Dias com recompensa
 
+                // Atualiza o texto sobre o status de recompensas no layout
                 binding.textsobrerecompensas.text = "${recompensaobtida.toInt()} " +
                         "recompensas obtidas de ${recompensatotal.toInt()} disponíveis"
 
+                // Calcula o progresso de recompensas obtidas como uma fração do total
                 val progressoObtido = if (totalRecompensas > 0) recompensaobtida / totalRecompensas else 0f
+
+                // Calcula o progresso restante, subtraindo o progresso obtido de 1 (100%)
                 val progressoRestante = 1f - progressoObtido
 
-                // Cria as entradas para o gráfico
+                //  // Cria uma lista de entradas (PieEntry) representando os dados do gráfico
                 val entries = listOf(
                     PieEntry(progressoObtido, "Obtidas"),
                     PieEntry(progressoRestante, "Restantes")
@@ -184,14 +210,15 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
                 val data = PieData(dataSet)
                 pieChartRecompensas.data = data
 
-                // Adiciona o texto no centro do gráfico
+                // Calcula o percentual de recompensas obtidas e define como texto central no gráfico
                 val totalPercent = if (totalRecompensas > 0) {
                     (recompensaobtida / totalRecompensas) * 100
                 } else {
                     0f
                 }
+                // Exibe o percentual no centro do gráfico
                 pieChartRecompensas.centerText = "${"%.1f".format(totalPercent)}%"
-                pieChartRecompensas.setCenterTextSize(12f)
+                pieChartRecompensas.setCenterTextSize(12f) // Define o tamanho da fonte do texto central
                 dataSet.valueTextColor = ContextCompat.getColor(this, R.color.dark_grey) // Cor do texto
                 val typeface = ResourcesCompat.getFont(this, R.font.poppins_medium)
                 pieChartRecompensas.setCenterTextTypeface(typeface)
@@ -202,17 +229,19 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
         }
     }
 
-
+    // Função suspensa para inicializar o cliente Android. Retorna verdadeiro se a inicialização for bem-sucedida.
     private suspend fun initializeClientAndroid(): Boolean {
+        // Verifica se o processo de inicialização já está em andamento para evitar inicializações simultâneas
         if (isInitializingClient) {
             return false
         }
 
+        // Marca que a inicialização está em andamento
         isInitializingClient = true
         try {
             Log.d("ProgressReport", "Iniciando a conexão com o servidor...")
 
-            // Estabelecer a conexão com o servidor
+            // // Estabelece a conexão com o servidor de forma assíncrona usando o Dispatchers.IO para operações de I/O
             val socket = withContext(Dispatchers.IO) {
                 try {
                     val newSocket = Socket("192.168.15.58", 3000) // Para emulador, altere para o IP do servidor em um dispositivo real
@@ -235,6 +264,7 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
             // Criar DataInputStream e DataOutputStream para comunicação com o servidor
             val inputStream = withContext(Dispatchers.IO) {
                 try {
+                    // Tenta criar um DataInputStream a partir do socket
                     val stream = DataInputStream(socket.getInputStream())
                     Log.d("ProgressReport", "DataInputStream criado com sucesso.")
                     stream
@@ -244,8 +274,10 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
                 }
             }
 
+            // Cria o DataOutputStream para enviar dados através do socket de forma assíncrona
             val outputStream = withContext(Dispatchers.IO) {
                 try {
+                    // Tenta criar um DataOutputStream a partir do socket
                     val stream = DataOutputStream(socket.getOutputStream())
                     Log.d("ProgressReport", "DataOutputStream criado com sucesso.")
                     stream
@@ -281,7 +313,7 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
         }
     }
 
-    // Implementação do método da interface MetricsListener
+    // Implementação do metodo da interface MetricsListener
     override fun onMetricsUpdate(metrics: String) {
         runOnUiThread {
             // Armazena o valor recebido na variável global
@@ -376,15 +408,18 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
         }
     }
 
+    // Função que conta os dias com tarefas e os dias com recompensa, recebendo o ID do usuário e um callback para retornar os resultados
     private fun contarDiasComTarefasERecompensa(userId: String, onResult: (diasComTarefas: Int, diasComRecompensa: Int) -> Unit) {
         // Referência ao documento de tarefas do usuário no Firestore
         val tarefasRef = db.collection("Tarefas").document(userId)
 
+        // Realiza uma leitura assíncrona do documento de tarefas do usuário
         tarefasRef.get().addOnSuccessListener { document ->
             if (document.exists()) {
                 // Acessa o mapa de tarefas
                 val tarefas = document.get("tarefas") as? Map<String, Map<String, Any>> ?: emptyMap()
 
+                // Inicializa contadores para os dias com tarefas e com recompensa
                 var diasComTarefas = 0
                 var diasComRecompensa = 0
 
@@ -407,12 +442,12 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
                             // Verifica se há ao menos uma tarefa no dia
                             val tarefasDoDia = tarefaData["lista"] as? List<Map<String, Any>> ?: emptyList()
                             if (tarefasDoDia.isNotEmpty()) {
-                                diasComTarefas++
+                                diasComTarefas++ // Se houver tarefas, incrementa o contador de dias com tarefas
 
                                 // Verifica se o campo 'recompensa' é true
                                 val recompensa = tarefaData["recompensa"] as? Boolean ?: false
                                 if (recompensa) {
-                                    diasComRecompensa++
+                                    diasComRecompensa++// Se a recompensa for verdadeira, incrementa o contador de dias com recompensa
                                 }
                             }
                         }
@@ -432,6 +467,7 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
         }
     }
 
+    // Função que conta o número total de tarefas no mês atual, recebendo o ID do usuário e um callback para retornar o resultado
     private fun contarTarefasNoMesAtual(userId: String, onResult: (totalTarefasNoMes: Int) -> Unit) {
         // Obtém o mês e o ano atuais
         val calendar = Calendar.getInstance()
