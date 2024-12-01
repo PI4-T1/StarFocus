@@ -18,7 +18,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 class BottomNav : AppCompatActivity() {
 
     // Referência para o binding da interface de usuário associada a esta atividade
-    private lateinit var binding: BottomNavBinding  // Referência para o binding da activity
+    private lateinit var binding: BottomNavBinding
 
     /**
      * Inicializa a atividade e configura a navegação entre os fragmentos.
@@ -33,7 +33,7 @@ class BottomNav : AppCompatActivity() {
         binding = BottomNavBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Verifica se a Intent contém o extra para abrir o MapFragment diretamente
+        // Verifica se a intenção de abrir diretamente um fragmento específico foi enviada na Intent.
         if (intent.getBooleanExtra("open_map_fragment", false)) {
             // Abre diretamente o MapFragment se o extra for true
             if (savedInstanceState == null) {
@@ -53,7 +53,7 @@ class BottomNav : AppCompatActivity() {
                 binding.bottomNavigation.selectedItemId = R.id.profile
             }
         } else {
-            // Caso contrário, carrega o fragmento padrão (HomeFragment, por exemplo)
+            // Caso contrário, carrega o fragmento padrão (HomeFragment)
             if (savedInstanceState == null) {
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.container, HomeFragment()) // Substitui pelo HomeFragment inicialmente
@@ -61,7 +61,7 @@ class BottomNav : AppCompatActivity() {
             }
         }
 
-        // Configura a navegação do BottomNavigationView
+        // Configura o listener para alternância de itens no BottomNavigationView.
         binding.bottomNavigation.setOnNavigationItemSelectedListener { item ->
             // Define qual fragmento será exibido com base no item selecionado
             val fragment: Fragment = when (item.itemId) {
