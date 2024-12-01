@@ -70,7 +70,7 @@
             android:textAlignment="center"
             android:textColor="@color/black"
             android:layout_marginStart="40dp"
-            android:layout_marginTop="160dp"
+            android:layout_marginTop="170dp"
             android:fontFamily="@font/poppins"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

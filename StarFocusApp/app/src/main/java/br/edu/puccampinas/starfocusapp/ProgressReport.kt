@@ -22,6 +22,7 @@ import kotlinx.coroutines.withContext
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.net.Socket
+import java.text.DateFormatSymbols
 import java.util.Calendar
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -156,10 +157,13 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
                 binding.textsobrerecompensas.text = "${recompensaobtida.toInt()} " +
                         "recompensas obtidas de ${recompensatotal.toInt()} disponíveis"
 
+                val progressoObtido = if (totalRecompensas > 0) recompensaobtida / totalRecompensas else 0f
+                val progressoRestante = 1f - progressoObtido
+
                 // Cria as entradas para o gráfico
                 val entries = listOf(
-                    PieEntry(recompensatotal, "Total"),
-                    PieEntry(recompensaobtida, "Obtidas")
+                    PieEntry(progressoObtido, "Obtidas"),
+                    PieEntry(progressoRestante, "Restantes")
                 )
 
                 // Cria o DataSet para o gráfico
@@ -384,17 +388,33 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
                 var diasComTarefas = 0
                 var diasComRecompensa = 0
 
+                // Obtem o mês e o ano atuais
+                val hoje = Calendar.getInstance()
+                val anoAtual = hoje.get(Calendar.YEAR)
+                val mesAtual = hoje.get(Calendar.MONTH) + 1 // Janeiro é 0
+
                 // Percorre todos os dias no mapa de tarefas
                 for ((dataSelecionada, tarefaData) in tarefas) {
-                    // Verifica se há ao menos uma tarefa no dia
-                    val tarefasDoDia = tarefaData["lista"] as? List<Map<String, Any>> ?: emptyList()
-                    if (tarefasDoDia.isNotEmpty()) {
-                        diasComTarefas++
+                    // Extrai o dia, mês e ano da data selecionada
+                    val partesData = dataSelecionada.split("-")
+                    if (partesData.size == 3) {
+                        val dia = partesData[0].toIntOrNull() // Não será usado aqui, mas pode ser útil
+                        val mes = partesData[1].toIntOrNull()
+                        val ano = partesData[2].toIntOrNull()
 
-                        // Verifica se o campo 'recompensa' é true
-                        val recompensa = tarefaData["recompensa"] as? Boolean ?: false
-                        if (recompensa) {
-                            diasComRecompensa++
+                        // Verifica se a data pertence ao mês e ano atual
+                        if (ano == anoAtual && mes == mesAtual) {
+                            // Verifica se há ao menos uma tarefa no dia
+                            val tarefasDoDia = tarefaData["lista"] as? List<Map<String, Any>> ?: emptyList()
+                            if (tarefasDoDia.isNotEmpty()) {
+                                diasComTarefas++
+
+                                // Verifica se o campo 'recompensa' é true
+                                val recompensa = tarefaData["recompensa"] as? Boolean ?: false
+                                if (recompensa) {
+                                    diasComRecompensa++
+                                }
+                            }
                         }
                     }
                 }
@@ -417,6 +437,12 @@ class ProgressReport : AppCompatActivity(), MetricsListener {
         val calendar = Calendar.getInstance()
         val anoAtual = calendar.get(Calendar.YEAR)
         val mesAtual = calendar.get(Calendar.MONTH) + 1 // Janeiro é 0, então somamos 1 para ficar no intervalo correto
+
+        // Obtem o nome do mês atual
+        val nomeDoMes = DateFormatSymbols().months[mesAtual - 1]
+
+        //Altera o text do mês atual
+        binding.mes.text = "Em $nomeDoMes"
 
         // Referência ao documento de tarefas do usuário no Firestore
         val tarefasRef = db.collection("Tarefas").document(userId)
