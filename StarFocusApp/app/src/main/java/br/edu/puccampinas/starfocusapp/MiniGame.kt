@@ -106,7 +106,7 @@ class MiniGame : AppCompatActivity() {
             if (!checkForMatch(indexOfSingleSelectedCard!!, position)) {
                 errorCount++ // Incrementa o contador de erros em caso de erro
                 updateErrorCounter()
-                if (errorCount >= 5) {
+                if (errorCount >= 12) {
                     redirectToMapFragment()
                     return
                 }
@@ -146,7 +146,7 @@ class MiniGame : AppCompatActivity() {
     }
 
     private fun updateErrorCounter() {
-        errorCounterTextView.text = "Erros: $errorCount"
+        errorCounterTextView.text = "Erros: $errorCount/12"
     }
 
     private fun redirectToMapFragment() {

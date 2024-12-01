@@ -29,11 +29,9 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:background="@drawable/baseline_arrow_forward_24_offwhite"
-        app:layout_constraintStart_toStartOf="@id/history"
-        app:layout_constraintBottom_toBottomOf="@id/history"
-        app:layout_constraintEnd_toEndOf="@id/history"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginStart="260dp"
-
-
         />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
