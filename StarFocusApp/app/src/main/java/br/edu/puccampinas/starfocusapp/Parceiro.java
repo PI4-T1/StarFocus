@@ -34,24 +34,4 @@ public class Parceiro {
         return transmissor;
     }
 
-    // Método para enviar um int
-    public void receba(int valor) throws Exception {
-        try {
-            this.transmissor.writeInt(valor);
-            this.transmissor.flush();
-        } catch (IOException erro) {
-            throw new Exception("Erro de transmissão");
-        }
-    }
-
-    // Método para fechar a conexão
-    public void adeus() throws Exception {
-        try {
-            this.transmissor.close();
-            this.receptor.close();
-            this.conexao.close();
-        } catch (Exception erro) {
-            throw new Exception("Erro de desconexão");
-        }
-    }
 }
