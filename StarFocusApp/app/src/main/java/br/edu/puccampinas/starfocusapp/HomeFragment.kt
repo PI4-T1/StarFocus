@@ -182,44 +182,33 @@ class HomeFragment : Fragment(), ProgressListener {
         }
     }
 
-// Atualiza o progresso do usuário, inicializando o cliente Android e enviando o progresso das tarefas ao servidor.
+    // Atualiza o progresso do usuário, inicializando o cliente Android e enviando o progresso das tarefas ao servidor.
     private fun updateProgress() {
-        lifecycleScope.launch(Dispatchers.Main) {// Inicia uma nova coroutine no contexto da thread principal
+        lifecycleScope.launch(Dispatchers.Main) {
             try {
                 Log.d("HomeFragment", "Iniciando a atualização do progresso...")
 
                 // Inicializar o cliente Android de forma simplificada
                 val initializedSuccessfully = initializeClientAndroid()
 
-                // Verifica se o cliente foi inicializado corretamente
+                // Aguarde a inicialização do clienteAndroid (garante que o cliente está pronto)
                 if (initializedSuccessfully && isClienteAndroidInitialized) {
-                    Log.d(
-                        "HomeFragment",
-                        "clienteAndroid inicializado, atualizando barra de progresso..."
-                    )
-                    // Obtém o ID do usuário atual autenticado
+                    Log.d("HomeFragment", "clienteAndroid inicializado, atualizando barra de progresso...")
+
                     val userId = auth.currentUser?.uid
 
-                    // Formata a data selecionada no formato dd-MM-yyyy
                     val dataSelecionada = String.format(
                         "%02d-%02d-%04d",
                         selectedDay,
-                        selectedMonth + 1,  // Adiciona 1 ao mês, pois o índice do mês é 0-based
+                        selectedMonth + 1,
                         selectedYear
                     )
-                    // Verifica se o ID do usuário não é nulo
+
                     if (userId != null) {
-                        // Chama a função para contar as tarefas do usuário no dia selecionado
                         countTasks(userId, dataSelecionada) { totalTarefas, enviadas ->
-                            Log.d(
-                                "HomeFragment",
-                                "Chamando sendProgress com totalTarefas=$totalTarefas e enviadas=$enviadas"
-                            )
-                            clienteAndroid.sendProgress(totalTarefas, enviadas)  // Envia o progresso das tarefas ao servidor através do clienteAndroid
-                            Log.d(
-                                "HomeFragment",
-                                "Progresso enviado com sucesso: totalTarefas=$totalTarefas, enviadas=$enviadas"
-                            )
+                            Log.d("HomeFragment", "Chamando sendProgress com totalTarefas=$totalTarefas e enviadas=$enviadas")
+                            clienteAndroid.sendProgress(totalTarefas, enviadas)
+                            Log.d("HomeFragment", "Progresso enviado com sucesso: totalTarefas=$totalTarefas, enviadas=$enviadas")
                         }
                     }
                 } else {
@@ -632,7 +621,7 @@ class HomeFragment : Fragment(), ProgressListener {
                 Log.e("Firestore", "Erro ao carregar tarefas", e) // Loga qualquer erro ao tentar carregar tarefas
             }
 
-        updateProgress()
+        //updateProgress()
     }
 
     /**
@@ -1253,11 +1242,8 @@ class HomeFragment : Fragment(), ProgressListener {
     }
 
     private fun noServerDialog() {
-        if (!isDialogShown) { // Verifica se o diálogo já foi exibido
-            val dialog = DialogNoServerFragment() // Cria o fragmento
-            dialog.show(parentFragmentManager, "DialogNoServer") // Exibe o fragmento
-            isDialogShown = true // Atualiza o estado para indicar que o diálogo foi exibido
-        }
+        val dialog = DialogNoServerFragment() // Cria o fragmento
+        dialog.show(parentFragmentManager, "DialogNoServer") // Exibe o fragmento
     }
 
 }
